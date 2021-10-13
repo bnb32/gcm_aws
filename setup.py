@@ -11,10 +11,12 @@ setup(
     install_requires=[
         'matplotlib',
         'xarray',
-        'cartopy',
+        'proj',
+        'geos',
+        #'cartopy',
         'netCDF4',
-        'ffmpeg',
-        'xesmf',
-        'jupyterlab',
+        #'ffmpeg',
+        #'xesmf',
+        #'jupyterlab',
         ]
 )

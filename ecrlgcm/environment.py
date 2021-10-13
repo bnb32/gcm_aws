@@ -7,7 +7,7 @@ ROOT_DIR="/data/%s" %(NETID)
 SCRATCH_DIR=ROOT_DIR+"/scratch"
 BASE_DIR="/home/%s/environment" %(USERNAME)
 ISCA_DIR=ROOT_DIR+"/isca"
-os.environ['GFDL_BASE']=ISCA_DIR
+os.environ['GFDL_BASE']=GFDL_BASE=ISCA_DIR
 
 os.environ['GCM_REPO_DIR']=BASE_DIR+"/gcm_aws"
 

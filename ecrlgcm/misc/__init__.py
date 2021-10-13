@@ -3,16 +3,17 @@ import ecrlgcm.environment
 import logging
 import glob
 import os
+from sys import stdout
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 sh = logging.StreamHandler(stdout)
-sh.SetLevel(logging.INFO)
+sh.setLevel(logging.INFO)
 formatter = logging.Formatter('[%(levelname)s] %(asctime)s %(message)s')
 sh.setFormatter(formatter)
 logger.addHandler(sh)
 
-def get_logger()
+def get_logger():
     return logger
 
 land_years = glob.glob(os.environ["RAW_TOPO_DIR"]+'/Map*.nc')

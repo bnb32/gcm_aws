@@ -1,4 +1,4 @@
-import ecrlisca.environment
+import ecrlgcm.environment
 import os
 import glob
 

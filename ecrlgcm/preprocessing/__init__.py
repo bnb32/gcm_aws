@@ -94,31 +94,33 @@ def adjust_co2(multiplier=1,land_year=0,co2_value=None,outfile=None):
 
 def adjust_continents(land_year=0,sea_level=0):
     land = interpolate_land(land_year)
-    return regrid_continent_data(land,land_year=land_year,sea_level=sea_level)
+    ds_out = regrid_continent_data(land,sea_level=sea_level)
 
-def regrid_continent_data(land,land_year=0,sea_level=0):
+    out_file = os.path.join(os.environ['TOPO_DIR'],Experiment(land_year=land_year).land_file)
+
+    os.system(f'rm -f {out_file}')
+    ds_out.to_netcdf(out_file)
+    print(f'{out_file}')
+
+def regrid_continent_data(land,sea_level=0):
 
     base = xr.open_mfdataset(os.environ['BASE_TOPO_FILE'])
 
     ds_out = xr.Dataset({'lat': (['lat'], base['lat'].values),
                          'lon': (['lon'], base['lon'].values)})
 
-    out_file = os.path.join(os.environ['TOPO_DIR'],Experiment(land_year=land_year).land_file)
 
     regridder = xe.Regridder(land, ds_out, 'bilinear')
     tmp = land['z'].values
     tmp[tmp<sea_level] = 0
-    #ds_out['z'].values[ds_out['z'].values < 0] = 0
     land['z'] = (land['z'].dims,tmp)
     ds_out = regridder(land)
     ds_out['land_mask'] = (ds_out['z'].dims,np.array(ds_out['z'].values > 0.0,dtype=float))
     ds_out = ds_out.rename({'z':'zsurf'})
+    ds_out['PHIS'] = (ds_out['zsurf'].dims,9.8*ds_out['zsurf'].values)
     ds_out = ds_out.fillna(0)
-    os.system(f'rm -f {out_file}')
-    ds_out.to_netcdf(out_file)
-    print(f'{out_file}')
     return ds_out
-
+    
 def interpolate_land(land_year):
     year = float(land_year)
 
@@ -153,4 +155,36 @@ def regrid_continent_maps(remap_file):
     land_year = f'{remap_file.strip(".nc").split("_")[-1]}'
     land = xr.open_mfdataset(remap_file)
     
-    regrid_continent_data(land,land_year)
+    ds_out = regrid_continent_data(land)
+
+    out_file = os.path.join(os.environ['TOPO_DIR'],Experiment(land_year=land_year).land_file)
+
+    os.system(f'rm -f {out_file}')
+    ds_out.to_netcdf(out_file)
+    print(f'{out_file}')
+
+def zonal_band_anomaly_squared_distance(y,y0):
+    return (y-y0)**2
+
+def meridional_band_anomaly_squared_distance(r,x,x0,y):
+    ymin=np.sqrt(r)+1
+    ymax=90-ymin-1
+    if ymin<y<ymax: return (x-x0)**2
+    elif y<=ymin: return (x-x0)**2+(y-ymin)**2
+    elif y>=ymax: return (x-x0)**2+(y-ymax)**2
+
+def disk_anomaly_squared_distance(x,x0,y,y0):
+    return (x-x0)**2+(y-y0)**2
+
+def anomaly_smoothing(max_val,d,r):
+    if d<=r:
+        return max_val*(r-d)/r#*np.exp(-dd/r)
+    else:
+        return 0
+
+def modify_topofile(land_year,infile,outfile):
+    
+    data = regrid_continent_data(interpolate_land(land_year))
+    f=xr.open_mfdataset(infile)
+    f['PHIS'] = (data['PHIS'].dims,data['PHIS'].values)
+    f.to_netcdf(outfile)
