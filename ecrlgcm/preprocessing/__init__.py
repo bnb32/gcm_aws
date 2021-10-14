@@ -92,11 +92,14 @@ def adjust_co2(multiplier=1,land_year=0,co2_value=None,outfile=None):
     ncfile.variables['co2'][:,:,:,:] = co2[:,:,:,:]
     ncfile.close()
 
-def adjust_continents(land_year=0,sea_level=0):
+def adjust_continents(land_year=0,sea_level=0,gcm_type='isca'):
     land = interpolate_land(land_year)
     ds_out = regrid_continent_data(land,sea_level=sea_level)
 
-    out_file = os.path.join(os.environ['TOPO_DIR'],Experiment(land_year=land_year).land_file)
+    if gcm_type=='isca':
+        out_file = os.path.join(os.environ['ISCA_TOPO_DIR'],Experiment(type='isca',land_year=land_year).land_file)
+    if gcm_type=='cesm':
+        out_file = os.path.join(os.environ['CESM_TOPO_DIR'],Experiment(type='cesm',land_year=land_year).land_file)
 
     os.system(f'rm -f {out_file}')
     ds_out.to_netcdf(out_file)
@@ -104,20 +107,20 @@ def adjust_continents(land_year=0,sea_level=0):
 
 def regrid_continent_data(land,sea_level=0):
 
-    base = xr.open_mfdataset(os.environ['BASE_TOPO_FILE'])
+    base = xr.open_mfdataset(os.environ['ORIG_ISCA_TOPO_FILE'])
 
     ds_out = xr.Dataset({'lat': (['lat'], base['lat'].values),
                          'lon': (['lon'], base['lon'].values)})
 
 
     regridder = xe.Regridder(land, ds_out, 'bilinear')
-    tmp = land['z'].values
-    tmp[tmp<sea_level] = 0
-    land['z'] = (land['z'].dims,tmp)
     ds_out = regridder(land)
-    ds_out['land_mask'] = (ds_out['z'].dims,np.array(ds_out['z'].values > 0.0,dtype=float))
+    ds_out['land_mask'] = (ds_out['z'].dims,np.array(ds_out['z'].values > sea_level, dtype=float))
+    tmp = ds_out['z'].values
+    tmp[tmp<-100] = -100.0
+    ds_out['z'] = (ds_out['z'].dims,tmp)
+    ds_out['PHIS'] = (ds_out['z'].dims,9.8*ds_out['z'].values)
     ds_out = ds_out.rename({'z':'zsurf'})
-    ds_out['PHIS'] = (ds_out['zsurf'].dims,9.8*ds_out['zsurf'].values)
     ds_out = ds_out.fillna(0)
     return ds_out
     
@@ -150,14 +153,17 @@ def get_original_map_data(land_year):
     land = xr.open_mfdataset(file)
     return land
 
-def regrid_continent_maps(remap_file):
+def regrid_continent_maps(remap_file,gcm_type='isca'):
 
     land_year = f'{remap_file.strip(".nc").split("_")[-1]}'
     land = xr.open_mfdataset(remap_file)
     
     ds_out = regrid_continent_data(land)
 
-    out_file = os.path.join(os.environ['TOPO_DIR'],Experiment(land_year=land_year).land_file)
+    if gcm_type=='isca':
+        out_file = os.path.join(os.environ['ISCA_TOPO_DIR'],Experiment(type='isca',land_year=land_year).land_file)
+    if gcm_type=='cesm':
+        out_file = os.path.join(os.environ['CESM_TOPO_DIR'],Experiment(type='cesm',land_year=land_year).land_file)
 
     os.system(f'rm -f {out_file}')
     ds_out.to_netcdf(out_file)
