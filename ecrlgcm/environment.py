@@ -28,12 +28,23 @@ os.environ['RAW_TOPO_DIR'] = RAW_TOPO_DIR = f'/data/{NETID}/paleodem_raw'
 
 os.environ['ISCA_TOPO_DIR'] = ISCA_TOPO_DIR = os.path.join(RAW_TOPO_DIR,'land_masks/')
 
-os.environ['ORIG_ISCA_TOPO_FILE'] = ORIG_ISCA_TOPO_FILE = os.path.join(GFDL_BASE,'input/land_masks/era_land_t42.nc')
-
 os.environ["PATH"]+=f":{CESM_SCRIPTS}"
 
-os.environ['ORIG_CESM_TOPO_FILE'] = ORIG_CESM_TOPO_FILE = f'{CESM_INPUT_DATA_DIR}/atm/cam/topo/T42_nc3000_Co060_Fi001_PF_nullRR_Nsw042_20180111.nc'
+os.environ['ORIG_CESM_CO2_FILE'] = ORIG_CESM_CO2_FILE = f'{CESM_INPUT_DATA_DIR}/atm/waccm/lb/LBC_2000climo_CMIP6_0p5degLat_c180227.nc'
+
+T42_TOPO_FILE = 'T42_nc3000_Co060_Fi001_PF_nullRR_Nsw042_20180111.nc'
+f19_TOPO_FILE = 'fv_1.9x2.5_nc3000_Nsw084_Nrs016_Co120_Fi001_ZR_GRNL_031819.nc'
+f09_TOPO_FILE = 'fv_0.9x1.25_nc3000_Nsw042_Nrs008_Co060_Fi001_ZR_sgh30_24km_GRNL_c170103.nc'
+os.environ['T42_TOPO_FILE'] = f'{CESM_INPUT_DATA_DIR}/atm/cam/topo/{T42_TOPO_FILE}'
+os.environ['f19_TOPO_FILE'] = f'{CESM_INPUT_DATA_DIR}/atm/cam/topo/{f19_TOPO_FILE}'
+os.environ['f09_TOPO_FILE'] = f'{CESM_INPUT_DATA_DIR}/atm/cam/topo/{f09_TOPO_FILE}'
+
+os.environ['ORIG_ISCA_TOPO_FILE'] = ORIG_ISCA_TOPO_FILE = os.path.join(GFDL_BASE,'input/land_masks/era_land_t42.nc')
+os.environ['ORIG_TOPO_FILE'] = ORIG_TOPO_FILE = f'{CESM_INPUT_DATA_DIR}/atm/cam/topo/{f19_TOPO_FILE}'
+
 os.environ['CESM_TOPO_DIR'] = CESM_TOPO_DIR = f'{USER_DIR}/topo_files/'
+
+os.environ['CESM_CO2_DIR'] = CESM_CO2_DIR = f'{USER_DIR}/co2_files/'
 
 os.environ['GFDL_ENV'] = GFDL_ENV = 'aws'
 

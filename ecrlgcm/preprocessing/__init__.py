@@ -107,7 +107,7 @@ def adjust_continents(land_year=0,sea_level=0,gcm_type='isca'):
 
 def regrid_continent_data(land,sea_level=0):
 
-    base = xr.open_mfdataset(os.environ['ORIG_ISCA_TOPO_FILE'])
+    base = xr.open_mfdataset(os.environ['ORIG_TOPO_FILE'])
 
     ds_out = xr.Dataset({'lat': (['lat'], base['lat'].values),
                          'lon': (['lon'], base['lon'].values)})
@@ -193,4 +193,13 @@ def modify_topofile(land_year,infile,outfile):
     data = regrid_continent_data(interpolate_land(land_year))
     f=xr.open_mfdataset(infile)
     f['PHIS'] = (data['PHIS'].dims,data['PHIS'].values)
+    f.to_netcdf(outfile)
+
+def modify_co2file(land_year,multiplier,infile,outfile):
+    
+    co2value = interpolate_co2(land_year)
+    f=xr.open_mfdataset(infile,decode_times=False)
+    tmp = np.zeros(f['CO2_LBC'].shape)
+    tmp[:,:] = multiplier*co2value*1.0e-6
+    f['CO2_LBC'] = (f['CO2_LBC'].dims,tmp)
     f.to_netcdf(outfile)
