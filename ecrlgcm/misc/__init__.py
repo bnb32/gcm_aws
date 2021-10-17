@@ -13,6 +13,15 @@ formatter = logging.Formatter('[%(levelname)s] %(asctime)s %(message)s')
 sh.setFormatter(formatter)
 logger.addHandler(sh)
 
+def get_base_topofile(res):
+    if res.split('_')[0][0:3]=='T42':
+        os.environ['ORIG_TOPO_FILE']=os.environ['T42_TOPO_FILE']
+    if res.split('_')[0][0:3]=='f19':
+        os.environ['ORIG_TOPO_FILE']=os.environ['f19_TOPO_FILE']
+    if res.split('_')[0][0:3]=='f09':
+        os.environ['ORIG_TOPO_FILE']=os.environ['f09_TOPO_FILE']
+    return os.environ['ORIG_TOPO_FILE']
+
 def get_logger():
     return logger
 
