@@ -94,16 +94,22 @@ def adjust_co2(multiplier=1,land_year=0,co2_value=None,outfile=None):
     ncfile.variables['co2'][:,:,:,:] = co2[:,:,:,:]
     ncfile.close()
 
-def adjust_continents(basefile='',land_year=0,sea_level=0,max_depth=0,gcm_type='isca'):
+def adjust_continents(basefile='',outfile='',land_year=0,sea_level=0,max_depth=0):
     land = interpolate_land(land_year)
     ds_out = regrid_continent_data(land,basefile=basefile,
                                    sea_level=sea_level,
                                    max_depth=max_depth)
 
-    if gcm_type=='isca':
-        out_file = os.path.join(os.environ['ISCA_TOPO_DIR'],Experiment(type='isca',land_year=land_year).land_file)
-    if gcm_type=='cesm':
-        out_file = os.path.join(os.environ['CESM_TOPO_DIR'],Experiment(type='cesm',land_year=land_year).land_file)
+    os.system(f'rm -f {out_file}')
+    ds_out.to_netcdf(out_file)
+    print(f'{out_file}')
+
+def regrid_continent_maps(remap_file,basefile='',outfile='',sea_level=0,max_depth=0):
+    land_year = f'{remap_file.strip(".nc").split("_")[-1]}'
+    land = xr.open_mfdataset(remap_file)
+    ds_out = regrid_continent_data(land,basefile=basefile,
+                                   sea_level=sea_level,
+                                   max_depth=max_depth)
 
     os.system(f'rm -f {out_file}')
     ds_out.to_netcdf(out_file)
@@ -113,9 +119,17 @@ def regrid_continent_data(land,basefile='',sea_level=0,max_depth=0):
 
     base = xr.open_mfdataset(basefile)
 
-    ds_out = xr.Dataset({'lat': (['lat'], base['lat'].values),
-                         'lon': (['lon'], base['lon'].values)})
+    if all(-np.pi < l < np.pi for l in base['lat'].values):
+        lats = 180.0/np.pi * base['lat'].values
+    else:
+        lats = base['lat'].values
+    if all(-2*np.pi < l < 2*np.pi for l in base['lon'].values):
+        lons = 180.0/np.pi * base['lon'].values
+    else:
+        lons = base['lon'].values
 
+    ds_out = xr.Dataset({'lat': (['lat'], lats),
+                         'lon': (['lon'], lons)})
 
     regridder = xe.Regridder(land, ds_out, 'bilinear')
     ds_out = regridder(land)
@@ -159,24 +173,6 @@ def get_original_map_data(land_year):
     land = xr.open_mfdataset(file)
     return land
 
-def regrid_continent_maps(remap_file,basefile='',gcm_type='isca',sea_level=0,max_depth=0):
-
-    land_year = f'{remap_file.strip(".nc").split("_")[-1]}'
-    land = xr.open_mfdataset(remap_file)
-    
-    ds_out = regrid_continent_data(land,basefile=basefile,
-                                   sea_level=sea_level,
-                                   max_depth=max_depth)
-
-    if gcm_type=='isca':
-        out_file = os.path.join(os.environ['ISCA_TOPO_DIR'],Experiment(type='isca',land_year=land_year).land_file)
-    if gcm_type=='cesm':
-        out_file = os.path.join(os.environ['CESM_TOPO_DIR'],Experiment(type='cesm',land_year=land_year).land_file)
-
-    os.system(f'rm -f {out_file}')
-    ds_out.to_netcdf(out_file)
-    print(f'{out_file}')
-
 def zonal_band_anomaly_squared_distance(y,y0):
     return (y-y0)**2
 
@@ -203,7 +199,7 @@ def modify_topofile(land_year=0,infile='',outfile='',sea_level=0,max_depth=0):
                                  sea_level=sea_level,
                                  max_depth=max_depth)
     f=xr.open_mfdataset(infile)
-    f['PHIS'] = data['PHIS']
+    f['PHIS'] = (data['PHIS'].dims,data['PHIS'].values)
     f.to_netcdf(outfile)
     logger.info(f'Saved topofile: {outfile}')
     return f
@@ -216,3 +212,49 @@ def modify_co2file(land_year=0,multiplier=1,infile='',outfile=''):
     f['co2vmr'] = (f['co2vmr'].dims,tmp)
     f.to_netcdf(outfile)
     logger.info(f'Saved co2file: {outfile}')
+
+def anomaly_value(max_val,r,x,x0,y,y0,anomaly_type='disk'):
+    if x>=180.0: x-=360.0
+    if x0>=180.0: x0-=360.0
+    if anomaly_type=='disk':
+        d=disk_anomaly_squared_distance(x,x0,y,y0)
+    if anomaly_type=='zonal_band':
+        d=zonal_band_anomaly_squared_distance(y,y0)
+    if anomaly_type=='meridional_band':
+        d=meridional_band_anomaly_squared_distance(r,x,x0,y)
+    if anomaly_type=='none':
+        return 0
+    return anomaly_smoothing(max_val,np.sqrt(d),np.sqrt(r))
+
+def inject_anomaly(basefile='',anomaly_type='disk',
+                   variable='PHIS',exp_type='dry_hs',
+                   max_anomaly=0,squared_radius=1,
+                   anomaly_lon=0,anomaly_lat=0,
+                   use_lapse_rate=True,
+                   just_surface=False):
+
+    base = xr.open_mfdataset(basefile)
+    data = base[variable].values
+    lats = base['lat'].values
+    lons = base['lon'].values
+
+    for i,lat in enumerate(lats):
+        for j,lon in enumerate(lons):
+        
+            value=anomaly_value(max_anomaly,squared_radius,
+                                lon,anomaly_lon,lat,anomaly_lat,
+                                anomaly_type=anomaly_type)
+
+            if exp_type=='aqua':
+	        data[:,i,j]+=value
+            elif exp_type='dry_hs':
+                if use_lapse_rate:
+                    for k in range(len(data[0,:,0,0])):
+                        lapse_rate=value/(len(data[0,:,0,0])-1)
+                        data[:,k,i,j]+=k*lapse_rate
+                elif just_surface:
+                    data[:,-1,i,j]+=value
+                else:
+                    data[:,:,i,j]+=value
+    
+    return data

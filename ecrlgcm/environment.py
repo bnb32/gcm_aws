@@ -32,8 +32,7 @@ os.environ["PATH"]+=f":{CESM_SCRIPTS}"
 
 os.environ['ORIG_CESM_CO2_FILE'] = ORIG_CESM_CO2_FILE = f'{CESM_INPUT_DATA_DIR}/atm/waccm/lb/LBC_2000climo_CMIP6_0p5degLat_c180227.nc'
 
-T42_TOPO_FILE = os.path.join(GFDL_BASE,'input/land_masks/era_land_t42.nc')
-#'T42_nc3000_Co060_Fi001_PF_nullRR_Nsw042_20180111.nc'
+T42_TOPO_FILE = f'{CESM_INPUT_DATA_DIR}/atm/cam/topo/T42_nc3000_Co060_Fi001_PF_nullRR_Nsw042_20180111.nc'
 f19_TOPO_FILE = f'{CESM_INPUT_DATA_DIR}/atm/cam/topo/fv_1.9x2.5_nc3000_Nsw084_Nrs016_Co120_Fi001_ZR_GRNL_031819.nc'
 f09_TOPO_FILE = f'{CESM_INPUT_DATA_DIR}/atm/cam/topo/fv_0.9x1.25_nc3000_Nsw042_Nrs008_Co060_Fi001_ZR_sgh30_24km_GRNL_c170103.nc'
 os.environ['T42_TOPO_FILE'] = T42_TOPO_FILE
