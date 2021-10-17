@@ -1,7 +1,7 @@
 import ecrlgcm.environment
 from ecrlgcm.data import co2_series, ecc_series, obl_series
 from ecrlgcm.experiment import Experiment
-from ecrlgcm.misc import land_years
+from ecrlgcm.misc import land_years, get_logger
 
 import os
 import netCDF4 as nc
@@ -11,6 +11,8 @@ import xarray as xr
 import xesmf as xe
 import warnings
 warnings.filterwarnings("ignore")
+
+logger = get_logger()
 
 def mila_cycle(Amin=0,Amax=0,Acurr=0,T=0,land_year=0):
 
@@ -92,9 +94,11 @@ def adjust_co2(multiplier=1,land_year=0,co2_value=None,outfile=None):
     ncfile.variables['co2'][:,:,:,:] = co2[:,:,:,:]
     ncfile.close()
 
-def adjust_continents(land_year=0,sea_level=0,gcm_type='isca'):
+def adjust_continents(basefile='',land_year=0,sea_level=0,max_depth=0,gcm_type='isca'):
     land = interpolate_land(land_year)
-    ds_out = regrid_continent_data(land,sea_level=sea_level)
+    ds_out = regrid_continent_data(land,basefile=basefile,
+                                   sea_level=sea_level,
+                                   max_depth=max_depth)
 
     if gcm_type=='isca':
         out_file = os.path.join(os.environ['ISCA_TOPO_DIR'],Experiment(type='isca',land_year=land_year).land_file)
@@ -105,9 +109,9 @@ def adjust_continents(land_year=0,sea_level=0,gcm_type='isca'):
     ds_out.to_netcdf(out_file)
     print(f'{out_file}')
 
-def regrid_continent_data(land,sea_level=0):
+def regrid_continent_data(land,basefile='',sea_level=0,max_depth=0):
 
-    base = xr.open_mfdataset(os.environ['ORIG_TOPO_FILE'])
+    base = xr.open_mfdataset(basefile)
 
     ds_out = xr.Dataset({'lat': (['lat'], base['lat'].values),
                          'lon': (['lon'], base['lon'].values)})
@@ -115,9 +119,11 @@ def regrid_continent_data(land,sea_level=0):
 
     regridder = xe.Regridder(land, ds_out, 'bilinear')
     ds_out = regridder(land)
+    
     ds_out['land_mask'] = (ds_out['z'].dims,np.array(ds_out['z'].values > sea_level, dtype=float))
+    
     tmp = ds_out['z'].values
-    tmp[tmp<-100] = -100.0
+    tmp[tmp<-max_depth] = -max_depth
     ds_out['z'] = (ds_out['z'].dims,tmp)
     ds_out['PHIS'] = (ds_out['z'].dims,9.8*ds_out['z'].values)
     ds_out = ds_out.rename({'z':'zsurf'})
@@ -153,12 +159,14 @@ def get_original_map_data(land_year):
     land = xr.open_mfdataset(file)
     return land
 
-def regrid_continent_maps(remap_file,gcm_type='isca'):
+def regrid_continent_maps(remap_file,basefile='',gcm_type='isca',sea_level=0,max_depth=0):
 
     land_year = f'{remap_file.strip(".nc").split("_")[-1]}'
     land = xr.open_mfdataset(remap_file)
     
-    ds_out = regrid_continent_data(land)
+    ds_out = regrid_continent_data(land,basefile=basefile,
+                                   sea_level=sea_level,
+                                   max_depth=max_depth)
 
     if gcm_type=='isca':
         out_file = os.path.join(os.environ['ISCA_TOPO_DIR'],Experiment(type='isca',land_year=land_year).land_file)
@@ -188,18 +196,23 @@ def anomaly_smoothing(max_val,d,r):
     else:
         return 0
 
-def modify_topofile(land_year,infile,outfile):
+def modify_topofile(land_year=0,infile='',outfile='',sea_level=0,max_depth=0):
     
-    data = regrid_continent_data(interpolate_land(land_year))
+    data = regrid_continent_data(interpolate_land(land_year),
+                                 basefile=infile,
+                                 sea_level=sea_level,
+                                 max_depth=max_depth)
     f=xr.open_mfdataset(infile)
-    f['PHIS'] = (data['PHIS'].dims,data['PHIS'].values)
+    f['PHIS'] = data['PHIS']
     f.to_netcdf(outfile)
+    logger.info(f'Saved topofile: {outfile}')
+    return f
 
-def modify_co2file(land_year,multiplier,infile,outfile):
+def modify_co2file(land_year=0,multiplier=1,infile='',outfile=''):
     
     co2value = interpolate_co2(land_year)
     f=xr.open_mfdataset(infile,decode_times=False)
-    tmp = np.zeros(f['CO2_LBC'].shape)
-    tmp[:,:] = multiplier*co2value*1.0e-6
-    f['CO2_LBC'] = (f['CO2_LBC'].dims,tmp)
+    tmp = np.full(f['co2vmr'].shape,multiplier*co2value*1.0e-6)
+    f['co2vmr'] = (f['co2vmr'].dims,tmp)
     f.to_netcdf(outfile)
+    logger.info(f'Saved co2file: {outfile}')
