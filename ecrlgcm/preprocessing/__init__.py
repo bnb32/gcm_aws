@@ -246,8 +246,8 @@ def inject_anomaly(basefile='',anomaly_type='disk',
                                 anomaly_type=anomaly_type)
 
             if exp_type=='aqua':
-	        data[:,i,j]+=value
-            elif exp_type='dry_hs':
+                data[:,i,j]+=value
+            elif exp_type=='dry_hs':
                 if use_lapse_rate:
                     for k in range(len(data[0,:,0,0])):
                         lapse_rate=value/(len(data[0,:,0,0])-1)
