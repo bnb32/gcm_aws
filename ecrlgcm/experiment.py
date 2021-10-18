@@ -1,17 +1,19 @@
 import ecrlgcm.environment
+import xarray as xr
 
 import os
 import glob
 
 class Experiment:
-    def __init__(self,gcm_type='isca',multiplier=1,land_year=0,co2_value=None,res='T42_T42',exp_type='cam'):
+    def __init__(self,gcm_type='cesm',multiplier=1,land_year=0,co2_value=None,res='T42_T42',exp_type='cam'):
         self.multiplier = float(multiplier)
         self.land_year = land_year
         self.res = res
         self.exp_type = exp_type
         self.gcm_type = gcm_type
-        self.land_file = f'continents_{land_year}Ma_{res}.nc'
+        self.topo_file = f'topo_{land_year}Ma_{res}.nc'
         self.solar_file = f'solar_{land_year}Ma.nc'
+        self.landfrac_file = f'landfrac_{land_year}Ma_{res}.nc'
         
         if co2_value is not None:
             self.co2_file = f'co2_{co2_value}ppm_continents_{land_year}Ma_{res}.nc'
@@ -26,4 +28,16 @@ class Experiment:
         elif gcm_type=='cesm':
             self.file_path = os.path.join(os.environ['CIME_OUT_DIR'],self.path_format)
             self.files = sorted(glob.glob(os.path.join(self.file_path,f'atm/hist/{self.name}.cam.h0.*.nc')))
+            self.solar_file = f'{os.environ["CESM_SOLAR_DIR"]}/{self.solar_file}'
+            self.topo_file = f'{os.environ["CESM_TOPO_DIR"]}/{self.topo_file}'
+            self.co2_file = f'{os.environ["CESM_CO2_DIR"]}/{self.co2_file}'
+            self.landfrac_file = f'{os.environ["CESM_LANDFRAC_DIR"]}/{self.landfrac_file}'
 
+    def topo_data(self):
+        return xr.open_mfdataset(self.topo_file,decode_times=False)
+    
+    def solar_data(self):
+        return xr.open_mfdataset(self.solar_file,decode_times=False)
+    
+    def co2_data(self):
+        return xr.open_mfdataset(self.co2_file,decode_times=False)

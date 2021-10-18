@@ -13,10 +13,9 @@ setup(
         'xarray',
         'proj',
         'geos',
-        #'cartopy',
+        'pop-tools',
+        'cartopy',
         'netCDF4',
-        #'ffmpeg',
-        #'xesmf',
-        #'jupyterlab',
+        'xesmf',
         ]
 )

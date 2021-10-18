@@ -33,7 +33,7 @@ def define_land_colormap():
 
 def get_data(experiment,field='t_surf',level=None,decode_times=True,anomaly=False):
     data = xr.open_mfdataset(experiment.files,decode_times=decode_times)
-    land = xr.open_mfdataset(os.path.join(os.environ['TOPO_DIR'],experiment.land_file),
+    land = xr.open_mfdataset(os.path.join(os.environ['TOPO_DIR'],experiment.topo_file),
             decode_times=False)
     
     if field=='potential_intensity':

@@ -1,7 +1,7 @@
 import ecrlgcm.environment
 from ecrlgcm.data import co2_series, ecc_series, obl_series
 from ecrlgcm.experiment import Experiment
-from ecrlgcm.misc import land_years, get_logger
+from ecrlgcm.misc import land_years, get_logger, sliding_std
 
 import os
 import netCDF4 as nc
@@ -139,10 +139,14 @@ def regrid_continent_data(land,basefile='',sea_level=0,max_depth=0):
     ds_out = regridder(land)
     
     ds_out['land_mask'] = (ds_out['z'].dims,np.array(ds_out['z'].values > sea_level, dtype=float))
-    
-    tmp = ds_out['z'].values
-    tmp[tmp<-max_depth] = -max_depth
-    ds_out['z'] = (ds_out['z'].dims,tmp)
+    ds_out['ocean_mask'] = (ds_out['z'].dims,np.array(ds_out['z'].values < sea_level, dtype=float))
+
+    height = ds_out['z'].values
+    depth = ds_out['z'].values
+    height[height<-max_depth] = -max_depth
+    depth[depth>sea_level] = 0
+    ds_out['z'] = (ds_out['z'].dims,height)
+    ds_out['depth'] = (ds_out['z'].dims,depth)
     ds_out['PHIS'] = (ds_out['z'].dims,9.8*ds_out['z'].values)
     ds_out = ds_out.rename({'z':'zsurf'})
     ds_out = ds_out.fillna(0)
@@ -204,9 +208,30 @@ def modify_topofile(land_year=0,infile='',outfile='',sea_level=0,max_depth=0):
                                  max_depth=max_depth)
     f=xr.open_mfdataset(infile)
     f['PHIS'] = (data['PHIS'].dims,data['PHIS'].values)
+    f['landmask'] = (data['land_mask'].dims,data['land_mask'].values)
+    f['LANDFRAC'] = (data['land_mask'].dims,data['land_mask'].values)
+    f['LANDM_COSLAT'] = (data['land_mask'].dims,data['land_mask'].values)
+    f['SGH'] = (data['zsurf'].dims,sliding_std(data['zsurf'].values))
     f.to_netcdf(outfile)
     logger.info(f'Saved topofile: {outfile}')
     return f
+
+def modify_variable(source='',infile=''outfile='',srcvar='',outvar=''):
+    fsrc=xr.open_mfdataset(source)
+    fin=xr.open_mfdataset(infile)
+    fin[outvar] = (fin[outvar].dims,fsrc[srcvar].values)
+    fin.to_netcdf(outfile)
+    logger.info(f'Saved file: {outfile}')
+    return fin
+
+def modify_landfracfile(topo_file='',infile='',outfile=''):
+    fsrc=xr.open_mfdataset(topo_file)
+    fin=xr.open_mfdataset(infile)
+    fin['mask'] = (fin['mask'].dims,fsrc['land_mask'].values)
+    fin['landfrac'] = (fin['landfrac'].dims,fsrc['land_mask'].values)
+    fin.to_netcdf(outfile)
+    logger.info(f'Saved landfracfile: {outfile}')
+    return fin
 
 def modify_co2file(land_year=0,multiplier=1,infile='',outfile=''):
     

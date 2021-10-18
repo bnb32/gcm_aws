@@ -4,6 +4,7 @@ import logging
 import glob
 import os
 from sys import stdout
+import numpy as np
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -52,3 +53,17 @@ def none_or_str(arg):
 
 def sig_round(number,figs):
     return float('%s' % float(f'%.{figs}g' % number))
+
+def sliding_std(data,dx=3,dy=3):
+    tmp = np.array(data)
+    for i in range(tmp.shape[0]):
+        for j in range(tmp.shape[1]):
+            i_min = max(0,i-dx//2)
+            i_max = min(tmp.shape[0],i+dx//2)
+            j_min = max(0,j-dx//2)
+            j_max = min(tmp.shape[1],j+dx//2)
+            tmp[i,j] = np.std(tmp[i_min:i_max+1,j_min:j_max+1])
+    return tmp
+
+def overlap_fraction(inlat,inlon,outlat,outlon,landmask):
+    tmp = np.zeros((length(outlat),length(outlon)))
