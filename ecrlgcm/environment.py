@@ -30,7 +30,9 @@ os.environ['ISCA_TOPO_DIR'] = ISCA_TOPO_DIR = os.path.join(RAW_TOPO_DIR,'land_ma
 
 os.environ["PATH"]+=f":{CESM_SCRIPTS}"
 
-os.environ['ORIG_CESM_CO2_FILE'] = ORIG_CESM_CO2_FILE = f'{CESM_INPUT_DATA_DIR}/atm/waccm/lb/LBC_2000climo_CMIP6_0p5degLat_c180227.nc'
+os.environ['ORIG_CESM_CO2_FILE']=f'{os.environ["CESM_INPUT_DATA_DIR"]}/atm/cam/inic/gaus/cami_0000-01-01_64x128_L30_c090102.nc'
+#os.environ['ORIG_CESM_CO2_FILE'] = ORIG_CESM_CO2_FILE = f'{CESM_INPUT_DATA_DIR}/atm/waccm/lb/LBC_2000climo_CMIP6_0p5degLat_c180227.nc'
+os.environ['ORIG_CESM_SOLAR_FILE'] = ORIG_CESM_SOLAR_FILE = f'{CESM_INPUT_DATA_DIR}//atm/cam/solar/SolarForcingCMIP6piControl_c160921.nc'
 
 T42_TOPO_FILE = f'{CESM_INPUT_DATA_DIR}/atm/cam/topo/T42_nc3000_Co060_Fi001_PF_nullRR_Nsw042_20180111.nc'
 f19_TOPO_FILE = f'{CESM_INPUT_DATA_DIR}/atm/cam/topo/fv_1.9x2.5_nc3000_Nsw084_Nrs016_Co120_Fi001_ZR_GRNL_031819.nc'
@@ -45,6 +47,8 @@ os.environ['CESM_TOPO_DIR'] = CESM_TOPO_DIR = f'{USER_DIR}/topo_files/'
 
 os.environ['CESM_CO2_DIR'] = CESM_CO2_DIR = f'{USER_DIR}/co2_files/'
 
+os.environ['CESM_SOLAR_DIR'] = CESM_SOLAR_DIR = f'{USER_DIR}/solar_files/'
+
 os.environ['GFDL_ENV'] = GFDL_ENV = 'aws'
 
 os.environ['GFDL_WORK'] = GFDL_WORK = f"{USER_DIR}/gfdl_work"
@@ -54,3 +58,7 @@ os.environ['GFDL_DATA'] = GFDL_DATA = f"{USER_DIR}/gfdl_data"
 os.environ['RAW_CO2_DIR'] = RAW_CO2_DIR = os.path.join(GFDL_BASE,'exp/test_cases/variable_co2_concentration/input/')
 
 os.environ['CO2_DIR'] = CO2_DIR = os.path.join(ISCA_REPO_DIR,'experiments/input')
+
+os.system(f'mkdir -p {os.environ["CESM_TOPO_DIR"]}')
+os.system(f'mkdir -p {os.environ["CESM_CO2_DIR"]}')
+os.system(f'mkdir -p {os.environ["CESM_SOLAR_DIR"]}')

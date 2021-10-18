@@ -32,10 +32,14 @@ def obliquity(land_year):
     #return mila_cycle(Amin=22.1,Amax=24.5,Acurr=23.4,T=0.041,land_year=-land_year)
     return interpolate_obl(land_year)
 
-def solar_constant(land_year):
+def solar_fraction(land_year):
     #assuming years prior to current era is expressed as a positive value
     time = -float(land_year)/4700.0
-    return 1370.0/(1-0.4*time)
+    return 1.0/(1-0.4*time)
+
+def solar_constant(land_year):
+    #assuming years prior to current era is expressed as a positive value
+    return 1370.0*solar_fraction(land_year)
 
 def interp(a,b,dt):
     return a*(1-dt)+dt*b
@@ -212,6 +216,15 @@ def modify_co2file(land_year=0,multiplier=1,infile='',outfile=''):
     f['co2vmr'] = (f['co2vmr'].dims,tmp)
     f.to_netcdf(outfile)
     logger.info(f'Saved co2file: {outfile}')
+
+def modify_solarfile(land_year=0,infile='',outfile=''):
+    
+    solar_frac = solar_fraction(land_year)
+    f=xr.open_mfdataset(infile,decode_times=False)
+    f['ssi'] = (f['ssi'].dims,solar_frac*f['ssi'].values)
+    f.to_netcdf(outfile)
+    logger.info(f'Saved solarfile: {outfile}')
+
 
 def anomaly_value(max_val,r,x,x0,y,y0,anomaly_type='disk'):
     if x>=180.0: x-=360.0
