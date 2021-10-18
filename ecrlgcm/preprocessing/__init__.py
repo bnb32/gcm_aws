@@ -200,7 +200,7 @@ def anomaly_smoothing(max_val,d,r):
     else:
         return 0
 
-def modify_topofile(land_year=0,infile='',outfile='',sea_level=0,max_depth=0):
+def modify_topo_file(land_year=0,infile='',outfile='',sea_level=0,max_depth=0):
     
     data = regrid_continent_data(interpolate_land(land_year),
                                  basefile=infile,
@@ -209,14 +209,16 @@ def modify_topofile(land_year=0,infile='',outfile='',sea_level=0,max_depth=0):
     f=xr.open_mfdataset(infile)
     f['PHIS'] = (data['PHIS'].dims,data['PHIS'].values)
     f['landmask'] = (data['land_mask'].dims,data['land_mask'].values)
+    f['oceanmask'] = (data['ocean_mask'].dims,data['ocean_mask'].values)
     f['LANDFRAC'] = (data['land_mask'].dims,data['land_mask'].values)
+    f['OCEANFRAC'] = (data['ocean_mask'].dims,data['ocean_mask'].values)
     f['LANDM_COSLAT'] = (data['land_mask'].dims,data['land_mask'].values)
     f['SGH'] = (data['zsurf'].dims,sliding_std(data['zsurf'].values))
     f.to_netcdf(outfile)
-    logger.info(f'Saved topofile: {outfile}')
+    logger.info(f'Saved topo_file: {outfile}')
     return f
 
-def modify_variable(source='',infile=''outfile='',srcvar='',outvar=''):
+def modify_variable(source='',infile='',outfile='',srcvar='',outvar=''):
     fsrc=xr.open_mfdataset(source)
     fin=xr.open_mfdataset(infile)
     fin[outvar] = (fin[outvar].dims,fsrc[srcvar].values)
@@ -224,32 +226,40 @@ def modify_variable(source='',infile=''outfile='',srcvar='',outvar=''):
     logger.info(f'Saved file: {outfile}')
     return fin
 
-def modify_landfracfile(topo_file='',infile='',outfile=''):
+def modify_landfrac_file(topo_file='',infile='',outfile=''):
     fsrc=xr.open_mfdataset(topo_file)
     fin=xr.open_mfdataset(infile)
-    fin['mask'] = (fin['mask'].dims,fsrc['land_mask'].values)
-    fin['landfrac'] = (fin['landfrac'].dims,fsrc['land_mask'].values)
+    fin['mask'] = (fin['mask'].dims,fsrc['landmask'].values)
+    fin['frac'] = (fin['frac'].dims,fsrc['landmask'].values)
     fin.to_netcdf(outfile)
-    logger.info(f'Saved landfracfile: {outfile}')
+    logger.info(f'Saved landfrac_file: {outfile}')
     return fin
 
-def modify_co2file(land_year=0,multiplier=1,infile='',outfile=''):
+def modify_oceanfrac_file(ocn_file='',infile='',outfile=''):
+    fsrc=xr.open_mfdataset(topo_file)
+    fin=xr.open_mfdataset(infile)
+    fin['mask'] = (fin['mask'].dims,fsrc['oceanmask'].values)
+    fin['frac'] = (fin['frac'].dims,fsrc['oceanmask'].values)
+    fin.to_netcdf(outfile)
+    logger.info(f'Saved oceanfrac_file: {outfile}')
+    return fin
+
+def modify_co2_file(land_year=0,multiplier=1,infile='',outfile=''):
     
     co2value = interpolate_co2(land_year)
     f=xr.open_mfdataset(infile,decode_times=False)
     tmp = np.full(f['co2vmr'].shape,multiplier*co2value*1.0e-6)
     f['co2vmr'] = (f['co2vmr'].dims,tmp)
     f.to_netcdf(outfile)
-    logger.info(f'Saved co2file: {outfile}')
+    logger.info(f'Saved co2_file: {outfile}')
 
-def modify_solarfile(land_year=0,infile='',outfile=''):
+def modify_solar_file(land_year=0,infile='',outfile=''):
     
     solar_frac = solar_fraction(land_year)
     f=xr.open_mfdataset(infile,decode_times=False)
     f['ssi'] = (f['ssi'].dims,solar_frac*f['ssi'].values)
     f.to_netcdf(outfile)
-    logger.info(f'Saved solarfile: {outfile}')
-
+    logger.info(f'Saved solar_file: {outfile}')
 
 def anomaly_value(max_val,r,x,x0,y,y0,anomaly_type='disk'):
     if x>=180.0: x-=360.0

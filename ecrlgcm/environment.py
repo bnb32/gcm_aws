@@ -47,6 +47,8 @@ os.environ['ORIG_TOPO_FILE'] = ORIG_TOPO_FILE = f'{CESM_INPUT_DATA_DIR}/atm/cam/
 
 os.environ['ORIG_CESM_LANDFRAC_FILE'] = ORIG_LANDFRAC_FILE = f'{CESM_INPUT_DATA_DIR}/share/domains/domain.lnd.fv1.9x2.5_gx1v6.090206.nc'
 
+os.environ['ORIG_CESM_OCEANFRAC_FILE'] = ORIG_OCEANFRAC_FILE = f'{CESM_INPUT_DATA_DIR}/share/domains/domain.ocn.gx1v6.090206.nc'
+
 os.environ['CESM_TOPO_DIR'] = CESM_TOPO_DIR = os.path.join(RAW_TOPO_DIR,'cesm/')
 
 os.environ['CESM_CO2_DIR'] = CESM_CO2_DIR = f'{USER_DIR}/inputdata/co2_files/'
@@ -61,12 +63,13 @@ os.environ['GFDL_WORK'] = GFDL_WORK = f"{USER_DIR}/gfdl_work"
 
 os.environ['GFDL_DATA'] = GFDL_DATA = f"{USER_DIR}/gfdl_data"
 
-os.environ['RAW_CO2_DIR'] = RAW_CO2_DIR = os.path.join(GFDL_BASE,'exp/test_cases/variable_co2_concentration/input/')
+os.environ['RAW_ISCA_CO2_DIR'] = RAW_CO2_DIR = os.path.join(GFDL_BASE,'exp/test_cases/variable_co2_concentration/input/')
 
-os.environ['CO2_DIR'] = CO2_DIR = os.path.join(ISCA_REPO_DIR,'experiments/input')
+os.environ['ISCA_CO2_DIR'] = CO2_DIR = f'{USER_DIR}/inputdata/co2_files/isca/')
 
 os.system(f'mkdir -p {os.environ["CESM_TOPO_DIR"]}')
 os.system(f'mkdir -p {os.environ["ISCA_TOPO_DIR"]}')
 os.system(f'mkdir -p {os.environ["CESM_CO2_DIR"]}')
 os.system(f'mkdir -p {os.environ["CESM_SOLAR_DIR"]}')
 os.system(f'mkdir -p {os.environ["CESM_LANDFRAC_DIR"]}')
+os.system(f'mkdir -p {os.environ["CESM_OCEANFRAC_DIR"]}')

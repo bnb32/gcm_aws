@@ -14,6 +14,7 @@ class Experiment:
         self.topo_file = f'topo_{land_year}Ma_{res}.nc'
         self.solar_file = f'solar_{land_year}Ma.nc'
         self.landfrac_file = f'landfrac_{land_year}Ma_{res}.nc'
+        self.oceanfrac_file = f'oceanfrac_{land_year}Ma_{res}.nc'
         
         if co2_value is not None:
             self.co2_file = f'co2_{co2_value}ppm_continents_{land_year}Ma_{res}.nc'
@@ -32,6 +33,7 @@ class Experiment:
             self.topo_file = f'{os.environ["CESM_TOPO_DIR"]}/{self.topo_file}'
             self.co2_file = f'{os.environ["CESM_CO2_DIR"]}/{self.co2_file}'
             self.landfrac_file = f'{os.environ["CESM_LANDFRAC_DIR"]}/{self.landfrac_file}'
+            self.oceanfrac_file = f'{os.environ["CESM_OCEANFRAC_DIR"]}/{self.oceanfrac_file}'
 
     def topo_data(self):
         return xr.open_mfdataset(self.topo_file,decode_times=False)
