@@ -1,7 +1,7 @@
 import ecrlgcm.environment
 from ecrlgcm.data import co2_series, ecc_series, obl_series
 from ecrlgcm.experiment import Experiment
-from ecrlgcm.misc import land_years, get_logger, sliding_std
+from ecrlgcm.misc import land_years, get_logger, sliding_std, overlap_fraction
 
 import os
 import netCDF4 as nc
@@ -132,6 +132,12 @@ def regrid_continent_data(land,basefile='',sea_level=0,max_depth=0):
     else:
         lons = base['lon'].values
 
+    raw_lats = land['latitude'].values
+    raw_lons = land['longitude'].values
+    
+    raw_landmask = np.array(land['z'].values > sea_level, dtype=float)
+    raw_oceanmask = np.array(land['z'].values <= sea_level, dtype=float)
+
     ds_out = xr.Dataset({'lat': (['lat'], lats),
                          'lon': (['lon'], lons)})
 
@@ -139,7 +145,12 @@ def regrid_continent_data(land,basefile='',sea_level=0,max_depth=0):
     ds_out = regridder(land)
     
     ds_out['land_mask'] = (ds_out['z'].dims,np.array(ds_out['z'].values > sea_level, dtype=float))
-    ds_out['ocean_mask'] = (ds_out['z'].dims,np.array(ds_out['z'].values < sea_level, dtype=float))
+    logger.info('Calculating landfrac')
+    ds_out['landfrac'] = (ds_out['land_mask'].dims,overlap_fraction(raw_lats,raw_lons,lats,lons,raw_landmask))
+    
+    ds_out['ocean_mask'] = (ds_out['z'].dims,np.array(ds_out['z'].values <= sea_level, dtype=float))
+    logger.info('Calculating oceanfrac')
+    ds_out['oceanfrac'] = (ds_out['ocean_mask'].dims,overlap_fraction(raw_lats,raw_lons,lats,lons,raw_oceanmask))
 
     height = ds_out['z'].values
     depth = ds_out['z'].values
@@ -200,6 +211,16 @@ def anomaly_smoothing(max_val,d,r):
     else:
         return 0
 
+def fill_poles(data):
+    tmp = data['land_mask'].values
+    for i in range(len(data['lat'].values)):
+        for j in range(len(data['lon'].values)):
+            if np.abs(data['lat'].values[i]-90.0)<1:
+                tmp[i,j]=1.0
+            if np.abs(data['lat'].values[i]+90.0)<1:
+                tmp[i,j]=1.0
+    return tmp            
+
 def modify_topo_file(land_year=0,infile='',outfile='',sea_level=0,max_depth=0):
     
     data = regrid_continent_data(interpolate_land(land_year),
@@ -208,11 +229,11 @@ def modify_topo_file(land_year=0,infile='',outfile='',sea_level=0,max_depth=0):
                                  max_depth=max_depth)
     f=xr.open_mfdataset(infile)
     f['PHIS'] = (data['PHIS'].dims,data['PHIS'].values)
-    f['landmask'] = (data['land_mask'].dims,data['land_mask'].values)
+    f['landmask'] = (data['land_mask'].dims,fill_poles(data))
     f['oceanmask'] = (data['ocean_mask'].dims,data['ocean_mask'].values)
-    f['LANDFRAC'] = (data['land_mask'].dims,data['land_mask'].values)
-    f['OCEANFRAC'] = (data['ocean_mask'].dims,data['ocean_mask'].values)
-    f['LANDM_COSLAT'] = (data['land_mask'].dims,data['land_mask'].values)
+    f['LANDFRAC'] = (data['landfrac'].dims,data['landfrac'].values)
+    f['OCEANFRAC'] = (data['oceanfrac'].dims,data['oceanfrac'].values)
+    f['LANDM_COSLAT'] = (data['landfrac'].dims,data['landfrac'].values)
     f['SGH'] = (data['zsurf'].dims,sliding_std(data['zsurf'].values))
     f.to_netcdf(outfile)
     logger.info(f'Saved topo_file: {outfile}')
@@ -229,17 +250,31 @@ def modify_variable(source='',infile='',outfile='',srcvar='',outvar=''):
 def modify_landfrac_file(topo_file='',infile='',outfile=''):
     fsrc=xr.open_mfdataset(topo_file)
     fin=xr.open_mfdataset(infile)
-    fin['mask'] = (fin['mask'].dims,fsrc['landmask'].values)
-    fin['frac'] = (fin['frac'].dims,fsrc['landmask'].values)
+    
+    ds_out = xr.Dataset({'lat': (['nj','ni'], fin['yc'].values),
+                         'lon': (['nj','ni'], fin['xc'].values)})
+
+    regridder = xe.Regridder(fsrc, ds_out, 'bilinear')
+    ds_out = regridder(fsrc)
+    
+    fin['mask'] = (fin['mask'].dims,np.array(ds_out['LANDFRAC'].values>0,dtype=float))
+    fin['frac'] = (fin['frac'].dims,ds_out['LANDFRAC'].values)
     fin.to_netcdf(outfile)
     logger.info(f'Saved landfrac_file: {outfile}')
     return fin
 
 def modify_oceanfrac_file(ocn_file='',infile='',outfile=''):
-    fsrc=xr.open_mfdataset(topo_file)
+    fsrc=xr.open_mfdataset(ocn_file)
     fin=xr.open_mfdataset(infile)
-    fin['mask'] = (fin['mask'].dims,fsrc['oceanmask'].values)
-    fin['frac'] = (fin['frac'].dims,fsrc['oceanmask'].values)
+    
+    ds_out = xr.Dataset({'lat': (['nj','ni'], fin['yc'].values),
+                         'lon': (['nj','ni'], fin['xc'].values)})
+
+    regridder = xe.Regridder(fsrc, ds_out, 'bilinear')
+    ds_out = regridder(fsrc)
+
+    fin['mask'] = (fin['mask'].dims,np.array(ds_out['OCEANFRAC'].values>0,dtype=float))
+    fin['frac'] = (fin['frac'].dims,ds_out['OCEANFRAC'].values)
     fin.to_netcdf(outfile)
     logger.info(f'Saved oceanfrac_file: {outfile}')
     return fin
