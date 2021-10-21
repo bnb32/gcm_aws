@@ -5,6 +5,7 @@ import glob
 import os
 from sys import stdout
 import numpy as np
+from tqdm import tqdm
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -97,12 +98,10 @@ def overlap_fraction(inlat,inlon,outlat,outlon,landmask):
     lat_dx = outlat[1]-outlat[0]
     lon_dx = outlon[1]-outlon[0]
 
-    for i in range(len(outlat)):
+    for i in tqdm(range(len(outlat))):
         for j in range(len(outlon)):
             tmp[i,j] = cell_overlap(inlat,inlon,
                                     outlat[i],outlon[j],
                                     lat_dx,lon_dx,
                                     landmask)
     return tmp        
-
-
