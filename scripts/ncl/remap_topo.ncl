@@ -14,6 +14,8 @@ begin
   fout = addfile(outfile, "w")
   
   landfrac = fin->frac
+  landmask = fin->mask
+  oceandepth = fin->depth
   
   opt = True
   opt@ForceOverwrite = True
@@ -52,13 +54,15 @@ begin
   opt = True
 
   remap_frac = ESMF_regrid_with_weights(1-landfrac,wgtFile,opt)
+  remap_depth = ESMF_regrid_with_weights(oceandepth,wgtFile,opt)
    
   printVarSummary(remap_frac)
 
   replace_ieeenan(remap_frac,0.0,0)
-  remap_mask = where(remap_frac>0,1,0)
+  remap_mask = where(remap_frac>0.9,1,0)
 
   fout->mask = (/remap_mask/)
   fout->frac = (/remap_frac/)
+  fout->depth = (/remap_depth/)
   
 end
