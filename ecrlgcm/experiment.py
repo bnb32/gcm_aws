@@ -11,6 +11,10 @@ class Experiment:
         self.res = res
         self.exp_type = exp_type
         self.gcm_type = gcm_type
+        self.high_res_file = f'{land_year}Ma_high_res.nc'
+        self.remapped_f19 = f'remapped_{land_year}Ma_f19.nc'
+        self.remapped_g16 = f'remapped_{land_year}Ma_g16.nc'
+        self.remapped_1x1d = f'remapped_{land_year}Ma_1x1d.nc'
         self.topo_file = f'topo_{land_year}Ma_{res}.nc'
         self.solar_file = f'solar_{land_year}Ma.nc'
         self.landfrac_file = f'landfrac_{land_year}Ma_{res}.nc'
@@ -43,6 +47,10 @@ class Experiment:
             self.oceantopo_file = f'{os.environ["CESM_OCEANFRAC_DIR"]}/{self.oceantopo_file}'
             self.init_ocean_file = f'{os.environ["CESM_OCEANFRAC_DIR"]}/{self.init_ocean_file}'
             self.landplant_file = f'{os.environ["CESM_LANDFRAC_DIR"]}/{self.landplant_file}'
+            self.high_res_file = f'{os.environ["HIGH_RES_TOPO_DIR"]}/{self.high_res_file}'
+            self.remapped_f19 = f'{os.environ["REMAPPED_LAND_DIR"]}/{self.remapped_f19}'
+            self.remapped_g16 = f'{os.environ["REMAPPED_LAND_DIR"]}/{self.remapped_g16}'
+            self.remapped_1x1d = f'{os.environ["REMAPPED_LAND_DIR"]}/{self.remapped_1x1d}'
 
     def topo_data(self):
         return xr.open_mfdataset(self.topo_file,decode_times=False)

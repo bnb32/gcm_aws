@@ -30,6 +30,10 @@ os.environ['CESM_SOLAR_DIR'] = CESM_SOLAR_DIR = f'{USER_INPUT_DIR}/solar_files'
 os.environ['CESM_LANDFRAC_DIR'] = CESM_SOLAR_DIR = f'{USER_INPUT_DIR}/landfrac_files'
 os.environ['CESM_OCEANFRAC_DIR'] = CESM_OCEANFRAC_DIR = f'{USER_INPUT_DIR}/oceanfrac_files'
 os.environ['CESM_LANDPLANT_DIR'] = CESM_LANDPLANT_DIR = f'{USER_INPUT_DIR}/landplant_files'
+os.environ['CESM_MAPPING_DIR'] = CESM_MAPPING_DIR = f'{USER_INPUT_DIR}/mapping_files'
+os.environ['REMAPPED_LAND_DIR'] = REMAPPED_LAND_DIR = f'{USER_INPUT_DIR}/remapped_land_files'
+
+os.environ['CESM_MAP_FILE'] = f'{CESM_MAPPING_DIR}/map_fv1.9x2.5_to_gx1v6_tmp.nc'
 
 os.environ['T42_TOPO_FILE'] = T42_TOPO_FILE = f'{CESM_INPUT_DATA_DIR}/atm/cam/topo/T42_nc3000_Co060_Fi001_PF_nullRR_Nsw042_20180111.nc'
 os.environ['f19_TOPO_FILE'] = f19_TOPO_FILE = f'{CESM_INPUT_DATA_DIR}/atm/cam/topo/fv_1.9x2.5_nc3000_Nsw084_Nrs016_Co120_Fi001_ZR_GRNL_031819.nc'
@@ -46,6 +50,7 @@ os.environ['ORIG_CESM_LANDPLANT_FILE'] = ORIG_CESM_LANDPLANT_FILE = f'{CESM_INPU
 #os.environ['ORIG_INIT_OCEAN_FILE'] = ORIG_INIT_OCEAN_FILE = f'{CESM_INPUT_DATA_DIR}/ocn/pop/gx1v6/ic/ecosys_jan_IC_omip_POP_gx1v7_c200323.nc'
 os.environ['ORIG_INIT_OCEAN_FILE'] = ORIG_INIT_OCEAN_FILE = f'{CESM_INPUT_DATA_DIR}/ocn/pop/gx1v6/ic/ts_PHC2_jan_ic_gx1v6_20090205.ieeer8'
 os.environ['OCEAN_REGION_MASK_FILE'] = OCEAN_REGION_MASK_FILE = f'{CESM_OCEANFRAC_DIR}/gx1v6_region_ids'
+os.environ['ORIG_DOCN_DOMAIN_FILE'] = ORIG_DOCN_DOMAIN_FILE = f'{CESM_INPUT_DATA_DIR}/ocn/docn7/domain.ocn.1x1.111007_bkup.nc'
 
 #ISCA params
 os.environ['ISCA_TOPO_DIR'] = ISCA_TOPO_DIR = f'{USER_INPUT_DIR}/topo_files/isca'
@@ -68,3 +73,5 @@ os.system(f'mkdir -p {os.environ["CESM_LANDFRAC_DIR"]}')
 os.system(f'mkdir -p {os.environ["CESM_OCEANFRAC_DIR"]}')
 os.system(f'mkdir -p {os.environ["CESM_LANDPLANT_DIR"]}')
 os.system(f'mkdir -p {os.environ["HIGH_RES_TOPO_DIR"]}')
+os.system(f'mkdir -p {os.environ["CESM_MAPPING_DIR"]}')
+os.system(f'mkdir -p {os.environ["REMAPPED_LAND_DIR"]}')

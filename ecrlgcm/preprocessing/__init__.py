@@ -120,6 +120,67 @@ def regrid_continent_maps(remap_file,basefile='',outfile='',sea_level=0,max_dept
     ds_out.to_netcdf(out_file)
     print(f'{out_file}')
 
+def compute_land_ocean_properties(land,sea_level=0):
+
+    landmask = np.array(land['z'].values > sea_level, dtype=float)
+    oceanmask = 1-landmask
+    height = land['z'].values
+    height[height<=sea_level] = 0
+    depth = land['z'].values
+    depth[depth>sea_level]=0
+    depth=-depth
+    
+    if 'latitude' in land:
+        land = land.rename({'latitude':'lat'})
+    if 'longitude' in land:    
+        land = land.rename({'longitude':'lon'})
+    
+    land['lon'] = (land['lon'].dims,
+                   [x+360.0 if x<0 else x for x in land['lon'].values])
+    land['landmask'] = (land['z'].dims,landmask)
+    land['oceanmask'] = (land['z'].dims,oceanmask)
+    land['height'] = (land['z'].dims,height)
+    land['PHIS'] = (land['z'].dims,9.8*land['z'].values)
+    land['depth'] = (land['z'].dims,depth)
+    return land
+
+def regrid_high_res_data(cesmexp):
+
+    tmp_remapped_file=f'{os.environ["GCM_REPO_DIR"]}/ecrlgcm/data/tmp/remapped.nc'
+    
+    logger.info('Regridding high res file to fv1.9x2.5')
+    #os.system(f'cp {cesmexp.high_res_file} {tmp_remapped_file}')
+    cmd = f'export NCL_POP_REMAP="{os.environ["USER_DIR"]}/inputdata/mapping_files";'
+    cmd += f'ncl infile=\'"{cesmexp.high_res_file}"\' outfile=\'"{tmp_remapped_file}"\' '
+    cmd += f'res=\'"f19"\' {os.environ["NCL_SCRIPTS"]}/remap_high_res.ncl'
+    os.system(cmd)
+    remapped_data = xr.open_mfdataset(tmp_remapped_file)
+    os.system(f'rm {tmp_remapped_file}')
+    remapped_data.to_netcdf(cesmexp.remapped_f19)
+    logger.info(f'Saved {cesmexp.remapped_f19}')
+
+    logger.info('Regridding high res file to gx1v6')
+    #os.system(f'cp {cesmexp.high_res_file} {tmp_remapped_file}')
+    cmd = f'export NCL_POP_REMAP="{os.environ["USER_DIR"]}/inputdata/mapping_files";'
+    cmd += f'ncl infile=\'"{cesmexp.high_res_file}"\' outfile=\'"{tmp_remapped_file}"\' '
+    cmd += f'res=\'"g16"\' {os.environ["NCL_SCRIPTS"]}/remap_high_res.ncl'
+    os.system(cmd)
+    remapped_data = xr.open_mfdataset(tmp_remapped_file)
+    os.system(f'rm {tmp_remapped_file}')
+    remapped_data.to_netcdf(cesmexp.remapped_g16)
+    logger.info(f'Saved {cesmexp.remapped_g16}')
+
+    logger.info('Regridding high res file to 1x1d')
+    #os.system(f'cp {cesmexp.high_res_file} {tmp_remapped_file}')
+    cmd = f'export NCL_POP_REMAP="{os.environ["USER_DIR"]}/inputdata/mapping_files";'
+    cmd += f'ncl infile=\'"{cesmexp.high_res_file}"\' outfile=\'"{tmp_remapped_file}"\' '
+    cmd += f'res=\'"1x1d"\' {os.environ["NCL_SCRIPTS"]}/remap_high_res.ncl'
+    os.system(cmd)
+    remapped_data = xr.open_mfdataset(tmp_remapped_file)
+    os.system(f'rm {tmp_remapped_file}')
+    remapped_data.to_netcdf(cesmexp.remapped_1x1d)
+    logger.info(f'Saved {cesmexp.remapped_1x1d}')
+
 def regrid_continent_data(land,basefile='',sea_level=0,max_depth=1000):
 
     base = xr.open_mfdataset(basefile)
@@ -200,9 +261,9 @@ def interpolate_land(land_year):
                          (year-keys[i])/(keys[i+1]-keys[i]))
             ds_out['z'] = (ds_out['z'].dims,tmp)
     
+    #regridder = xe.Regridder(ds_out,xe.util.grid_global(0.5, 0.5),'bilinear')
+    #return regridder(ds_out)
     ds_out = ds_out.rename({'latitude':'lat','longitude':'lon'})
-    regridder = xe.Regridder(ds_out,xe.util.grid_global(0.5, 0.5),'bilinear')
-    return regridder(ds_out)
     return ds_out
 
 def get_original_map_data(land_year):
@@ -255,7 +316,10 @@ def modify_input_files(cesmexp,sea_level=0,max_depth=1000,remap=True):
     base_topofile = get_base_topofile(cesmexp.res)
     if not os.path.exists(cesmexp.topo_file) or remap:
         logger.info('Modifying topo_file')
-        raw_topo_data = interpolate_land(land_year)
+        raw_topo_data = compute_land_ocean_properties(interpolate_land(land_year),sea_level=sea_level)
+        raw_topo_data.to_netcdf(cesmexp.high_res_file)
+        logger.info(f'Saving high res map file: {cesmexp.high_res_file}')
+        regrid_high_res_data(cesmexp)
         data = regrid_continent_data(raw_topo_data,
                                      basefile=base_topofile,
                                      sea_level=sea_level,
@@ -336,19 +400,37 @@ def modify_input_files(cesmexp,sea_level=0,max_depth=1000,remap=True):
     #oceanfrac file
     if not os.path.exists(cesmexp.oceanfrac_file) or remap:
         logger.info('Modifying oceanfrac_file')
-       
         tmp_oceanfrac_file=f'{os.environ["GCM_REPO_DIR"]}/ecrlgcm/data/tmp/oceanfrac.nc'
         os.system(f'cp {os.environ["ORIG_CESM_OCEANFRAC_FILE"]} {tmp_oceanfrac_file}')
         cmd = f'export NCL_POP_REMAP="{os.environ["USER_DIR"]}/inputdata/mapping_files";'
-        cmd += f'ncl infile=\'"{cesmexp.landfrac_file}"\' outfile=\'"{tmp_oceanfrac_file}"\' {os.environ["NCL_SCRIPTS"]}/remap_topo.ncl'
+        cmd += f'ncl infile=\'"{cesmexp.landfrac_file}"\' outfile=\'"{tmp_oceanfrac_file}"\' '
+        cmd += f'{os.environ["NCL_SCRIPTS"]}/remap_land_to_ocean.ncl'
         os.system(cmd)
-        oceanfrac_data=xr.open_mfdataset(tmp_oceanfrac_file)
+        oceanfrac_data = xr.open_mfdataset(tmp_oceanfrac_file)
+        oceanfrac = oceanfrac_data['frac'].values        
+        oceanmask = np.array(oceanfrac>0.99,dtype=np.int32)
         mask_attrs = oceanfrac_data['mask'].attrs
         frac_attrs = oceanfrac_data['frac'].attrs
+        os.system(f'rm {tmp_oceanfrac_file}')
         
-        oceanfrac = oceanfrac_data['frac'].values        
-        oceanmask = np.array(oceanfrac_data['frac'].values>0.99,dtype=np.int32)
+        '''
+        fsrc = xr.open_mfdataset(cesmexp.landfrac_file)
+        fin = xr.open_mfdataset(os.environ['ORIG_CESM_OCEANFRAC_FILE'])        
+        ds_out = xr.Dataset({'lat': (['nj','ni'], fin['yc'].values),
+                             'lon': (['nj','ni'], fin['xc'].values)})
 
+        logger.info('Regridding oceanfrac_file')
+        regridder = xe.Regridder(fsrc, ds_out, 'bilinear')
+
+        oceanfrac_data = regridder(fsrc)
+
+        #oceanfrac_data=xr.open_mfdataset(tmp_oceanfrac_file)
+        mask_attrs = fin['mask'].attrs
+        frac_attrs = fin['frac'].attrs
+        oceanfrac = 1-oceanfrac_data['frac'].values        
+        oceanmask = np.array(oceanfrac>0.99,dtype=np.int32)
+        '''
+    
         oceanfrac_data['mask'] = (oceanfrac_data['mask'].dims,oceanmask.astype(np.int32))
         oceanfrac_data['mask'].attrs = mask_attrs
         oceanfrac_data['frac'] = (oceanfrac_data['mask'].dims,oceanmask.astype(np.int32))
@@ -361,8 +443,43 @@ def modify_input_files(cesmexp,sea_level=0,max_depth=1000,remap=True):
         
         oceanfrac_data.to_netcdf(cesmexp.oceanfrac_file)
         logger.info(f'Saved oceanfrac_file: {cesmexp.oceanfrac_file}')
-        os.system(f'rm {tmp_oceanfrac_file}')
     
+    #if not os.path.exists(cesmexp.docn_domain_file) or remap:
+        logger.info('Modifying docn_domain_file')
+        tmp_docn_domain_file=f'{os.environ["GCM_REPO_DIR"]}/ecrlgcm/data/tmp/docn_domain.nc'
+        os.system(f'cp {os.environ["ORIG_DOCN_DOMAIN_FILE"]} {tmp_docn_domain_file}')
+        cmd = f'export NCL_POP_REMAP="{os.environ["USER_DIR"]}/inputdata/mapping_files";'
+        cmd += f'ncl infile=\'"{cesmexp.oceanfrac_file}"\' outfile=\'"{tmp_docn_domain_file}"\' ' 
+        cmd += f'{os.environ["NCL_SCRIPTS"]}/remap_ocean_gx1v6_to_1x1.ncl'
+        os.system(cmd)
+        docn_domain_data = xr.open_mfdataset(tmp_docn_domain_file)
+        oceanfrac = docn_domain_data['frac'].values        
+        oceanmask = np.array(oceanfrac>0.99,dtype=np.int32)
+        mask_attrs = docn_domain_data['mask'].attrs
+        frac_attrs = docn_domain_data['frac'].attrs
+        area_attrs = docn_domain_data['area'].attrs
+        os.system(f'rm {tmp_docn_domain_file}')
+
+        #fin = xr.open_mfdataset('/data/cesm/inputdata/ocn/docn7/domain.ocn.1x1.111007_bkup.nc')
+        fsrc = xr.open_mfdataset(cesmexp.oceanfrac_file)
+
+        #ds_out = xr.Dataset({'lat': (['nj'], fin['yc'].values),
+        #                     'lon': (['ni'], fin['xc'].values)})
+
+        #logger.info('Regridding docn_domain_file')
+        #regridder = xe.Regridder(fsrc, ds_out, 'bilinear')
+
+        #ds_out = regridder(fsrc)
+        #fin['mask'] = (fsrc['mask'].dims,ds_out['mask'].values)
+        #fin['area'] = (fsrc['area'].dims,ds_out['area'].values)
+        
+        fin['mask'] = (fsrc['mask'].dims,oceanmask)
+        fin['frac'] = (fsrc['frac'].dims,oceanfrac)
+        fin['area'] = (fsrc['area'].dims,docn_domain_data['area'].values)
+        
+        fin.to_netcdf('/data/cesm/inputdata/ocn/docn7/domain.ocn.1x1.111007.nc') 
+        logger.info(f'Saved docn_domain_file')#: {cesmexp.docn_domain_file}')
+
     #init ocean file
     if not os.path.exists(cesmexp.init_ocean_file) or remap:
         logger.info('Modifying init_ocean_file')
