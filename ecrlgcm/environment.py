@@ -51,6 +51,7 @@ os.environ['ORIG_CESM_LANDPLANT_FILE'] = ORIG_CESM_LANDPLANT_FILE = f'{CESM_INPU
 os.environ['ORIG_INIT_OCEAN_FILE'] = ORIG_INIT_OCEAN_FILE = f'{CESM_INPUT_DATA_DIR}/ocn/pop/gx1v6/ic/ts_PHC2_jan_ic_gx1v6_20090205.ieeer8'
 os.environ['OCEAN_REGION_MASK_FILE'] = OCEAN_REGION_MASK_FILE = f'{CESM_OCEANFRAC_DIR}/gx1v6_region_ids'
 os.environ['ORIG_DOCN_DOMAIN_FILE'] = ORIG_DOCN_DOMAIN_FILE = f'{CESM_INPUT_DATA_DIR}/ocn/docn7/domain.ocn.1x1.111007_bkup.nc'
+os.environ['ORIG_DOCN_SOM_FILE'] = ORIG_DOCN_SOM_FILE = f'{CESM_INPUT_DATA_DIR}/ocn/docn7/SOM/pop_frc.gx1v6.100513.nc'
 
 #ISCA params
 os.environ['ISCA_TOPO_DIR'] = ISCA_TOPO_DIR = f'{USER_INPUT_DIR}/topo_files/isca'

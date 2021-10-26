@@ -18,7 +18,7 @@ begin
   end if
 
   srcGridFile = "/data/bnb32/inputdata/grid_files/src_grid_tmp.nc"
-  dstGridFile = "/data/bnb32/inputdata/grid_files/ds_grid_tmp.nc"
+  dstGridFile = "/data/bnb32/inputdata/grid_files/dst_grid_tmp.nc"
   wgtFile = "/data/bnb32/inputdata/mapping_files/map_grids_tmp.nc"
   
   fin = addfile(infile, "rw")
@@ -29,14 +29,14 @@ begin
   dimUnlim = (/False, False/)
   filedimdef(fout, dimNames, dimSizes, dimUnlim)
   
-  landmask = lonFlip(fin->landmask)
-  landfrac = lonFlip(fin->landfrac)
-  oceanmask = lonFlip(fin->oceanmask)
-  oceanfrac = lonFlip(fin->oceanfrac)
-  height = lonFlip(fin->height)
-  depth = lonFlip(fin->depth)
-  PHIS = lonFlip(fin->PHIS)
-  z = lonFlip(fin->z)
+  landmask = fin->landmask
+  landfrac = fin->landfrac
+  oceanmask = fin->oceanmask
+  oceanfrac = fin->oceanfrac
+  height = fin->height
+  depth = fin->depth
+  PHIS = fin->PHIS
+  z = fin->z
   
   opt = True
   opt@ForceOverwrite = True
@@ -73,7 +73,7 @@ begin
   delete(opt)
   opt = True
   opt@ForceOverwrite = True
-  opt@InterpMethod = "conserve"
+  opt@InterpMethod = "bilinear"
   opt@IgnoreUnmappedPoints = False
   opt@SrcRegional = False
   opt@DstRegional = False
@@ -84,10 +84,10 @@ begin
   delete(opt)
   opt = True
 
-  remap_lndmask = ESMF_regrid_with_weights(landmask,wgtFile,opt)
-  remap_lndfrac = ESMF_regrid_with_weights(landfrac,wgtFile,opt)
-  remap_ocnmask = ESMF_regrid_with_weights(oceanmask,wgtFile,opt)
-  remap_ocnfrac = ESMF_regrid_with_weights(oceanfrac,wgtFile,opt)
+  remap_lndfrac = ESMF_regrid_with_weights(landfrac,wgtFile,opt) ;ESMF_regrid_with_weights(landfrac,wgtFile,opt)
+  remap_lndmask = tointeger(where(remap_lndfrac>0.0,1.0,0.0)) ;ESMF_regrid_with_weights(landmask,wgtFile,opt)
+  remap_ocnmask = tointeger(1-remap_lndmask) ;ESMF_regrid_with_weights(oceanmask,wgtFile,opt)
+  remap_ocnfrac = tointeger(1-remap_lndmask) ;1-remap_lndfrac ;ESMF_regrid_with_weights(oceanfrac,wgtFile,opt)
   remap_depth = ESMF_regrid_with_weights(depth,wgtFile,opt)
   remap_height = ESMF_regrid_with_weights(height,wgtFile,opt)
   remap_PHIS = ESMF_regrid_with_weights(PHIS,wgtFile,opt)

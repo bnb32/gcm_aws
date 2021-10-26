@@ -24,7 +24,8 @@ class Experiment:
         self.landplant_file = f'landplant_{land_year}Ma_{res}.nc'
         #self.init_ocean_file = f'init_ocean_{land_year}Ma_{res}.nc'
         self.init_ocean_file = f'init_ocean_{land_year}Ma_{res}.ieeer8'
-        
+        self.docn_som_file = f'docn_som_{land_year}Ma_{res}.nc'
+
         if co2_value is not None:
             self.co2_file = f'co2_{co2_value}ppm_continents_{land_year}Ma_{res}.nc'
             self.name = self.path_format = f'{exp_type}_co2_{co2_value}ppm_continents_{land_year}Ma_experiment'
@@ -45,6 +46,8 @@ class Experiment:
             self.oceanfrac_file = f'{os.environ["CESM_OCEANFRAC_DIR"]}/{self.oceanfrac_file}'
             self.oceanmask_file = f'{os.environ["CESM_OCEANFRAC_DIR"]}/{self.oceanmask_file}'
             self.oceantopo_file = f'{os.environ["CESM_OCEANFRAC_DIR"]}/{self.oceantopo_file}'
+            self.docn_som_file = f'{os.environ["CESM_OCEANFRAC_DIR"]}/{self.docn_som_file}'
+            self.docn_domain_file = f'{os.environ["CESM_INPUT_DATA_DIR"]}/ocn/docn7/domain.ocn.1x1.111007.nc'
             self.init_ocean_file = f'{os.environ["CESM_OCEANFRAC_DIR"]}/{self.init_ocean_file}'
             self.landplant_file = f'{os.environ["CESM_LANDFRAC_DIR"]}/{self.landplant_file}'
             self.high_res_file = f'{os.environ["HIGH_RES_TOPO_DIR"]}/{self.high_res_file}'

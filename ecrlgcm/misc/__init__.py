@@ -15,6 +15,63 @@ formatter = logging.Formatter('[%(levelname)s] %(asctime)s %(message)s')
 sh.setFormatter(formatter)
 logger.addHandler(sh)
 
+def edit_namelists(experiment,configuration):
+        
+    case = f'{os.environ["CESM_REPO_DIR"]}/cases/{experiment.name}'
+    nl_cam_file=f"{case}/user_nl_cam"
+    nl_cpl_file=f"{case}/user_nl_cpl"
+    nl_clm_file=f"{case}/user_nl_clm"
+    nl_pop_file=f"{case}/user_nl_pop"
+    nl_docn_file=f"{case}/user_nl_docn"
+    nl_ice_file=f"{case}/user_nl_ice"
+                    
+    logger.info(f"**Changing namelist file: {nl_cam_file}**")
+    with open(nl_cam_file,'w') as f:
+        for l in configuration['atm']:
+            f.write(f'{l}\n')
+    f.close()
+    
+    logger.info(f"**Changing namelist file: {nl_cpl_file}**")
+    with open(nl_cpl_file,'w') as f:
+        for l in configuration['cpl']:
+            f.write(f'{l}\n')
+    f.close()    
+
+    logger.info(f"**Changing namelist file: {nl_clm_file}**")
+    with open(nl_clm_file,'w') as f:
+        for l in configuration['lnd']:
+            f.write(f'{l}\n')
+    f.close()    
+    
+    logger.info(f"**Changing namelist file: {nl_docn_file}**")
+    with open(nl_docn_file,'w') as f:
+        for l in configuration['docn']:
+            f.write(f'{l}\n')
+    f.close()
+
+    logger.info(f"**Changing namelist file: {nl_pop_file}**")
+    with open(nl_pop_file,'w') as f:
+        for l in configuration['ocn']:
+            f.write(f'{l}\n')
+    f.close()    
+
+    logger.info(f"**Changing namelist file: {nl_ice_file}**")
+    with open(nl_ice_file,'w') as f:
+        for l in configuration['ocn']:
+            f.write(f'{l}\n')
+    f.close()    
+
+    logger.info(f"**Changing docn stream file**")
+    with open(f'{os.environ["GCM_REPO_DIR"]}/templates/user_docn.streams.txt.som') as f:
+        docn_file=f.read()
+        
+    os.system(f'cp {os.environ["GCM_REPO_DIR"]}/templates/user_docn.streams.txt.som {case}')
+    with open(f'{case}/user_docn.streams.txt.som','w') as f:
+        tmp_file = experiment.docn_som_file.split('/')[-1]
+        tmp_path = experiment.docn_som_file.split('/')[:-1]
+        tmp_path = '/'.join(tmp_path)
+        f.write(docn_file.replace('%DOCN_SOM_FILE%',tmp_file).replace('%DOCN_SOM_DIR%',tmp_path))
+
 def get_base_topofile(res):
     if res.split('_')[0][0:3]=='T42':
         os.environ['ORIG_TOPO_FILE']=os.environ['T42_TOPO_FILE']
