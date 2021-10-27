@@ -60,26 +60,43 @@ def edit_namelists(experiment,configuration):
         for l in configuration['ocn']:
             f.write(f'{l}\n')
     f.close()    
-
-    logger.info(f"**Changing docn stream file**")
-    with open(f'{os.environ["GCM_REPO_DIR"]}/templates/user_docn.streams.txt.som') as f:
-        docn_file=f.read()
+    
+    if configuration['change_som_stream']:
+        logger.info(f"**Changing docn dom stream file**")
+        with open(f'{os.environ["GCM_REPO_DIR"]}/templates/user_docn.streams.txt.som') as f:
+            docn_file=f.read()
         
-    os.system(f'cp {os.environ["GCM_REPO_DIR"]}/templates/user_docn.streams.txt.som {case}')
-    with open(f'{case}/user_docn.streams.txt.som','w') as f:
-        tmp_file = experiment.docn_som_file.split('/')[-1]
-        tmp_path = experiment.docn_som_file.split('/')[:-1]
-        tmp_path = '/'.join(tmp_path)
-        f.write(docn_file.replace('%DOCN_SOM_FILE%',tmp_file).replace('%DOCN_SOM_DIR%',tmp_path))
+        os.system(f'cp {os.environ["GCM_REPO_DIR"]}/templates/user_docn.streams.txt.som {case}')
+        with open(f'{case}/user_docn.streams.txt.som','w') as f:
+            tmp_file = experiment.docn_som_file.split('/')[-1]
+            tmp_path = experiment.docn_som_file.split('/')[:-1]
+            tmp_path = '/'.join(tmp_path)
+            f.write(docn_file.replace('%DOCN_SOM_FILE%',tmp_file).replace('%DOCN_SOM_DIR%',tmp_path))
+    
+    if configuration['change_dom_stream']:
+        logger.info(f"**Changing docn dom stream file**")
+        with open(f'{os.environ["GCM_REPO_DIR"]}/templates/user_docn.streams.txt.prescribed') as f:
+            docn_file=f.read()
+        
+        os.system(f'cp {os.environ["GCM_REPO_DIR"]}/templates/user_docn.streams.txt.prescribed {case}')
+        with open(f'{case}/user_docn.streams.txt.prescribed','w') as f:
+            sst_file = experiment.docn_sst_file.split('/')[-1]
+            sst_path = experiment.docn_sst_file.split('/')[:-1]
+            sst_path = '/'.join(sst_path)
+            ocnfrac_file = experiment.docn_ocnfrac_file.split('/')[-1]
+            ocnfrac_path = experiment.docn_ocnfrac_file.split('/')[:-1]
+            ocnfrac_path = '/'.join(ocnfrac_path)
+            f.write(docn_file.replace('%DOCN_SST_FILE%',sst_file).replace('%DOCN_SST_DIR%',sst_path).replace('%DOCN_OCNFRAC_FILE%',ocnfrac_file).replace('%DOCN_OCNFRAC_DIR%',ocnfrac_path))
 
 def get_base_topofile(res):
-    if res.split('_')[0][0:3]=='T42':
-        os.environ['ORIG_TOPO_FILE']=os.environ['T42_TOPO_FILE']
-    if res.split('_')[0][0:3]=='f19':
-        os.environ['ORIG_TOPO_FILE']=os.environ['f19_TOPO_FILE']
-    if res.split('_')[0][0:3]=='f09':
-        os.environ['ORIG_TOPO_FILE']=os.environ['f09_TOPO_FILE']
-    return os.environ['ORIG_TOPO_FILE']
+    tmp_res = res.replace('.','').split('_')[0]
+    if '42' in tmp_res:
+        os.environ['ORIG_CESM_TOPO_FILE']=os.environ['T42_TOPO_FILE']
+    if '19' in tmp_res:
+        os.environ['ORIG_CESM_TOPO_FILE']=os.environ['f19_TOPO_FILE']
+    if '09' in tmp_res:
+        os.environ['ORIG_CESM_TOPO_FILE']=os.environ['f09_TOPO_FILE']
+    return os.environ['ORIG_CESM_TOPO_FILE']
 
 def get_logger():
     return logger

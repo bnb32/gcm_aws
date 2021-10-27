@@ -15,9 +15,9 @@ os.environ['NCL_SCRIPTS'] = f'{os.environ["GCM_REPO_DIR"]}/scripts/ncl'
 os.environ['RAW_TOPO_DIR'] = RAW_TOPO_DIR = f'{USER_INPUT_DIR}/paleodem_raw'
 
 #CESM params
-RUN_DIR=f"{ROOT_DIR}/cesm"
-CESM_DIR=f"{USER_DIR}/my_cesm"
-CESM_SCRIPTS=f"{CESM_DIR}/cime/scripts"
+os.environ['RUN_DIR'] = RUN_DIR = f"{ROOT_DIR}/cesm"
+os.environ['CESM_DIR'] = CESM_DIR = f"{USER_DIR}/my_cesm"
+CESM_SCRIPTS = f"{CESM_DIR}/cime/scripts"
 os.environ["PATH"]+=f":{CESM_SCRIPTS}"
 
 os.environ['CIME_OUT_DIR'] = f"{SCRATCH_DIR}/archive"
@@ -33,15 +33,9 @@ os.environ['CESM_LANDPLANT_DIR'] = CESM_LANDPLANT_DIR = f'{USER_INPUT_DIR}/landp
 os.environ['CESM_MAPPING_DIR'] = CESM_MAPPING_DIR = f'{USER_INPUT_DIR}/mapping_files'
 os.environ['REMAPPED_LAND_DIR'] = REMAPPED_LAND_DIR = f'{USER_INPUT_DIR}/remapped_land_files'
 
-os.environ['CESM_MAP_FILE'] = f'{CESM_MAPPING_DIR}/map_fv1.9x2.5_to_gx1v6_tmp.nc'
-
-os.environ['T42_TOPO_FILE'] = T42_TOPO_FILE = f'{CESM_INPUT_DATA_DIR}/atm/cam/topo/T42_nc3000_Co060_Fi001_PF_nullRR_Nsw042_20180111.nc'
-os.environ['f19_TOPO_FILE'] = f19_TOPO_FILE = f'{CESM_INPUT_DATA_DIR}/atm/cam/topo/fv_1.9x2.5_nc3000_Nsw084_Nrs016_Co120_Fi001_ZR_GRNL_031819.nc'
-os.environ['f09_TOPO_FILE'] = f09_TOPO_FILE = f'{CESM_INPUT_DATA_DIR}/atm/cam/topo/fv_0.9x1.25_nc3000_Nsw042_Nrs008_Co060_Fi001_ZR_sgh30_24km_GRNL_c170103.nc'
-os.environ['ORIG_TOPO_FILE'] = ORIG_TOPO_FILE = f'{CESM_INPUT_DATA_DIR}/atm/cam/topo/{f19_TOPO_FILE}'
-
-os.environ['ORIG_CESM_LANDFRAC_FILE'] = ORIG_LANDFRAC_FILE = f'{CESM_INPUT_DATA_DIR}/share/domains/domain.lnd.fv1.9x2.5_gx1v6.090206.nc'
-os.environ['ORIG_CESM_OCEANFRAC_FILE'] = ORIG_OCEANFRAC_FILE = f'{CESM_INPUT_DATA_DIR}/share/domains/domain.ocn.gx1v6.090206.nc'
+os.environ['ORIG_CESM_TOPO_FILE'] = ORIG_TOPO_FILE = f'{CESM_INPUT_DATA_DIR}/atm/cam/topo/fv_1.9x2.5_nc3000_Nsw084_Nrs016_Co120_Fi001_ZR_GRNL_031819.nc'
+os.environ['ORIG_CESM_LANDFRAC_FILE'] = ORIG_LANDFRAC_FILE = f'{CESM_INPUT_DATA_DIR}/share/domains/domain.lnd.fv1.9x2.5_gx1v7.181205.nc'
+os.environ['ORIG_CESM_OCEANFRAC_FILE'] = ORIG_OCEANFRAC_FILE = f'{CESM_INPUT_DATA_DIR}/share/domains/domain.ocn.fv1.9x2.5_gx1v7.181205.nc'
 os.environ['ORIG_CESM_CO2_FILE'] = ORIG_CESM_CO2_FILE = f'{os.environ["CESM_INPUT_DATA_DIR"]}/atm/cam/inic/gaus/cami_0000-01-01_64x128_L30_c090102.nc'
 os.environ['ORIG_CESM_SOLAR_FILE'] = ORIG_CESM_SOLAR_FILE = f'{CESM_INPUT_DATA_DIR}/atm/cam/solar/SolarForcingCMIP6piControl_c160921.nc'
 os.environ['ORIG_CESM_OCEANMASK_FILE'] = ORIG_CESM_OCEANMASK_FILE = f'{CESM_INPUT_DATA_DIR}/ocn/pop/gx1v6/grid/region_mask_20090205.ieeei4'
@@ -50,8 +44,12 @@ os.environ['ORIG_CESM_LANDPLANT_FILE'] = ORIG_CESM_LANDPLANT_FILE = f'{CESM_INPU
 #os.environ['ORIG_INIT_OCEAN_FILE'] = ORIG_INIT_OCEAN_FILE = f'{CESM_INPUT_DATA_DIR}/ocn/pop/gx1v6/ic/ecosys_jan_IC_omip_POP_gx1v7_c200323.nc'
 os.environ['ORIG_INIT_OCEAN_FILE'] = ORIG_INIT_OCEAN_FILE = f'{CESM_INPUT_DATA_DIR}/ocn/pop/gx1v6/ic/ts_PHC2_jan_ic_gx1v6_20090205.ieeer8'
 os.environ['OCEAN_REGION_MASK_FILE'] = OCEAN_REGION_MASK_FILE = f'{CESM_OCEANFRAC_DIR}/gx1v6_region_ids'
-os.environ['ORIG_DOCN_DOMAIN_FILE'] = ORIG_DOCN_DOMAIN_FILE = f'{CESM_INPUT_DATA_DIR}/ocn/docn7/domain.ocn.1x1.111007_bkup.nc'
-os.environ['ORIG_DOCN_SOM_FILE'] = ORIG_DOCN_SOM_FILE = f'{CESM_INPUT_DATA_DIR}/ocn/docn7/SOM/pop_frc.gx1v6.100513.nc'
+os.environ['ORIG_DOCN_DOMAIN_FILE'] = ORIG_DOCN_DOMAIN_FILE = f'{CESM_INPUT_DATA_DIR}/ocn/docn7/domain.ocn.1x1.111007.nc'
+os.environ['ORIG_DOCN_SOM_FILE'] = ORIG_DOCN_SOM_FILE = f'{CESM_INPUT_DATA_DIR}/ocn/docn7/SOM/pop_frc.f19.nc'
+#os.environ['ORIG_DOCN_SOM_FILE'] = ORIG_DOCN_SOM_FILE = f'{CESM_INPUT_DATA_DIR}/ocn/docn7/SOM/pop_frc.gx1v6.100513.nc'
+#os.environ['ORIG_DOCN_SOM_FILE'] = ORIG_DOCN_SOM_FILE = f'{CESM_INPUT_DATA_DIR}/ocn/docn7/SOM/default.som.forcing.aquaplanet.Qflux0_h30_sstQOBS.2degFV_c20170421.nc'
+os.environ['ORIG_DOCN_SST_FILE'] = ORIG_DOCN_SST_FILE = f'{CESM_INPUT_DATA_DIR}/atm/cam/sst/sst_HadOIBl_bc_1.9x2.5_clim_pi_c101028.nc'
+os.environ['ORIG_DOCN_OCNFRAC_FILE'] = ORIG_DOCN_OCNFRAC_FILE = f'{CESM_INPUT_DATA_DIR}/atm/cam/ocnfrac/domain.camocn.1.9x2.5_gx1v6_090403.nc'
 
 #ISCA params
 os.environ['ISCA_TOPO_DIR'] = ISCA_TOPO_DIR = f'{USER_INPUT_DIR}/topo_files/isca'

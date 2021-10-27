@@ -73,6 +73,7 @@ begin
   delete(opt)
   opt = True
   opt@ForceOverwrite = True
+  ;opt@InterpMethod = "conserve"
   opt@InterpMethod = "bilinear"
   opt@IgnoreUnmappedPoints = False
   opt@SrcRegional = False
@@ -84,10 +85,10 @@ begin
   delete(opt)
   opt = True
 
-  remap_lndfrac = ESMF_regrid_with_weights(landfrac,wgtFile,opt) ;ESMF_regrid_with_weights(landfrac,wgtFile,opt)
-  remap_lndmask = tointeger(where(remap_lndfrac>0.0,1.0,0.0)) ;ESMF_regrid_with_weights(landmask,wgtFile,opt)
-  remap_ocnmask = tointeger(1-remap_lndmask) ;ESMF_regrid_with_weights(oceanmask,wgtFile,opt)
-  remap_ocnfrac = tointeger(1-remap_lndmask) ;1-remap_lndfrac ;ESMF_regrid_with_weights(oceanfrac,wgtFile,opt)
+  remap_lndfrac = ESMF_regrid_with_weights(landfrac,wgtFile,opt) 
+  remap_lndmask = tointeger(where(remap_lndfrac>0.001,1.0,0.0)) 
+  remap_ocnfrac = 1-remap_lndfrac
+  remap_ocnmask = tointeger(where(remap_ocnfrac>0.0,1.0,0.0)) 
   remap_depth = ESMF_regrid_with_weights(depth,wgtFile,opt)
   remap_height = ESMF_regrid_with_weights(height,wgtFile,opt)
   remap_PHIS = ESMF_regrid_with_weights(PHIS,wgtFile,opt)
