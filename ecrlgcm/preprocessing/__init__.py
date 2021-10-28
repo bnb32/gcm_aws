@@ -11,17 +11,10 @@ import xesmf as xe
 import warnings
 from tqdm import tqdm
 from scipy.ndimage import gaussian_filter
+from metpy.calc import smooth_n_point
 warnings.filterwarnings("ignore")
 
 logger = get_logger()
-
-def mila_cycle(Amin=0,Amax=0,Acurr=0,T=0,land_year=0):
-
-    w = 2*np.pi/T
-    A = (Amax-Amin)/2.0
-    A0 = (Amax+Amin)/2.0
-    phase = np.arcsin((Acurr-A0)/A)
-    return A0 + A*np.sin(w*land_year + phase)
 
 def eccentricity(land_year): 
 
@@ -29,8 +22,6 @@ def eccentricity(land_year):
     return interpolate_ecc(land_year)
 
 def obliquity(land_year):
-
-    #return mila_cycle(Amin=22.1,Amax=24.5,Acurr=23.4,T=0.041,land_year=-land_year)
     return interpolate_obl(land_year)
 
 def solar_fraction(land_year):
@@ -149,7 +140,6 @@ def compute_land_ocean_properties(land,sea_level=0,max_depth=1000):
         land = land.rename({'longitude':'lon'})
     
     land = shift_longitude(land)
-    #land['z'] = (land['z'].dims,gaussian_filter(land['z'].values,5))
     landfrac = np.where(land['z'].values>sea_level,1.0,0.0)
     landmask = np.where(landfrac>0.0,1.0,0.0)
     oceanfrac = 1-landfrac
@@ -172,7 +162,33 @@ def compute_land_ocean_properties(land,sea_level=0,max_depth=1000):
     land['z'].attrs = z_attrs
     return land
 
-def regrid_high_res_data(cesmexp,in_shape=(1801,3601),remap=True):
+def regrid_high_res_data(cesmexp,land,remap=True):
+
+    if not os.path.exists(cesmexp.remapped_f19) or remap:
+        basefile = xr.open_mfdataset(os.environ['ORIG_CESM_TOPO_FILE'])
+        ds_out = xr.Dataset({'lat': (['lat'], basefile['lat'].values),
+                             'lon': (['lon'], basefile['lon'].values)})
+
+        logger.info('Regridding high res file to fv1.9x2.5')
+        regridder = xe.Regridder(land, ds_out, 'bilinear', ignore_degenerate=True)
+        land = regridder(land)
+        
+        landfrac = smooth_n_point(land['landfrac'].values,9)
+        landmask = np.where(landfrac>0.0,1.0,0.0)
+        oceanfrac = 1-landfrac
+        oceanfrac = np.where(oceanfrac>1.0,1.0,oceanfrac)
+        oceanfrac = np.where(oceanfrac<0.0,0.0,oceanfrac)
+        oceanmask = np.where(oceanfrac>0.0,1.0,0.0)
+        
+        land['landmask'] = (land['z'].dims,landmask)
+        land['landfrac'] = (land['z'].dims,landfrac)
+        land['oceanmask'] = (land['z'].dims,oceanmask)
+        land['oceanfrac'] = (land['z'].dims,oceanfrac)
+
+        land.to_netcdf(cesmexp.remapped_f19)
+        logger.info(f'Saved {cesmexp.remapped_f19}')
+
+def regrid_high_res_data_ncl(cesmexp,in_shape=(1801,3601),remap=True):
 
     cmd = f'export NCL_POP_REMAP="{os.environ["USER_DIR"]}/inputdata/mapping_files"; '
     cmd += f'rm -f "%s"; ncl infile=\'"{cesmexp.high_res_file}"\' outfile=\'"%s"\' '
@@ -251,12 +267,10 @@ def regrid_continent_data(land,basefile='',sea_level=0,max_depth=1000):
     ds_out['depth'] = (ds_out['z'].dims,depth)
     ds_out['PHIS'] = (ds_out['z'].dims,9.8*ds_out['z'].values)
     ds_out = ds_out.rename({'z':'zsurf'})
-    #ds_out = ds_out.fillna(0)
     return ds_out
     
 def interpolate_land(land_year):
     year = float(land_year)
-
     keys = sorted(land_years)
 
     if land_year in keys:
@@ -365,7 +379,8 @@ def modify_input_files(cesmexp,remap=True,remap_hires=True):
                                                       max_depth=max_depth)
         raw_topo_data.to_netcdf(cesmexp.high_res_file)
         logger.info(f'Saving high res map file: {cesmexp.high_res_file}')
-        regrid_high_res_data(cesmexp,in_shape=raw_topo_data['z'].shape,remap=remap)
+        regrid_high_res_data(cesmexp,raw_topo_data,remap=remap)
+        #regrid_high_res_data_ncl(cesmexp,in_shape=raw_topo_data['z'].shape,remap=remap)
     
     #topo file
     if not os.path.exists(cesmexp.topo_file) or remap:

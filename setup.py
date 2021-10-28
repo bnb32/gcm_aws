@@ -17,5 +17,6 @@ setup(
         'cartopy',
         'netCDF4',
         'xesmf',
+        'metpy',
         ]
 )
