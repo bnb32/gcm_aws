@@ -6,9 +6,14 @@ import os
 import glob
 
 class Experiment:
-    def __init__(self,gcm_type='cesm',multiplier=1,land_year=0,co2_value=None,res='f19_f19_mg17',exp_type='cam'):
+    def __init__(self,gcm_type='cesm',multiplier=1,
+                 land_year=0,co2_value=None,
+                 res='f19_f19_mg17',exp_type='cam',
+                 sea_level=0,max_depth=1000):
         self.multiplier = float(multiplier)
         self.land_year = land_year
+        self.sea_level = sea_level
+        self.max_depth = max_depth
         self.res = res
         self.exp_type = exp_type
         self.gcm_type = gcm_type
@@ -28,6 +33,7 @@ class Experiment:
         self.docn_som_file = f'docn_som_{land_year}Ma_{res}.nc'
         self.docn_ocnfrac_file = f'docn_ocnfrac_{land_year}Ma_{res}.nc'
         self.docn_sst_file = f'docn_sst_{land_year}Ma_{res}.nc'
+        self.init_atm_file = f'init_atm_{land_year}Ma_{res}.nc'
 
         if co2_value is not None:
             self.co2_file = f'co2_{co2_value}ppm_continents_{land_year}Ma_{res}.nc'
@@ -59,6 +65,7 @@ class Experiment:
             self.remapped_f19 = f'{os.environ["REMAPPED_LAND_DIR"]}/{self.remapped_f19}'
             self.remapped_g16 = f'{os.environ["REMAPPED_LAND_DIR"]}/{self.remapped_g16}'
             self.remapped_f1 = f'{os.environ["REMAPPED_LAND_DIR"]}/{self.remapped_f1}'
+            self.init_atm_file = f'{os.environ["INIT_CONDITIONS_DIR"]}/{self.init_atm_file}'
 
     def topo_data(self):
         return xr.open_mfdataset(self.topo_file,decode_times=False)
@@ -106,8 +113,8 @@ def Configuration(cesmexp,args):
         sim_config['cpl'] = [
                 f'orb_mode="fixed_year"',
                 f'orb_iyear=1850',
-                f'orb_eccen={eccentricity(args.land_year)}',
-                f'orb_obliq={obliquity(args.land_year)}',
+                f'orb_eccen={eccentricity(args.year)}',
+                f'orb_obliq={obliquity(args.year)}',
                 ]
 
         sim_config['xml_changes'] = [

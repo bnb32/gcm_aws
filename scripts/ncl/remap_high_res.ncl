@@ -85,9 +85,10 @@ begin
   delete(opt)
   opt = True
 
-  remap_lndfrac = ESMF_regrid_with_weights(landfrac,wgtFile,opt) 
-  remap_lndmask = tointeger(where(remap_lndfrac>0.001,1.0,0.0)) 
-  remap_ocnfrac = 1-remap_lndfrac
+  remap_lndfrac = smth9(ESMF_regrid_with_weights(landfrac,wgtFile,opt),0.5,0,True) 
+  remap_lndmask = tointeger(where(remap_lndfrac>0.0,1.0,0.0)) 
+  tmp_ocnfrac = 1-remap_lndfrac
+  remap_ocnfrac = where(tmp_ocnfrac<0,0,tmp_ocnfrac)
   remap_ocnmask = tointeger(where(remap_ocnfrac>0.0,1.0,0.0)) 
   remap_depth = ESMF_regrid_with_weights(depth,wgtFile,opt)
   remap_height = ESMF_regrid_with_weights(height,wgtFile,opt)
