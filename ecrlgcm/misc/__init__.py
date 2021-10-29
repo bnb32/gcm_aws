@@ -110,6 +110,10 @@ land_years = [int(x) if int(x)==float(x) else float(x) for x in land_years]
 min_land_year = int(min(land_years))
 max_land_year = int(max(land_years))
 
+stored_years = glob.glob(os.environ["CIME_OUT_DIR"]+'/*/atm/hist/*cam.*.nc')
+stored_years = sorted([float(l.split('_')[-2].strip('Ma')) for l in stored_years])
+stored_years = [int(x) if int(x)==float(x) else float(x) for x in stored_years]
+
 def land_year_range(arg):
     try:
         if int(arg)==float(arg):
