@@ -43,7 +43,6 @@ os.environ['ORIG_CESM_LANDPLANT_FILE'] = ORIG_CESM_LANDPLANT_FILE = f'{CESM_INPU
 os.environ['ORIG_INIT_OCEAN_FILE'] = ORIG_INIT_OCEAN_FILE = f'{CESM_INPUT_DATA_DIR}/ocn/pop/gx1v6/ic/ts_PHC2_jan_ic_gx1v6_20090205.ieeer8'
 os.environ['ORIG_INIT_ATM_FILE'] = ORIG_INIT_ATM_FILE = f'{CESM_INPUT_DATA_DIR}/cesm2_init/b.e20.B1850.f19_g17.release_cesm2_1_0.020/0301-01-01/b.e20.B1850.f19_g17.release_cesm2_1_0.020.cam.i.0301-01-01-00000.nc'
 os.environ['ORIG_INIT_LND_FILE'] = ORIG_INIT_LND_FILE = f'{CESM_INPUT_DATA_DIR}/lnd/clm2/initdata_map/clmi.BHIST.2000-01-01.0.9x1.25_gx1v7_simyr2000_c200728.nc'
-os.environ['OCEAN_REGION_MASK_FILE'] = OCEAN_REGION_MASK_FILE = f'{CESM_OCEANFRAC_DIR}/gx1v6_region_ids'
 os.environ['ORIG_DOCN_DOMAIN_FILE'] = ORIG_DOCN_DOMAIN_FILE = f'{CESM_INPUT_DATA_DIR}/ocn/docn7/domain.ocn.1x1.111007.nc'
 os.environ['ORIG_DOCN_SOM_FILE'] = ORIG_DOCN_SOM_FILE = f'{CESM_INPUT_DATA_DIR}/ocn/docn7/SOM/pop_frc.f19.nc'
 os.environ['ORIG_DOCN_SST_FILE'] = ORIG_DOCN_SST_FILE = f'{CESM_INPUT_DATA_DIR}/atm/cam/sst/sst_HadOIBl_bc_1.9x2.5_clim_pi_c101028.nc'

@@ -15,6 +15,9 @@ formatter = logging.Formatter('[%(levelname)s] %(asctime)s %(message)s')
 sh.setFormatter(formatter)
 logger.addHandler(sh)
 
+def interp(a,b,dt):
+    return a*(1-dt)+dt*b
+
 def edit_namelists(experiment,configuration):
         
     case = f'{os.environ["CESM_REPO_DIR"]}/cases/{experiment.name}'

@@ -6,9 +6,10 @@ import os
 import glob
 
 class Experiment:
-    def __init__(self,gcm_type='cesm',multiplier=1,
+    def __init__(self,gcm_type='cesm',multiplier=1.0,
                  land_year=0,co2_value=None,
-                 res='f19_f19_mg17',exp_type='cam',
+                 res='f19_f19_mg17',
+                 exp_type='cam_clmCN_docnDOM',
                  sea_level=0,max_depth=1000):
         self.multiplier = float(multiplier)
         self.land_year = land_year
@@ -39,8 +40,8 @@ class Experiment:
             self.co2_file = f'co2_{co2_value}ppm_continents_{land_year}Ma_{res}.nc'
             self.name = self.path_format = f'{exp_type}_co2_{co2_value}ppm_continents_{land_year}Ma_experiment'
         else:
-            self.co2_file = f'co2_{multiplier}x_continents_{land_year}Ma_{res}.nc'
-            self.name = self.path_format = f'{exp_type}_co2_{multiplier}x_continents_{land_year}Ma_experiment'
+            self.co2_file = f'co2_{self.multiplier}x_continents_{land_year}Ma_{res}.nc'
+            self.name = self.path_format = f'{exp_type}_co2_{self.multiplier}x_continents_{land_year}Ma_experiment'
         
         if gcm_type=='isca':
             self.file_path = os.path.join(os.environ['GFDL_DATA'],self.path_format)
@@ -67,8 +68,26 @@ class Experiment:
             self.remapped_f1 = f'{os.environ["REMAPPED_LAND_DIR"]}/{self.remapped_f1}'
             self.init_atm_file = f'{os.environ["INIT_CONDITIONS_DIR"]}/{self.init_atm_file}'
 
-    def topo_data(self):
+    def base(self):
+        return xr.open_mfdataset(self.remapped_f19)
+    
+    def hires(self):
+        return xr.open_mfdataset(self.high_res_file)
+
+    def sim_data(self):
+        return xr.open_mfdataset(self.files)
+
+    def topo(self):
         return xr.open_mfdataset(self.topo_file,decode_times=False)
+    
+    def land(self):
+        return xr.open_mfdataset(self.landfrac_file,decode_times=False)
+    
+    def ocean(self):
+        return xr.open_mfdataset(self.oceanfrac_file,decode_times=False)
+    
+    def docn(self):
+        return xr.open_mfdataset(self.docn_ocnfrac_file,decode_times=False)
     
     def solar_data(self):
         return xr.open_mfdataset(self.solar_file,decode_times=False)

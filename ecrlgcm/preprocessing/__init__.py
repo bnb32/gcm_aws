@@ -1,6 +1,6 @@
 import ecrlgcm.environment
 from ecrlgcm.data import co2_series, ecc_series, obl_series
-from ecrlgcm.misc import land_years, get_logger, sliding_std, get_base_topofile
+from ecrlgcm.misc import land_years, interp, get_logger, sliding_std, get_base_topofile
 
 import os
 import netCDF4 as nc
@@ -33,9 +33,6 @@ def solar_constant(land_year):
     #assuming years prior to current era is expressed as a positive value
     return 1370.0*solar_fraction(land_year)
 
-def interp(a,b,dt):
-    return a*(1-dt)+dt*b
-
 def interpolate_series(land_year,series):
 
     year = float(land_year)
@@ -45,17 +42,18 @@ def interpolate_series(land_year,series):
     if land_year in keys:
         return series[keys[keys.index(land_year)]]
 
-    if year <= keys[0]:
+    elif year <= keys[0]:
         return series[keys[0]]
 
-    if year >= keys[-1]:
+    elif year >= keys[-1]:
         return series[keys[-1]]
 
-    for i in range(len(keys)):
-        if keys[i] <= year <= keys[i+1]:
-            return interp(series[keys[i]],
-                          series[keys[i+1]],
-                          (year-keys[i])/(keys[i+1]-keys[i]))
+    else:
+        for i in range(len(keys)):
+            if keys[i] <= year <= keys[i+1]:
+                return interp(series[keys[i]],
+                              series[keys[i+1]],
+                              (year-keys[i])/(keys[i+1]-keys[i]))
 
 def interpolate_co2(land_year):
     return interpolate_series(land_year,co2_series)
@@ -140,6 +138,8 @@ def compute_land_ocean_properties(land,sea_level=0,max_depth=1000):
         land = land.rename({'longitude':'lon'})
     
     land = shift_longitude(land)
+    land['z_non_smooth'] = (land['z'].dims,land['z'].values)
+    land['z'] = (land['z'].dims,smooth_n_point(land['z'].values,9))
     landfrac = np.where(land['z'].values>sea_level,1.0,0.0)
     landmask = np.where(landfrac>0.0,1.0,0.0)
     oceanfrac = 1-landfrac
@@ -164,6 +164,9 @@ def compute_land_ocean_properties(land,sea_level=0,max_depth=1000):
 
 def regrid_high_res_data(cesmexp,land,remap=True):
 
+    sea_level = cesmexp.sea_level
+    max_depth = cesmexp.max_depth
+
     if not os.path.exists(cesmexp.remapped_f19) or remap:
         basefile = xr.open_mfdataset(os.environ['ORIG_CESM_TOPO_FILE'])
         ds_out = xr.Dataset({'lat': (['lat'], basefile['lat'].values),
@@ -173,17 +176,26 @@ def regrid_high_res_data(cesmexp,land,remap=True):
         regridder = xe.Regridder(land, ds_out, 'bilinear', ignore_degenerate=True)
         land = regridder(land)
         
-        landfrac = smooth_n_point(land['landfrac'].values,9)
+        landfrac = smooth_n_point(land['landfrac'].values,5)
         landmask = np.where(landfrac>0.0,1.0,0.0)
         oceanfrac = 1-landfrac
         oceanfrac = np.where(oceanfrac>1.0,1.0,oceanfrac)
         oceanfrac = np.where(oceanfrac<0.0,0.0,oceanfrac)
         oceanmask = np.where(oceanfrac>0.0,1.0,0.0)
+        height = np.where(land['z'].values>sea_level,land['z'].values,0)
+        depth = np.where(land['z'].values<=sea_level,-land['z'].values,0)
+        depth = np.where(depth>max_depth,max_depth,depth)
         
         land['landmask'] = (land['z'].dims,landmask)
         land['landfrac'] = (land['z'].dims,landfrac)
         land['oceanmask'] = (land['z'].dims,oceanmask)
         land['oceanfrac'] = (land['z'].dims,oceanfrac)
+        land['height'] = (land['z'].dims,height)
+        land['PHIS'] = (land['z'].dims,9.8*land['z'].values)
+        land['depth'] = (land['z'].dims,depth)
+        z_attrs = land['z'].attrs
+        land['z'] = (land['z'].dims,land['z'].values)
+        land['z'].attrs = z_attrs
 
         land.to_netcdf(cesmexp.remapped_f19)
         logger.info(f'Saved {cesmexp.remapped_f19}')
@@ -276,19 +288,20 @@ def interpolate_land(land_year):
     if land_year in keys:
         ds_out = get_original_map_data(keys[keys.index(land_year)])
 
-    if year <= keys[0]:
+    elif year <= keys[0]:
         ds_out = get_original_map_data(keys[0])
 
-    if year >= keys[-1]:
+    elif year >= keys[-1]:
         ds_out = get_original_map_data(keys[-1])
 
-    for i in range(len(keys)):
-        if keys[i] <= year <= keys[i+1]:
-            ds_out = get_original_map_data(keys[i])
-            tmp = interp(get_original_map_data(keys[i])['z'].values,
-                         get_original_map_data(keys[i+1])['z'].values,
-                         (year-keys[i])/(keys[i+1]-keys[i]))
-            ds_out['z'] = (ds_out['z'].dims,tmp)
+    else:
+        for i in range(len(keys)):
+            if keys[i] <= year <= keys[i+1]:
+                ds_out = get_original_map_data(keys[i])
+                tmp = interp(get_original_map_data(keys[i])['z'].values,
+                             get_original_map_data(keys[i+1])['z'].values,
+                             (year-keys[i])/(keys[i+1]-keys[i]))
+                ds_out['z'] = (ds_out['z'].dims,tmp)
     
     ds_out = ds_out.rename({'latitude':'lat','longitude':'lon'})
     return ds_out
@@ -401,6 +414,7 @@ def modify_input_files(cesmexp,remap=True,remap_hires=True):
         
         logger.info('Modifying landfrac_file')
         orig_land = xr.open_mfdataset(os.environ['ORIG_CESM_LANDFRAC_FILE'])
+        orig_mask = orig_land['mask'].values.copy()
         landfrac = topo_data['LANDFRAC'].values
         landfrac = np.where(landfrac>0.0,landfrac,0.0)
         orig_land['frac'] = (orig_land['frac'].dims,landfrac)
@@ -437,8 +451,12 @@ def modify_input_files(cesmexp,remap=True,remap_hires=True):
     if not os.path.exists(cesmexp.docn_sst_file) or remap:
         logger.info('Modifying docn_sst_file')
         orig_sst = xr.open_mfdataset(os.environ['ORIG_DOCN_SST_FILE'])
-        orig_sst['SST_cpl'] = (orig_sst['SST_cpl'].dims,orig_sst['SST_cpl'].values)
-        #orig_sst['ice_cov'] = (orig_sst['ice_cov'].dims,orig_sst['ice_cov'].values)
+        orig_sst['SST_cpl'] = (orig_sst['SST_cpl'].dims,
+                               modify_array_with_time(orig_sst['SST_cpl'].values,
+                                                      orig_mask,orig_land['mask'].values))
+        orig_sst['ice_cov'] = (orig_sst['ice_cov'].dims,
+                               modify_array_with_time(orig_sst['ice_cov'].values,
+                                                      orig_mask,orig_land['mask'].values))
         #orig_sst = orig_sst.fillna(0)
         orig_sst.to_netcdf(cesmexp.docn_sst_file)
         logger.info(f'Saving docn_sst_file: {cesmexp.docn_sst_file}')
