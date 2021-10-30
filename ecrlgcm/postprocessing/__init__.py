@@ -68,20 +68,14 @@ def hires_interp(land_year,stored_years):
     
     if land_year in keys:
         exp = Experiment(land_year=keys[keys.index(land_year)])
-        ds_out['PHIS'] = (('lat','lon'),exp.hires()['PHIS'].values)
-        ds_out['mask'] = (('lat','lon'),exp.hires()['landmask'].values)
         ds_out['z'] = (('lat','lon'),exp.hires()['z'].values)
 
     elif year <= keys[0]:
         exp = Experiment(land_year=keys[0])
-        ds_out['PHIS'] = (('lat','lon'),exp.hires()['PHIS'].values)
-        ds_out['mask'] = (('lat','lon'),exp.hires()['landmask'].values)
         ds_out['z'] = (('lat','lon'),exp.hires()['z'].values)
 
     elif year >= keys[-1]:
         exp = Experiment(land_year=keys[-1])
-        ds_out['PHIS'] = (('lat','lon'),exp.hires()['PHIS'].values)
-        ds_out['mask'] = (('lat','lon'),exp.hires()['landmask'].values)
         ds_out['z'] = (('lat','lon'),exp.hires()['z'].values)
     
     else:
@@ -93,13 +87,10 @@ def hires_interp(land_year,stored_years):
                              exp1.hires()['z'].values,
                              (year-keys[i])/(keys[i+1]-keys[i]))
                 ds_out['z'] = (('lat','lon'),tmp)
-                ds_out['mask'] = (('lat','lon'),np.where(tmp>0.0,tmp,0))
-                tmp = interp(exp0.hires()['PHIS'].values,
-                             exp1.hires()['PHIS'].values,
-                             (year-keys[i])/(keys[i+1]-keys[i]))
-                ds_out['PHIS'] = (('lat','lon'),np.where(ds_out['mask'].values>0,tmp,0))
     
-    ds_out['mask'] = (ds_out['mask'].dims,smooth_n_point(ds_out['mask'].values,5))
+    ds_out['z'] = (ds_out['z'].dims,smooth_n_point(ds_out['z'].values,9))
+    ds_out['PHIS'] = (ds_out['z'].dims,9.8*ds_out['z'].values)
+    ds_out['mask'] = (ds_out['z'].dims,np.where(ds_out['z'].values>0,1,0))
     return ds_out
 
 def field_interp(land_year,stored_years,field=None,level=None):
@@ -111,8 +102,6 @@ def field_interp(land_year,stored_years,field=None,level=None):
     
     if land_year in keys:
         exp = Experiment(land_year=keys[keys.index(land_year)])
-        ds_out['PHIS'] = (('lat','lon'),exp.topo()['PHIS'].values)
-        ds_out['mask'] = (('lat','lon'),exp.land()['mask'].values)
         ds_out['z'] = (('lat','lon'),exp.base()['z'].values)
         if field is not None:
             if exp.sim_data()[field].ndim==2:
@@ -129,8 +118,6 @@ def field_interp(land_year,stored_years,field=None,level=None):
 
     elif year <= keys[0]:
         exp = Experiment(land_year=keys[0])
-        ds_out['PHIS'] = (('lat','lon'),exp.topo()['PHIS'].values)
-        ds_out['mask'] = (('lat','lon'),exp.land()['mask'].values)
         ds_out['z'] = (('lat','lon'),exp.base()['z'].values)
         if field is not None:
             if exp.sim_data()[field].ndim==2:
@@ -141,14 +128,12 @@ def field_interp(land_year,stored_years,field=None,level=None):
                 if level is None:
                     ds_out[field] = (('lat','lon'),exp.sim_data()[field].mean(axis=(0,1)).values)
                 else:
-                    ds_out[field] = (('lat','lon'),exp.sim_data()[field].mean(axis=(0))[level].values)
+                    ds_out[field] = (('lat','lon'),exp.sim_data()[field].mean(axis=(0)).values[level])
             ds_out[field].attrs['long_name']= exp.sim_data()[field].long_name    
             ds_out[field].attrs['units'] = exp.sim_data()[field].units
 
     elif year >= keys[-1]:
         exp = Experiment(land_year=keys[-1])
-        ds_out['PHIS'] = (('lat','lon'),exp.topo()['PHIS'].values)
-        ds_out['mask'] = (('lat','lon'),exp.land()['mask'].values)
         ds_out['z'] = (('lat','lon'),exp.base()['z'].values)
         if field is not None:
             if exp.sim_data()[field].ndim==2:
@@ -159,7 +144,7 @@ def field_interp(land_year,stored_years,field=None,level=None):
                 if level is None:
                     ds_out[field] = (('lat','lon'),exp.sim_data()[field].mean(axis=(0,1)).values)
                 else:
-                    ds_out[field] = (('lat','lon'),exp.sim_data()[field].mean(axis=(0))[level].values)
+                    ds_out[field] = (('lat','lon'),exp.sim_data()[field].mean(axis=(0)).values[level])
             ds_out[field].attrs['long_name']= exp.sim_data()[field].long_name    
             ds_out[field].attrs['units'] = exp.sim_data()[field].units
 
@@ -172,11 +157,6 @@ def field_interp(land_year,stored_years,field=None,level=None):
                              exp1.base()['z'].values,
                              (year-keys[i])/(keys[i+1]-keys[i]))
                 ds_out['z'] = (('lat','lon'),tmp)
-                ds_out['mask'] = (('lat','lon'),np.where(tmp>0.0,tmp,0))
-                tmp = interp(exp0.topo()['PHIS'].values,
-                             exp1.topo()['PHIS'].values,
-                             (year-keys[i])/(keys[i+1]-keys[i]))
-                ds_out['PHIS'] = (('lat','lon'),np.where(ds_out['mask']>0,tmp,0))
                 if field is not None:
                     if exp0.sim_data()[field].ndim==2:
                         a = exp0.sim_data()[field].values
@@ -189,13 +169,15 @@ def field_interp(land_year,stored_years,field=None,level=None):
                             a = exp0.sim_data()[field].mean(axis=(0,1)).values
                             b = exp1.sim_data()[field].mean(axis=(0,1)).values
                         else:
-                            a = exp0.sim_data()[field].mean(axis=(0))[level].values
-                            b = exp1.sim_data()[field].mean(axis=(0))[level].values
+                            a = exp0.sim_data()[field].mean(axis=(0)).values[level]
+                            b = exp1.sim_data()[field].mean(axis=(0)).values[level]
                     tmp = interp(a,b,(year-keys[i])/(keys[i+1]-keys[i]))
                     ds_out[field] = (('lat','lon'),tmp)
                     ds_out[field].attrs['long_name']= exp0.sim_data()[field].long_name    
                     ds_out[field].attrs['units'] = exp0.sim_data()[field].units
     
+    ds_out['PHIS'] = (ds_out['z'].dims,9.8*ds_out['z'].values)
+    ds_out['mask'] = (ds_out['z'].dims,np.where(ds_out['z'].values>0,1,0))
     return ds_out
 
 def potential_intensity(t_surf):
@@ -224,7 +206,7 @@ def define_land_colormap():
 def define_cloud_colormap():
 
     ncolors = 256
-    ramped_alpha = list([0]*128)+list(np.linspace(0.3,1,128))
+    ramped_alpha = list([0]*1)+list(np.linspace(0.0,1,255))
     color_array = []
     for i in range(ncolors):
         color_array.append((1,1,1,ramped_alpha[i]))
@@ -328,7 +310,8 @@ def get_avg_field(exp,field='t_surf',level=None,vmin=None,vmax=None,anomaly=Fals
         ax.set_title(f'Time Average',fontsize=20)
 
 def get_field_animation(times,stored_years,field='TS',level=None,
-                        vmin=None,vmax=None,color_map='coolwarm'):
+                        level_num=10,vmin=None,vmax=None,
+                        color_map='coolwarm'):
 
     define_land_colormap()
     define_cloud_colormap()
@@ -337,17 +320,11 @@ def get_field_animation(times,stored_years,field='TS',level=None,
     fig = plt.figure(figsize=(12,7))
     proj = ccrs.PlateCarree(central_longitude=0.0)
     ax = plt.axes(projection=proj)
-    if field != 'RELHUM': field_alpha=0.5
+    if field != 'RELHUM': field_alpha=0.6
     else: field_alpha=1.0
     
-    init_field = field_interp(0,stored_years,field=field)[field]
-    '''
-    land_img = field_interp(0,stored_years,field=field)['mask'].plot.contour(ax=ax, levels=2, 
-                                                                             transform=proj,#ccrs.PlateCarree(), 
-                                                                             colors="black", 
-                                                                             add_colorbar=False, 
-                                                                             alpha=1.0)
-    '''
+    init_field = field_interp(0,stored_years,field=field,level=level)[field]
+    
     land_img = hires_interp(0,stored_years)['z'].plot.imshow(ax=ax, 
                                                              transform=proj,#ccrs.PlateCarree(), 
                                                              #cmap='custom_earth',
@@ -359,12 +336,21 @@ def get_field_animation(times,stored_years,field='TS',level=None,
                                                                    colors="black", 
                                                                    add_colorbar=False, 
                                                                    alpha=1.0)
-    image = init_field.plot.imshow(ax=ax, transform=proj, 
+    image = init_field.plot.imshow(ax=ax, levels=level_num,
+                                   transform=proj, 
                                    interpolation='bilinear',
                                    cmap=color_map, 
                                    #animated=True,
                                    add_colorbar=False,
                                    alpha=field_alpha)
+    
+    field_border = init_field.plot.contour(ax=ax, levels=level_num,
+                                           transform=proj, 
+                                           interpolation='bilinear',
+                                           cmap=color_map, 
+                                           #animated=True,
+                                           add_colorbar=False,
+                                           alpha=0.9)
      
     cb = plt.colorbar(image, ax=ax, orientation='horizontal', pad=0.05, label=f'{init_field.long_name} ({init_field.units})')
     if vmin is not None and vmax is not None:
@@ -378,14 +364,9 @@ def get_field_animation(times,stored_years,field='TS',level=None,
         logger.info(f'Animation step: {i}')
 
         t = times[i]
-        current_field = field_interp(t,stored_years,field=field)
+        current_field = field_interp(t,stored_years,field=field,level=level)
         fig.suptitle(f'Time: {str(round(t,2))} Ma B.P., Average {field}: {str(round(current_field[field].values.mean(),2))} {init_field.units}', fontsize=20)       
         ax.clear()
-        '''
-        land_img = current_field['mask'].plot.contour(ax=ax,levels=2,transform=proj,
-                                                      colors="black",add_colorbar=False,
-                                                      alpha=1.0)
-        '''
         
         land_img = hires_interp(t,stored_years)['z'].plot.imshow(ax=ax, 
                                                                  transform=proj,#ccrs.PlateCarree(), 
@@ -393,23 +374,35 @@ def get_field_animation(times,stored_years,field='TS',level=None,
                                                                  cmap='custom_noaa',
                                                                  add_colorbar=False, 
                                                                  alpha=1.0)
-        border_img = hires_interp(t,stored_years)['mask'].plot.contour(ax=ax, levels=2, 
+        border_img = hires_interp(t,stored_years)['mask'].plot.contour(ax=ax,levels=2, 
                                                                        transform=proj,#ccrs.PlateCarree(), 
                                                                        colors="black", 
                                                                        add_colorbar=False, 
                                                                        alpha=1.0)
-        image = current_field[field].plot.imshow(ax=ax,transform=proj,
+        image = current_field[field].plot.imshow(ax=ax,levels=level_num,
+                                                 transform=proj,
                                                  interpolation='bilinear',
                                                  cmap=color_map,
                                                  #animated=True,
                                                  add_colorbar=False,
                                                  alpha=field_alpha)
+        
+        field_border = current_field[field].plot.contour(ax=ax,levels=level_num,
+                                                         transform=proj, 
+                                                         interpolation='bilinear',
+                                                         cmap=color_map, 
+                                                         #animated=True,
+                                                         add_colorbar=False,
+                                                         alpha=0.9)
         return image
     
     plt.close()
     animation = anim.FuncAnimation(fig, update, frames=range(len(times)), blit=False)
     writervideo = anim.FFMpegWriter(fps=5) 
-    anim_file = os.path.join(os.environ['GCM_REPO_DIR'],f'ecrlgcm/data/figs/{field}_animation.mp4')
+    if level is not None:
+        anim_file = os.path.join(os.environ['GCM_REPO_DIR'],f'ecrlgcm/data/figs/{field}_lev{level}_animation.mp4')
+    else:    
+        anim_file = os.path.join(os.environ['GCM_REPO_DIR'],f'ecrlgcm/data/figs/{field}_animation.mp4')
     animation.save(anim_file, writer=writervideo)
     print(anim_file)
     #return HTML(animation.to_jshtml())        

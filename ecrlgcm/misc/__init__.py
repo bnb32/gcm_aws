@@ -133,6 +133,11 @@ def none_or_str(arg):
         return None
     return arg
 
+def none_or_int(arg):
+    if arg == 'None':
+        return None
+    return int(arg)
+
 def sig_round(number,figs):
     return float('%s' % float(f'%.{figs}g' % number))
 

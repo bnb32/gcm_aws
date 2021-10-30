@@ -13,7 +13,10 @@ class Experiment:
                  sea_level=0,max_depth=1000):
         self.multiplier = float(multiplier)
         self.land_year = land_year
-        self.sea_level = sea_level
+        if land_year=='0.02':
+            self.sea_level = -100
+        else: 
+            self.sea_level=sea_level
         self.max_depth = max_depth
         self.res = res
         self.exp_type = exp_type
