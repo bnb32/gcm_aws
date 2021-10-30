@@ -166,6 +166,13 @@ def Configuration(cesmexp,args):
                 f'SSTICE_DATA_FILENAME="{cesmexp.docn_sst_file}"',
                 ]
 
+        if args.timing:
+            sim_config['xml_changes'].append("SAVE_TIMING='TRUE'")
+            sim_config['xml_changes'].append("REST_OPTION='never'")
+            sim_config['xml_changes'].append('STOP_N=5')
+            sim_config['xml_changes'].append("STOP_OPTION='ndays'")
+            sim_config['atm'].append("nhtfrq=0")
+
         sim_config['ocn'] = [
         #f'overflows_on=.false.',
         #f'overflows_interactive=.false.',
