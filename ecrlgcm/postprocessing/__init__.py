@@ -93,16 +93,21 @@ def hires_interp(land_year,stored_years):
     ds_out['mask'] = (ds_out['z'].dims,np.where(ds_out['z'].values>0,1,0))
     return ds_out
 
-def field_interp(land_year,stored_years,field=None,level=None):
+def field_interp(land_year,stored_years,field=None,level=None,gcm_type='cesm'):
     year = float(land_year)
     keys = sorted(stored_years)
+    if gcm_type=='cesm':
+        height_key = 'z'
+    else:
+        height_key = 'zsurf'
+
     basefile = xr.open_mfdataset(os.environ['ORIG_CESM_TOPO_FILE'])
     ds_out = xr.Dataset({'lat': (['lat'], basefile['lat'].values),
                          'lon': (['lon'], basefile['lon'].values)})
     
     if land_year in keys:
-        exp = Experiment(land_year=keys[keys.index(land_year)])
-        ds_out['z'] = (('lat','lon'),exp.base()['z'].values)
+        exp = Experiment(gcm_type=gcm_type,land_year=keys[keys.index(land_year)])
+        ds_out['z'] = (('lat','lon'),exp.base()[height_key].values)
         if field is not None:
             if exp.sim_data()[field].ndim==2:
                 ds_out[field] = (('lat','lon'),exp.sim_data()[field].values)
@@ -117,8 +122,8 @@ def field_interp(land_year,stored_years,field=None,level=None):
             ds_out[field].attrs['units'] = exp.sim_data()[field].units
 
     elif year <= keys[0]:
-        exp = Experiment(land_year=keys[0])
-        ds_out['z'] = (('lat','lon'),exp.base()['z'].values)
+        exp = Experiment(gcm_type=gcm_type,land_year=keys[0])
+        ds_out['z'] = (('lat','lon'),exp.base()[height_key].values)
         if field is not None:
             if exp.sim_data()[field].ndim==2:
                 ds_out[field] = (('lat','lon'),exp.sim_data()[field].values)
@@ -133,8 +138,8 @@ def field_interp(land_year,stored_years,field=None,level=None):
             ds_out[field].attrs['units'] = exp.sim_data()[field].units
 
     elif year >= keys[-1]:
-        exp = Experiment(land_year=keys[-1])
-        ds_out['z'] = (('lat','lon'),exp.base()['z'].values)
+        exp = Experiment(gcm_type=gcm_type,land_year=keys[-1])
+        ds_out['z'] = (('lat','lon'),exp.base()[height_key].values)
         if field is not None:
             if exp.sim_data()[field].ndim==2:
                 ds_out[field] = (('lat','lon'),exp.sim_data()[field].values)
@@ -151,10 +156,10 @@ def field_interp(land_year,stored_years,field=None,level=None):
     else:
         for i in range(len(keys)):
             if keys[i] <= year <= keys[i+1]:
-                exp0 = Experiment(land_year=keys[i])
-                exp1 = Experiment(land_year=keys[i+1])
-                tmp = interp(exp0.base()['z'].values,
-                             exp1.base()['z'].values,
+                exp0 = Experiment(gcm_type=gcm_type,land_year=keys[i])
+                exp1 = Experiment(gcm_type=gcm_type,land_year=keys[i+1])
+                tmp = interp(exp0.base()[height_key].values,
+                             exp1.base()[height_key].values,
                              (year-keys[i])/(keys[i+1]-keys[i]))
                 ds_out['z'] = (('lat','lon'),tmp)
                 if field is not None:
@@ -311,32 +316,36 @@ def get_avg_field(exp,field='t_surf',level=None,vmin=None,vmax=None,anomaly=Fals
 
 def get_field_animation(times,stored_years,field='TS',level=None,
                         level_num=10,vmin=None,vmax=None,
-                        color_map='coolwarm'):
+                        color_map='coolwarm',globe=False,
+                        gcm_type='cesm'):
 
     define_land_colormap()
     define_cloud_colormap()
     define_noaa_colormap()
 
     fig = plt.figure(figsize=(12,7))
-    proj = ccrs.PlateCarree(central_longitude=0.0)
+    if globe:
+        proj = ccrs.Orthographic(320, 20)
+    else:
+        proj = ccrs.PlateCarree(central_longitude=0.0)
     ax = plt.axes(projection=proj)
     field_alpha=0.6
     
-    init_field = field_interp(0,stored_years,field=field,level=level)[field]
+    init_field = field_interp(0,stored_years,field=field,level=level,gcm_type=gcm_type)[field]
     
     land_img = hires_interp(0,stored_years)['z'].plot.imshow(ax=ax, 
-                                                             transform=proj,#ccrs.PlateCarree(), 
+                                                             transform=ccrs.PlateCarree(), 
                                                              #cmap='custom_earth',
                                                              cmap='custom_noaa',
                                                              add_colorbar=False, 
                                                              alpha=1.0)
     border_img = hires_interp(0,stored_years)['mask'].plot.contour(ax=ax, levels=2, 
-                                                                   transform=proj,#ccrs.PlateCarree(), 
+                                                                   transform=ccrs.PlateCarree(), 
                                                                    colors="black", 
                                                                    add_colorbar=False, 
                                                                    alpha=1.0)
     image = init_field.plot.imshow(ax=ax, levels=level_num,
-                                   transform=proj, 
+                                   transform=ccrs.PlateCarree(), 
                                    interpolation='bilinear',
                                    cmap=color_map, 
                                    #animated=True,
@@ -344,7 +353,7 @@ def get_field_animation(times,stored_years,field='TS',level=None,
                                    alpha=0.6)
     
     field_border = init_field.plot.contour(ax=ax, levels=level_num,
-                                           transform=proj, 
+                                           transform=ccrs.PlateCarree(), 
                                            interpolation='bilinear',
                                            cmap=color_map, 
                                            #animated=True,
@@ -363,23 +372,23 @@ def get_field_animation(times,stored_years,field='TS',level=None,
         logger.info(f'Animation step: {i}')
 
         t = times[i]
-        current_field = field_interp(t,stored_years,field=field,level=level)
+        current_field = field_interp(t,stored_years,field=field,level=level,gcm_type=gcm_type)
         fig.suptitle(f'Time: {str(round(t,2))} Ma BP, Average {field}: {str(round(current_field[field].values.mean(),2))} {init_field.units}', fontsize=20)       
         ax.clear()
         
         land_img = hires_interp(t,stored_years)['z'].plot.imshow(ax=ax, 
-                                                                 transform=proj,#ccrs.PlateCarree(), 
+                                                                 transform=ccrs.PlateCarree(), 
                                                                  #cmap='custom_earth', 
                                                                  cmap='custom_noaa',
                                                                  add_colorbar=False, 
                                                                  alpha=1.0)
         border_img = hires_interp(t,stored_years)['mask'].plot.contour(ax=ax,levels=2, 
-                                                                       transform=proj,#ccrs.PlateCarree(), 
+                                                                       transform=ccrs.PlateCarree(), 
                                                                        colors="black", 
                                                                        add_colorbar=False, 
                                                                        alpha=1.0)
         image = current_field[field].plot.imshow(ax=ax,levels=level_num,
-                                                 transform=proj,
+                                                 transform=ccrs.PlateCarree(), 
                                                  interpolation='bilinear',
                                                  cmap=color_map,
                                                  #animated=True,
@@ -387,7 +396,7 @@ def get_field_animation(times,stored_years,field='TS',level=None,
                                                  alpha=field_alpha)
         
         field_border = current_field[field].plot.contour(ax=ax,levels=level_num,
-                                                         transform=proj, 
+                                                         transform=ccrs.PlateCarree(), 
                                                          interpolation='bilinear',
                                                          cmap=color_map, 
                                                          #animated=True,
@@ -399,30 +408,42 @@ def get_field_animation(times,stored_years,field='TS',level=None,
     animation = anim.FuncAnimation(fig, update, frames=range(len(times)), blit=False)
     writervideo = anim.FFMpegWriter(fps=5) 
     if level is not None:
-        anim_file = os.path.join(os.environ['GCM_REPO_DIR'],f'ecrlgcm/data/figs/{field}_lev{level}_animation.mp4')
+        if globe:
+            anim_file = os.path.join(os.environ['GCM_REPO_DIR'],f'ecrlgcm/data/figs/{gcm_type}_{field}_lev{level}_globe_animation.mp4')
+        else:    
+            anim_file = os.path.join(os.environ['GCM_REPO_DIR'],f'ecrlgcm/data/figs/{gcm_type}_{field}_lev{level}_animation.mp4')
     else:    
-        anim_file = os.path.join(os.environ['GCM_REPO_DIR'],f'ecrlgcm/data/figs/{field}_animation.mp4')
+        if globe:
+            anim_file = os.path.join(os.environ['GCM_REPO_DIR'],f'ecrlgcm/data/figs/{gcm_type}_{field}_globe_animation.mp4')
+        else:    
+            anim_file = os.path.join(os.environ['GCM_REPO_DIR'],f'ecrlgcm/data/figs/{gcm_type}_{field}_animation.mp4')
     animation.save(anim_file, writer=writervideo)
     print(anim_file)
     #return HTML(animation.to_jshtml())        
 
-def get_continent_animation(times,stored_years):
+def get_continent_animation(times,stored_years,globe=False):
 
     define_land_colormap()
     define_noaa_colormap()
 
     fig = plt.figure(figsize=(12,7))
+
+    if globe:
+        proj = ccrs.Orthographic(320, 20)
+    else:
+        proj = ccrs.PlateCarree(central_longitude=0.0)
     proj = ccrs.PlateCarree(central_longitude=0.0)
     ax = plt.axes(projection=proj)
     
-    image = hires_interp(0,stored_years)['z'].plot.imshow(ax=ax, transform=proj, 
-                                                        interpolation='bilinear',
-                                                        #cmap="custom_earth", 
-                                                        cmap='custom_noaa',
-                                                        animated=True,
-                                                        add_colorbar=False)
+    image = hires_interp(0,stored_years)['z'].plot.imshow(ax=ax, 
+                                                          transform=ccrs.PlateCaree(), 
+                                                          interpolation='bilinear',
+                                                          #cmap="custom_earth", 
+                                                          cmap='custom_noaa',
+                                                          animated=True,
+                                                          add_colorbar=False)
     border_img = hires_interp(0,stored_years)['mask'].plot.contour(ax=ax, levels=2, 
-                                                                   transform=proj,#ccrs.PlateCarree(), 
+                                                                   transform=ccrs.PlateCaree(), 
                                                                    colors="black", 
                                                                    add_colorbar=False, 
                                                                    alpha=1.0)
@@ -442,14 +463,15 @@ def get_continent_animation(times,stored_years):
         current_field = hires_interp(t,stored_years)
         fig.suptitle(f'Time: {str(round(t,2))} Ma BP', fontsize=20)       
         ax.clear()
-        image = current_field['z'].plot.imshow(ax=ax,transform=proj,
-                                                 interpolation='bilinear',
-                                                 #cmap="custom_earth",
-                                                 cmap='custom_noaa',
-                                                 animated=True,
-                                                 add_colorbar=False)
+        image = current_field['z'].plot.imshow(ax=ax,
+                                               transform=ccrs.PlateCarree(),
+                                               interpolation='bilinear',
+                                               #cmap="custom_earth",
+                                               cmap='custom_noaa',
+                                               #animated=True,
+                                               add_colorbar=False)
         border_img = hires_interp(t,stored_years)['mask'].plot.contour(ax=ax, levels=2, 
-                                                                       transform=proj,#ccrs.PlateCarree(), 
+                                                                       transform=ccrs.PlateCarree(), 
                                                                        colors="black", 
                                                                        add_colorbar=False, 
                                                                        alpha=1.0)
@@ -457,8 +479,11 @@ def get_continent_animation(times,stored_years):
     
     plt.close()
     animation = anim.FuncAnimation(fig, update, frames=range(len(times)), blit=False)
-    writervideo = anim.FFMpegWriter(fps=5) 
-    anim_file = os.path.join(os.environ['GCM_REPO_DIR'],f'ecrlgcm/data/figs/continent_animation.mp4')
+    writervideo = anim.FFMpegWriter(fps=5)
+    if globe:
+        anim_file = os.path.join(os.environ['GCM_REPO_DIR'],f'ecrlgcm/data/figs/continent_globe_animation.mp4')
+    else:
+        anim_file = os.path.join(os.environ['GCM_REPO_DIR'],f'ecrlgcm/data/figs/continent_animation.mp4')
     animation.save(anim_file, writer=writervideo)
     print(anim_file)
 

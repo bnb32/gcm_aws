@@ -7,7 +7,7 @@ def get_co2_series():
     f = open(os.path.join(os.environ['GCM_REPO_DIR'],'ecrlgcm/data/co2.txt'),'r')
     lines = f.readlines()
     lines = [l.strip('\n').split() for l in lines]
-    lines = {-int(l[0]): float(l[1])*300.0 for l in lines}
+    lines = {-float(l[0]): float(l[1])*300.0 for l in lines}
     return lines
 
 def get_obl_series():
