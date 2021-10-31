@@ -58,8 +58,10 @@ os.environ['GFDL_BASE'] = GFDL_BASE = ISCA_DIR
 os.environ['GFDL_ENV'] = GFDL_ENV = 'aws'
 os.environ['GFDL_WORK'] = GFDL_WORK = f"{USER_DIR}/gfdl_work"
 os.environ['GFDL_DATA'] = GFDL_DATA = f"{USER_DIR}/gfdl_data"
-os.environ['RAW_ISCA_CO2_DIR'] = RAW_CO2_DIR = os.path.join(GFDL_BASE,'exp/test_cases/variable_co2_concentration/input')
-os.environ['ISCA_CO2_DIR'] = CO2_DIR = f'{USER_DIR}/inputdata/co2_files/isca'
+os.environ['RAW_ISCA_CO2_DIR'] = RAW_ISCA_CO2_DIR = os.path.join(GFDL_BASE,'exp/test_cases/variable_co2_concentration/input')
+os.environ['ORIG_ISCA_CO2_FILE'] = ORIG_ISCA_CO2_FILE = f'{RAW_ISCA_CO2_DIR}/co2.nc'
+os.environ['ISCA_CO2_DIR'] = ISCA_CO2_DIR = f'{USER_DIR}/inputdata/co2_files/isca'
+os.environ['ORIG_ISCA_TOPO_FILE'] = os.path.join(GFDL_BASE,'input/land_masks/era_land_t42.nc')
 
 #---------------------------------------------------------------------------------------------------
 

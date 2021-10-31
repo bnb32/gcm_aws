@@ -320,8 +320,7 @@ def get_field_animation(times,stored_years,field='TS',level=None,
     fig = plt.figure(figsize=(12,7))
     proj = ccrs.PlateCarree(central_longitude=0.0)
     ax = plt.axes(projection=proj)
-    if field != 'RELHUM': field_alpha=0.6
-    else: field_alpha=1.0
+    field_alpha=0.6
     
     init_field = field_interp(0,stored_years,field=field,level=level)[field]
     
@@ -342,7 +341,7 @@ def get_field_animation(times,stored_years,field='TS',level=None,
                                    cmap=color_map, 
                                    #animated=True,
                                    add_colorbar=False,
-                                   alpha=field_alpha)
+                                   alpha=0.6)
     
     field_border = init_field.plot.contour(ax=ax, levels=level_num,
                                            transform=proj, 
@@ -350,7 +349,7 @@ def get_field_animation(times,stored_years,field='TS',level=None,
                                            cmap=color_map, 
                                            #animated=True,
                                            add_colorbar=False,
-                                           alpha=0.9)
+                                           alpha=0.8)
      
     cb = plt.colorbar(image, ax=ax, orientation='horizontal', pad=0.05, label=f'{init_field.long_name} ({init_field.units})')
     if vmin is not None and vmax is not None:
@@ -365,7 +364,7 @@ def get_field_animation(times,stored_years,field='TS',level=None,
 
         t = times[i]
         current_field = field_interp(t,stored_years,field=field,level=level)
-        fig.suptitle(f'Time: {str(round(t,2))} Ma B.P., Average {field}: {str(round(current_field[field].values.mean(),2))} {init_field.units}', fontsize=20)       
+        fig.suptitle(f'Time: {str(round(t,2))} Ma BP, Average {field}: {str(round(current_field[field].values.mean(),2))} {init_field.units}', fontsize=20)       
         ax.clear()
         
         land_img = hires_interp(t,stored_years)['z'].plot.imshow(ax=ax, 
@@ -393,7 +392,7 @@ def get_field_animation(times,stored_years,field='TS',level=None,
                                                          cmap=color_map, 
                                                          #animated=True,
                                                          add_colorbar=False,
-                                                         alpha=0.9)
+                                                         alpha=0.8)
         return image
     
     plt.close()
@@ -441,7 +440,7 @@ def get_continent_animation(times,stored_years):
         ax.clear()
         #current_field = field_interp(t,stored_years)
         current_field = hires_interp(t,stored_years)
-        fig.suptitle(f'Time: {str(round(t,2))} Ma B.P.', fontsize=20)       
+        fig.suptitle(f'Time: {str(round(t,2))} Ma BP', fontsize=20)       
         ax.clear()
         image = current_field['z'].plot.imshow(ax=ax,transform=proj,
                                                  interpolation='bilinear',

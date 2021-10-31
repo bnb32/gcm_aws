@@ -64,40 +64,59 @@ def interpolate_ecc(land_year):
 def interpolate_obl(land_year):
     return interpolate_series(land_year,obl_series)
 
-def adjust_co2(cesmexp,multiplier=1,land_year=0,co2_value=None,outfile=None):
+def modify_isca_input_files(ecrlexp,remap=False):
     
-    base_dir = os.path.dirname(os.path.realpath(__file__))
-    co2_path = os.environ['RAW_CO2_DIR']
-    input_dir = os.environ['CO2_DIR']
-    new_file = os.path.join(input_dir,f'{ecrlexp.co2_file}')
+    multiplier = ecrlexp.multiplier
+    land_year = ecrlexp.land_year
+    sea_level = ecrlexp.sea_level
+    max_depth = ecrlexp.max_depth
+    co2_value = ecrlexp.co2_value
 
-    os.system(f'mkdir -p {input_dir}')
-    os.system(f'rm -f {new_file}')
-    os.system(f'cp {co2_path}/co2.nc {new_file}')
-    filename = new_file
-    ncfile = nc.Dataset(filename,'r+')
-    co2 = ncfile.variables['co2']
+    #co2 file
+    if not os.path.exists(ecrlexp.co2_file) or remap:
+        logger.info('Modifying co2_file')
+        os.system(f'cp {os.environ["ORIG_ISCA_CO2_FILE"]} {ecrlexp.co2_file}')
+        #co2_data = xr.open_mfdataset(ecrlexp.co2_file)
+        ncfile = nc.Dataset(ecrlexp.co2_file,'r+')
+        co2 = ncfile.variables['co2']
         
-    if co2_value is None:    
-        co2[:,:,:,:] = float(multiplier)*interpolate_co2(land_year)
-    else:    
-        co2[:,:,:,:] = float(co2_value)
+        if co2_value is None:    
+            co2[:,:,:,:] = float(multiplier)*interpolate_co2(land_year)
+            #co2_data['co2'] = (co2_data['co2'].dims,np.full(co2_data['co2'].shape,float(multiplier)*interpolate_co2(land_year)))
+        else:    
+            co2[:,:,:,:] = float(co2_value)
+            #co2_data['co2'] = (co2_data['co2'].dims,np.full(co2_data['co2'].shape,float(co2_value)))
+        ncfile.variables['co2'][:,:,:,:] = co2[:,:,:,:]
+        ncfile.close()
+        #co2_data.to_netcdf(ecrlexp.co2_file)
+        logger.info(f'Saving {ecrlexp.co2_file}')
 
-    ncfile.variables['co2'][:,:,:,:] = co2[:,:,:,:]
-    ncfile.close()
+    #topo file
+    if not os.path.exists(ecrlexp.topo_file) or remap:
+        logger.info('Modifying topo_file')
+        land = interpolate_land(land_year)
+        base = xr.open_mfdataset(os.environ['ORIG_ISCA_TOPO_FILE'])
 
-def adjust_continents(basefile='',outfile='',land_year=0,sea_level=0,max_depth=1000):
-    land = interpolate_land(land_year)
-    ds_out = regrid_continent_data(land,basefile=basefile,
-                                   sea_level=sea_level,
-                                   max_depth=max_depth)
+        ds_out = xr.Dataset({'lat': (['lat'], base['lat'].values),
+                         'lon': (['lon'], base['lon'].values)})
 
-    os.system(f'rm -f {out_file}')
-    ds_out.to_netcdf(out_file)
-    print(f'{out_file}')
+        if not os.path.exists(ecrlexp.high_res_file):
+            land.to_netcdf(ecrlexp.high_res_file)
+            logger.info(f'Saving high res map file: {ecrlexp.high_res_file}')
 
+        regridder = xe.Regridder(land, ds_out, 'bilinear')
+        #ds_out['z'].values[ds_out['z'].values < 0] = 0
+        land['z'] = (land['z'].dims,np.where(land['z'].values>sea_level,land['z'].values,0))
+        logger.info('Regridding topo_file')
+        ds_out = regridder(land)
+        ds_out['land_mask'] = (ds_out['z'].dims,np.where(ds_out['z'].values>0.0,1.0,0.0))
+        ds_out = ds_out.rename({'z':'zsurf'})
+        ds_out = ds_out.fillna(0)
+        ds_out.to_netcdf(ecrlexp.topo_file)
+        logger.info(f'Saving map file: {ecrlexp.topo_file}')
+    
 def regrid_continent_maps(remap_file,basefile='',outfile='',sea_level=0,max_depth=1000):
-    land_year = f'{remap_file.strip(".nc").split("_")[-1]}'
+    land_year = f'{remap_file.rstrip(".nc").split("_")[-1]}'
     land = xr.open_mfdataset(remap_file)
     ds_out = regrid_continent_data(land,basefile=basefile,
                                    sea_level=sea_level,
@@ -268,6 +287,7 @@ def regrid_continent_data(land,basefile='',sea_level=0,max_depth=1000):
     
     ds_out['landfrac'] = (ds_out['z'].dims,landfrac)
     ds_out['landmask'] = (ds_out['z'].dims,landmask.astype(np.int32))
+    ds_out['land_mask'] = (ds_out['z'].dims,landmask.astype(np.int32))
     
     ds_out['oceanfrac'] = (ds_out['z'].dims,1-ds_out['landfrac'].values)
     ds_out['oceanmask'] = (ds_out['z'].dims,np.array(1-ds_out['landmask'].values,dtype=np.int32))
@@ -276,9 +296,9 @@ def regrid_continent_data(land,basefile='',sea_level=0,max_depth=1000):
     depth = np.where(ds_out['z']<=sea_level,-ds_out['z'].values,0)
     depth = np.where(depth>max_depth,max_depth,depth)
     ds_out['z'] = (ds_out['z'].dims,height)
+    ds_out['zsurf'] = (ds_out['z'].dims,height)
     ds_out['depth'] = (ds_out['z'].dims,depth)
     ds_out['PHIS'] = (ds_out['z'].dims,9.8*ds_out['z'].values)
-    ds_out = ds_out.rename({'z':'zsurf'})
     return ds_out
     
 def interpolate_land(land_year):
@@ -378,7 +398,7 @@ def modify_all_arrays_with_mask(data,n_dims,old_mask,new_mask):
             data[e].attrs = tmp_attrs
     return data    
 
-def modify_input_files(cesmexp,remap=True,remap_hires=True):
+def modify_cesm_input_files(cesmexp,remap=True,remap_hires=True):
     
     land_year = cesmexp.land_year
     sea_level = cesmexp.sea_level
