@@ -1,5 +1,5 @@
 import ecrlgcm.environment
-from ecrlgcm.misc import sig_round, interp, land_years, get_logger
+from ecrlgcm.misc import mapping_map_to_sphere, sig_round, interp, land_years, get_logger, stored_years
 from ecrlgcm.preprocessing import solar_constant
 from ecrlgcm.experiment import Experiment
 
@@ -13,6 +13,8 @@ from IPython.display import HTML
 from matplotlib.colors import LinearSegmentedColormap
 from matplotlib.cm import unregister_cmap
 from metpy.calc import smooth_n_point
+import plotly.offline as po
+import plotly.graph_objs as go
 import os
 
 logger = get_logger()
@@ -59,7 +61,7 @@ def define_noaa_colormap():
     unregister_cmap('custom_noaa')
     plt.register_cmap(cmap=map_object)
 
-def hires_interp(land_year,stored_years):
+def hires_interp(land_year,stored_years=stored_years):
     year = float(land_year)
     keys = sorted(stored_years)
     basefile = xr.open_mfdataset(Experiment(land_year=0).high_res_file)
@@ -88,12 +90,20 @@ def hires_interp(land_year,stored_years):
                              (year-keys[i])/(keys[i+1]-keys[i]))
                 ds_out['z'] = (('lat','lon'),tmp)
     
-    ds_out['z'] = (ds_out['z'].dims,smooth_n_point(ds_out['z'].values,9))
-    ds_out['PHIS'] = (ds_out['z'].dims,9.8*ds_out['z'].values)
-    ds_out['mask'] = (ds_out['z'].dims,np.where(ds_out['z'].values>0,1,0))
-    return ds_out
+    ds_new = xr.Dataset({'lat': (['lat'], basefile['lat'].values),
+                         'lon': (['lon'], list(basefile['lon'].values)+[360.0])}) 
+    ds_new['z'] = (ds_out['z'].dims,smooth_n_point(close_lon_gap(ds_out,'z'),9))
+    ds_new['PHIS'] = (ds_out['z'].dims,9.8*ds_new['z'].values)
+    ds_new['mask'] = (ds_out['z'].dims,np.where(ds_new['z'].values>0,1,0))
+    return ds_new
 
-def field_interp(land_year,stored_years,field=None,level=None,gcm_type='cesm'):
+def close_lon_gap(data,field):
+    tmp = np.zeros((len(data['lat'].values),len(data['lon'].values)+1))
+    tmp[:,:-1] = data[field].values
+    tmp[:,-1] = tmp[:,0]
+    return tmp
+
+def field_interp(land_year,stored_years=stored_years,field=None,level=None,gcm_type='cesm'):
     year = float(land_year)
     keys = sorted(stored_years)
     if gcm_type=='cesm':
@@ -178,12 +188,20 @@ def field_interp(land_year,stored_years,field=None,level=None,gcm_type='cesm'):
                             b = exp1.sim_data()[field].mean(axis=(0)).values[level]
                     tmp = interp(a,b,(year-keys[i])/(keys[i+1]-keys[i]))
                     ds_out[field] = (('lat','lon'),tmp)
-                    ds_out[field].attrs['long_name']= exp0.sim_data()[field].long_name    
+                    ds_out[field].attrs['long_name'] = exp0.sim_data()[field].long_name    
                     ds_out[field].attrs['units'] = exp0.sim_data()[field].units
+
+    ds_new = xr.Dataset({'lat': (['lat'], basefile['lat'].values),
+                         'lon': (['lon'], list(basefile['lon'].values)+[360.0])})
     
-    ds_out['PHIS'] = (ds_out['z'].dims,9.8*ds_out['z'].values)
-    ds_out['mask'] = (ds_out['z'].dims,np.where(ds_out['z'].values>0,1,0))
-    return ds_out
+    ds_new['z'] = (ds_out['z'].dims,close_lon_gap(ds_out,'z'))
+    ds_new['PHIS'] = (ds_out['z'].dims,9.8*ds_new['z'].values)
+    ds_new['mask'] = (ds_out['z'].dims,np.where(ds_new['z'].values>0,1,0))
+    if field is not None:
+        ds_new[field] = (ds_out[field].dims,close_lon_gap(ds_out,field))
+        ds_new[field].attrs['long_name'] = ds_out[field].long_name
+        ds_new[field].attrs['units'] = ds_out[field].units
+    return ds_new
 
 def potential_intensity(t_surf):
     A = 28.2
@@ -208,10 +226,16 @@ def define_land_colormap():
     unregister_cmap('custom_earth')
     plt.register_cmap(cmap=map_object)
 
+def mpl_to_plotly(cmap, pl_entries=11, rdigits=2):
+    scale = np.linspace(0, 1, pl_entries)
+    colors = (cmap(scale)[:, :3]*255).astype(np.uint8)
+    pl_colorscale = [[round(s, rdigits), f'rgb{tuple(color)}'] for s, color in zip(scale, colors)]
+    return pl_colorscale
+
 def define_cloud_colormap():
 
     ncolors = 256
-    ramped_alpha = list([0]*1)+list(np.linspace(0.0,1,255))
+    ramped_alpha = list([0]*64)+list(np.linspace(0.4,1,ncolors-64))
     color_array = []
     for i in range(ncolors):
         color_array.append((1,1,1,ramped_alpha[i]))
@@ -314,9 +338,115 @@ def get_avg_field(exp,field='t_surf',level=None,vmin=None,vmax=None,anomaly=Fals
     else:
         ax.set_title(f'Time Average',fontsize=20)
 
-def get_field_animation(times,stored_years,field='TS',level=None,
-                        level_num=10,vmin=None,vmax=None,
-                        color_map='coolwarm',globe=False,
+def get_interactive_globe(land_year=0,field='TS',gcm_type='cesm',level=None):
+
+    define_noaa_colormap()
+    titlecolor = 'white'
+    bgcolor = 'black'
+    topo_step = 3
+    
+    logger.info('Getting interpolated fields for interactive globe')
+    interp_call = field_interp(land_year,gcm_type=gcm_type,field=field,level=level)
+    
+    field_array = interp_call[field].values
+    hires_topo = hires_interp(land_year)['z'].values
+    hires_lons = hires_interp(land_year)['lon'].values
+    hires_lats = hires_interp(land_year)['lat'].values
+    topo = interp_call['z'].values
+    lons = interp_call['lon'].values
+    lats = interp_call['lat'].values
+
+    lats = np.tile(lats,(field_array.shape[1],1)).transpose()
+    lons = np.tile(lons,(field_array.shape[0],1))
+    hires_lats = np.tile(hires_lats,(hires_topo.shape[1],1)).transpose()
+    hires_lons = np.tile(hires_lons,(hires_topo.shape[0],1))
+    
+    hires_topo = smooth_n_point(hires_topo[::topo_step,::topo_step],9)
+    xs,ys,zs = mapping_map_to_sphere(hires_lons[::topo_step,::topo_step],hires_lats[::topo_step,::topo_step])
+    #hires_topo = smooth_n_point(hires_topo,9)
+    #xs,ys,zs = mapping_map_to_sphere(hires_lons,hires_lats)
+    ratio_topo = 1.0 + hires_topo*1e-5
+    xs = xs*ratio_topo
+    ys = ys*ratio_topo
+    zs = zs*ratio_topo
+
+    xt,yt,zt = mapping_map_to_sphere(lons,lats)
+    xt = xt*(1.025+topo*1e-5)
+    yt = yt*(1.025+topo*1e-5)
+    zt = zt*(1.025+topo*1e-5)
+
+    Ctopo = mpl_to_plotly(plt.get_cmap('custom_noaa'),255)
+    if field=='RELHUM':
+        Cfield = [[0.0, 'rgba(255,255,255,0.0)'], [0.1, 'rgba(255,255,255,0.0)'],
+                  [0.2, 'rgba(255,255,255,0.0)'], [0.3, 'rgba(255,255,255,0.0)'],
+                  [0.4, 'rgba(255,255,255,0.0)'], [0.5, 'rgba(255,255,255,0.5)'],
+                  [0.6, 'rgba(255,255,255,0.6)'], [0.7, 'rgba(255,255,255,0.7)'],
+                  [0.8, 'rgba(255,255,255,0.8)'], [0.9, 'rgba(255,255,255,0.9)'],
+                  [1.0, 'rgba(255,255,255,1.0)']]
+        field_alpha = 1.0
+    else:
+        Cfield = mpl_to_plotly(plt.get_cmap('coolwarm'),255)
+        field_alpha = 0.6
+
+    topo_sphere=dict(type='surface',
+                     x=xs,
+                     y=ys,
+                     z=zs,
+                     colorscale=Ctopo,
+                     surfacecolor=hires_topo,
+                     opacity=1.0,
+                     cmin=-10000,
+                     cmax=10000,
+                     showscale=False)
+
+    field_sphere=dict(type='surface',
+                      x=xt,
+                      y=yt,
+                      z=zt,
+                      colorscale=Cfield,#Ctopo,
+                      surfacecolor=field_array,
+                      opacity=field_alpha,
+                      showscale=True,
+                      colorbar=dict(thickness=20,
+                                    title=f'{field} ({interp_call[field].units})',
+                                    titleside='right',
+                                    tickfont=dict(family='Courier New', color=titlecolor),
+                                    titlefont=dict(family='Courier New', color=titlecolor)))
+
+    noaxis=dict(showbackground=False,
+                showgrid=False,
+                showline=False,
+                showticklabels=False,
+                ticks='',
+                title='',
+                zeroline=False)
+    layout = go.Layout(
+                       autosize=False, width=650, height=600,
+                       title = f'Time: {land_year}Ma BP, {interp_call[field].long_name}',
+                       titlefont = dict(family='Courier New', color=titlecolor),
+                       showlegend = True,
+                       scene = dict(xaxis = noaxis,
+                                    yaxis = noaxis,
+                                    zaxis = noaxis,
+                                    aspectmode='manual',
+                                    aspectratio=go.layout.scene.Aspectratio(x=1, y=1, z=1)),
+                       paper_bgcolor = bgcolor,
+                       plot_bgcolor = bgcolor)
+
+    fig = go.Figure([topo_sphere,field_sphere], layout=layout)
+    if level is not None:
+        outfile = f'{os.environ["USER_FIGS_DIR"]}/{gcm_type}_{field}_lev{level}_{land_year}Ma_interactive_globe.html'
+    else:
+        outfile = f'{os.environ["USER_FIGS_DIR"]}/{gcm_type}_{field}_{land_year}Ma_interactive_globe.html'
+    logger.info(f'Saving webpage: {outfile}')
+    po.plot(fig,validate=False,filename=outfile,auto_open=False)
+    return fig
+
+def get_field_animation(times,stored_years=stored_years,
+                        field='TS',level=None,
+                        level_num=10,vmin=None,
+                        vmax=None,color_map='coolwarm',
+                        globe=False,
                         gcm_type='cesm'):
 
     define_land_colormap()
@@ -325,17 +455,17 @@ def get_field_animation(times,stored_years,field='TS',level=None,
 
     fig = plt.figure(figsize=(12,7))
     if globe:
-        proj = ccrs.Orthographic(320, 20)
+        proj = ccrs.Orthographic(330, 20)
     else:
         proj = ccrs.PlateCarree(central_longitude=0.0)
     ax = plt.axes(projection=proj)
+    ax.gridlines(color='black', linestyle='dotted')
     field_alpha=0.6
     
     init_field = field_interp(0,stored_years,field=field,level=level,gcm_type=gcm_type)[field]
     
     land_img = hires_interp(0,stored_years)['z'].plot.imshow(ax=ax, 
                                                              transform=ccrs.PlateCarree(), 
-                                                             #cmap='custom_earth',
                                                              cmap='custom_noaa',
                                                              add_colorbar=False, 
                                                              alpha=1.0)
@@ -348,7 +478,6 @@ def get_field_animation(times,stored_years,field='TS',level=None,
                                    transform=ccrs.PlateCarree(), 
                                    interpolation='bilinear',
                                    cmap=color_map, 
-                                   #animated=True,
                                    add_colorbar=False,
                                    alpha=0.6)
     
@@ -356,7 +485,6 @@ def get_field_animation(times,stored_years,field='TS',level=None,
                                            transform=ccrs.PlateCarree(), 
                                            interpolation='bilinear',
                                            cmap=color_map, 
-                                           #animated=True,
                                            add_colorbar=False,
                                            alpha=0.8)
      
@@ -378,7 +506,6 @@ def get_field_animation(times,stored_years,field='TS',level=None,
         
         land_img = hires_interp(t,stored_years)['z'].plot.imshow(ax=ax, 
                                                                  transform=ccrs.PlateCarree(), 
-                                                                 #cmap='custom_earth', 
                                                                  cmap='custom_noaa',
                                                                  add_colorbar=False, 
                                                                  alpha=1.0)
@@ -391,7 +518,6 @@ def get_field_animation(times,stored_years,field='TS',level=None,
                                                  transform=ccrs.PlateCarree(), 
                                                  interpolation='bilinear',
                                                  cmap=color_map,
-                                                 #animated=True,
                                                  add_colorbar=False,
                                                  alpha=field_alpha)
         
@@ -399,7 +525,6 @@ def get_field_animation(times,stored_years,field='TS',level=None,
                                                          transform=ccrs.PlateCarree(), 
                                                          interpolation='bilinear',
                                                          cmap=color_map, 
-                                                         #animated=True,
                                                          add_colorbar=False,
                                                          alpha=0.8)
         return image
@@ -409,14 +534,14 @@ def get_field_animation(times,stored_years,field='TS',level=None,
     writervideo = anim.FFMpegWriter(fps=5) 
     if level is not None:
         if globe:
-            anim_file = os.path.join(os.environ['GCM_REPO_DIR'],f'ecrlgcm/data/figs/{gcm_type}_{field}_lev{level}_globe_animation.mp4')
+            anim_file = f'{os.environ["USER_FIGS_DIR"]}/{gcm_type}_{field}_lev{level}_globe_animation.mp4'
         else:    
-            anim_file = os.path.join(os.environ['GCM_REPO_DIR'],f'ecrlgcm/data/figs/{gcm_type}_{field}_lev{level}_animation.mp4')
+            anim_file = f'{os.environ["USER_FIGS_DIR"]}/{gcm_type}_{field}_lev{level}_animation.mp4'
     else:    
         if globe:
-            anim_file = os.path.join(os.environ['GCM_REPO_DIR'],f'ecrlgcm/data/figs/{gcm_type}_{field}_globe_animation.mp4')
+            anim_file = f'{os.environ["USER_FIGS_DIR"]}/{gcm_type}_{field}_globe_animation.mp4'
         else:    
-            anim_file = os.path.join(os.environ['GCM_REPO_DIR'],f'ecrlgcm/data/figs/{gcm_type}_{field}_animation.mp4')
+            anim_file = f'{os.environ["USER_FIGS_DIR"]}/{gcm_type}_{field}_animation.mp4'
     animation.save(anim_file, writer=writervideo)
     print(anim_file)
     #return HTML(animation.to_jshtml())        
@@ -438,7 +563,6 @@ def get_continent_animation(times,stored_years,globe=False):
     image = hires_interp(0,stored_years)['z'].plot.imshow(ax=ax, 
                                                           transform=ccrs.PlateCaree(), 
                                                           interpolation='bilinear',
-                                                          #cmap="custom_earth", 
                                                           cmap='custom_noaa',
                                                           animated=True,
                                                           add_colorbar=False)
@@ -466,9 +590,7 @@ def get_continent_animation(times,stored_years,globe=False):
         image = current_field['z'].plot.imshow(ax=ax,
                                                transform=ccrs.PlateCarree(),
                                                interpolation='bilinear',
-                                               #cmap="custom_earth",
                                                cmap='custom_noaa',
-                                               #animated=True,
                                                add_colorbar=False)
         border_img = hires_interp(t,stored_years)['mask'].plot.contour(ax=ax, levels=2, 
                                                                        transform=ccrs.PlateCarree(), 
@@ -481,81 +603,8 @@ def get_continent_animation(times,stored_years,globe=False):
     animation = anim.FuncAnimation(fig, update, frames=range(len(times)), blit=False)
     writervideo = anim.FFMpegWriter(fps=5)
     if globe:
-        anim_file = os.path.join(os.environ['GCM_REPO_DIR'],f'ecrlgcm/data/figs/continent_globe_animation.mp4')
+        anim_file = f'{os.environ["USER_FIGS_DIR"]}/continent_globe_animation.mp4'
     else:
-        anim_file = os.path.join(os.environ['GCM_REPO_DIR'],f'ecrlgcm/data/figs/continent_animation.mp4')
+        anim_file = f'{os.environ["USER_FIGS_DIR"]}/continent_animation.mp4'
     animation.save(anim_file, writer=writervideo)
-    print(anim_file)
-
-def get_animation(exp,field='t_surf',level=None,vmin=None,vmax=None,anomaly=False):
-
-    data = get_data(exp,field=field,level=level,decode_times=True,anomaly=anomaly)
-    land = data['land_mask']
-    
-# Setup the initial plot
-    if 'co2' in data:
-        co2 = data['co2']
-
-    variable = data[field]
-
-    fig = plt.figure(figsize=(12,7))
-    proj = ccrs.PlateCarree(central_longitude=180.0)
-    ax = plt.axes(projection=proj)
-
-    image = variable.mean(dim='time').plot.imshow(ax=ax, transform=proj, 
-                                                  interpolation='bilinear',cmap="coolwarm", 
-                                                  animated=True, add_colorbar=False)
-    
-    
-    if land is not None:
-        land_img = land.plot.contour(ax=ax, transform=ccrs.PlateCarree(), 
-                                     cmap="land_cmap", 
-                                     add_colorbar=False,
-                                     alpha=1.0,
-                                    )
-    else:
-        ax.coastlines()
-    
-    
-    try:
-        cb = plt.colorbar(image, ax=ax, orientation='horizontal', pad=0.05, label=f'{variable.long_name} ({variable.units})')
-    except:
-        cb = plt.colorbar(image, ax=ax, orientation='horizontal', pad=0.05, label=f'{variable.name}')
-    
-    if vmin is None or vmax is None:
-        avg = variable.mean(dim=['time'])
-        std = np.std(variable.values)
-        
-        vmin = variable.values.min()#avg.values.min()-2*std
-        vmax = variable.values.max()#avg.values.max()+2*std
-
-        print(f"plotting with vmin={vmin}, vmax={vmax}")
-        image.set_clim(vmin,vmax)
-    else:
-        image.set_clim(vmin,vmax)
-        
-    text = cb.ax.xaxis.label
-    font = matplotlib.font_manager.FontProperties(size=16)
-    text.set_font_properties(font)
-    
-    def update(i):
-        t = variable.time.values[i]
-        if 'co2' in data:
-            ax.set_title(f'time = {t.strftime("%B %Y")}, co2 = {sig_round(co2[i].values.mean(),4)} ({co2.units}), solar constant = {sig_round(solar_constant(exp.land_year),4)} (W/m**3)',fontsize=20)
-        else:
-            ax.set_title(f'time = {t.strftime("%B %Y")}',fontsize=20)
-            
-        image.set_array(variable.sel(time=t))
-        return image
-    
-    plt.close()
-    animation = anim.FuncAnimation(fig, update, frames=range(len(variable.time)), blit=False)
-    writervideo = anim.FFMpegWriter(fps=5) 
-    anim_file = os.path.join(os.environ['GCM_REPO_DIR'],f'ecrlgcm/postprocessing/anims/{exp.path_format}_{field}')
-    if anomaly:
-        anim_file += '_anomaly.mp4'
-    else:
-        anim_file += '.mp4'
-    animation.save(anim_file, writer=writervideo)
-    print(anim_file)
-    #return HTML(animation.to_jshtml())        
+    logger.info(f'Saving: {anim_file}')

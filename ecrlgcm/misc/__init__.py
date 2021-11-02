@@ -15,6 +15,16 @@ formatter = logging.Formatter('[%(levelname)s] %(asctime)s %(message)s')
 sh.setFormatter(formatter)
 logger.addHandler(sh)
 
+def mapping_map_to_sphere(lon, lat, radius=1):
+    lon=np.array(lon, dtype=np.float64)
+    lat=np.array(lat, dtype=np.float64)
+    lon=np.pi/180.0*lon
+    lat=np.pi/180.0*lat
+    xs=radius*np.cos(lon)*np.cos(lat)
+    ys=radius*np.sin(lon)*np.cos(lat)
+    zs=radius*np.sin(lat)
+    return xs, ys, zs
+
 def interp(a,b,dt):
     return a*(1-dt)+dt*b
 

@@ -64,6 +64,7 @@ class Experiment:
             
             self.file_path = os.path.join(os.environ['CIME_OUT_DIR'],self.path_format)
             self.files = sorted(glob.glob(os.path.join(self.file_path,f'atm/hist/{self.name}.cam.h0.*.nc')))
+            self.run_files = sorted(glob.glob(os.path.join(self.file_path,f'run/{self.name}.cam.h0.*.nc')))
             
             self.solar_file = f'{os.environ["CESM_SOLAR_DIR"]}/{self.solar_file}'
             self.topo_file = f'{os.environ["CESM_TOPO_DIR"]}/{self.topo_file}'
@@ -92,6 +93,9 @@ class Experiment:
 
     def sim_data(self,**kwargs):
         return xr.open_mfdataset(self.files,**kwargs)
+    
+    def run_data(self,**kwargs):
+        return xr.open_mfdataset(self.run_files,**kwargs)
 
     def topo(self):
         return xr.open_mfdataset(self.topo_file,decode_times=False)
