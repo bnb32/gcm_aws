@@ -6,6 +6,7 @@ import argparse
 parser=argparse.ArgumentParser(description="Make interactive globe")
 parser.add_argument('-field',default='RELHUM')
 parser.add_argument('-level',default=None,type=none_or_int)
+parser.add_argument('-save_html',default=False,action='store_true')
 parser.add_argument('-model',default='cesm',choices=['cesm','isca'])
 parser.add_argument('-year',default=0,type=land_year_range,
                     metavar=f'[{min_land_year}-{max_land_year}]',
@@ -15,4 +16,6 @@ args=parser.parse_args()
 get_interactive_globe(land_year=args.year,
                       field=args.field,
                       level=args.level,
-                      gcm_type=args.model)
+                      save_html=args.save_html,
+                      gcm_type=args.model,
+                      vmin=0,vmax=100)

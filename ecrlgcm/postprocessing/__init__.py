@@ -1,5 +1,5 @@
 import ecrlgcm.environment
-from ecrlgcm.misc import mapping_map_to_sphere, sig_round, interp, land_years, get_logger, stored_years
+from ecrlgcm.misc import polar_to_cartesian, mapping_map_to_sphere, sig_round, interp, land_years, get_logger, stored_years
 from ecrlgcm.preprocessing import solar_constant
 from ecrlgcm.experiment import Experiment
 
@@ -15,7 +15,9 @@ from matplotlib.cm import unregister_cmap
 from metpy.calc import smooth_n_point
 import plotly.offline as po
 import plotly.graph_objs as go
+import plotly.io as pio
 import os
+import time
 
 logger = get_logger()
 
@@ -56,7 +58,10 @@ def define_noaa_colormap():
         tmp.append((entry[1],entry[2],entry[3],entry[0]))
     color_array = list(plt.get_cmap('GnBu_r')(range(64)))[::64//(len(tmp)//4)+1]+tmp[len(tmp)//4:]    
     map_object = LinearSegmentedColormap.from_list(name='custom_noaa',colors=color_array)
-
+    
+    color_array = list(map_object(range(256)))
+    color_array[126:128] = [(0,0,0,1)]*2
+    map_object = LinearSegmentedColormap.from_list(name='custom_noaa',colors=color_array)
     # register this new colormap with matplotlib
     unregister_cmap('custom_noaa')
     plt.register_cmap(cmap=map_object)
@@ -90,9 +95,12 @@ def hires_interp(land_year,stored_years=stored_years):
                              (year-keys[i])/(keys[i+1]-keys[i]))
                 ds_out['z'] = (('lat','lon'),tmp)
     
+    #ds_new = xr.Dataset({'lat': (['lat'], basefile['lat'].values),
+    #                     'lon': (['lon'], list(basefile['lon'].values)+[360.0])}) 
     ds_new = xr.Dataset({'lat': (['lat'], basefile['lat'].values),
-                         'lon': (['lon'], list(basefile['lon'].values)+[360.0])}) 
-    ds_new['z'] = (ds_out['z'].dims,smooth_n_point(close_lon_gap(ds_out,'z'),9))
+                         'lon': (['lon'], list(basefile['lon'].values))}) 
+    #ds_new['z'] = (ds_out['z'].dims,smooth_n_point(close_lon_gap(ds_out,'z'),9))
+    ds_new['z'] = (ds_out['z'].dims,smooth_n_point(ds_out['z'].values,9))
     ds_new['PHIS'] = (ds_out['z'].dims,9.8*ds_new['z'].values)
     ds_new['mask'] = (ds_out['z'].dims,np.where(ds_new['z'].values>0,1,0))
     return ds_new
@@ -193,12 +201,15 @@ def field_interp(land_year,stored_years=stored_years,field=None,level=None,gcm_t
 
     ds_new = xr.Dataset({'lat': (['lat'], basefile['lat'].values),
                          'lon': (['lon'], list(basefile['lon'].values)+[360.0])})
-    
+    #ds_new = xr.Dataset({'lat': (['lat'], basefile['lat'].values),
+    #                     'lon': (['lon'], list(basefile['lon'].values))}) 
     ds_new['z'] = (ds_out['z'].dims,close_lon_gap(ds_out,'z'))
+    #ds_new['z'] = (ds_out['z'].dims,ds_out['z'].values)
     ds_new['PHIS'] = (ds_out['z'].dims,9.8*ds_new['z'].values)
     ds_new['mask'] = (ds_out['z'].dims,np.where(ds_new['z'].values>0,1,0))
     if field is not None:
         ds_new[field] = (ds_out[field].dims,close_lon_gap(ds_out,field))
+        #ds_new[field] = (ds_out[field].dims,ds_out[field].values)
         ds_new[field].attrs['long_name'] = ds_out[field].long_name
         ds_new[field].attrs['units'] = ds_out[field].units
     return ds_new
@@ -235,7 +246,7 @@ def mpl_to_plotly(cmap, pl_entries=11, rdigits=2):
 def define_cloud_colormap():
 
     ncolors = 256
-    ramped_alpha = list([0]*64)+list(np.linspace(0.4,1,ncolors-64))
+    ramped_alpha = list([0]*128)+list(np.linspace(0.5,1,ncolors-128))
     color_array = []
     for i in range(ncolors):
         color_array.append((1,1,1,ramped_alpha[i]))
@@ -338,31 +349,17 @@ def get_avg_field(exp,field='t_surf',level=None,vmin=None,vmax=None,anomaly=Fals
     else:
         ax.set_title(f'Time Average',fontsize=20)
 
-def get_interactive_globe(land_year=0,field='TS',gcm_type='cesm',level=None):
+def get_hires_topo_and_polar_coords(land_year=0,rstride=1,cstride=1):
 
-    define_noaa_colormap()
-    titlecolor = 'white'
-    bgcolor = 'black'
-    topo_step = 3
-    
-    logger.info('Getting interpolated fields for interactive globe')
-    interp_call = field_interp(land_year,gcm_type=gcm_type,field=field,level=level)
-    
-    field_array = interp_call[field].values
     hires_topo = hires_interp(land_year)['z'].values
     hires_lons = hires_interp(land_year)['lon'].values
     hires_lats = hires_interp(land_year)['lat'].values
-    topo = interp_call['z'].values
-    lons = interp_call['lon'].values
-    lats = interp_call['lat'].values
 
-    lats = np.tile(lats,(field_array.shape[1],1)).transpose()
-    lons = np.tile(lons,(field_array.shape[0],1))
     hires_lats = np.tile(hires_lats,(hires_topo.shape[1],1)).transpose()
     hires_lons = np.tile(hires_lons,(hires_topo.shape[0],1))
     
-    hires_topo = smooth_n_point(hires_topo[::topo_step,::topo_step],9)
-    xs,ys,zs = mapping_map_to_sphere(hires_lons[::topo_step,::topo_step],hires_lats[::topo_step,::topo_step])
+    hires_topo = smooth_n_point(hires_topo[::rstride,::cstride],9)
+    xs,ys,zs = mapping_map_to_sphere(hires_lons[::rstride,::cstride],hires_lats[::rstride,::cstride])
     #hires_topo = smooth_n_point(hires_topo,9)
     #xs,ys,zs = mapping_map_to_sphere(hires_lons,hires_lats)
     ratio_topo = 1.0 + hires_topo*1e-5
@@ -370,10 +367,47 @@ def get_interactive_globe(land_year=0,field='TS',gcm_type='cesm',level=None):
     ys = ys*ratio_topo
     zs = zs*ratio_topo
 
+    return hires_topo,xs,ys,zs
+
+def get_field_and_polar_coords(land_year=0,field='TS',gcm_type='cesm',level=None):
+
+    interp_call = field_interp(land_year,gcm_type=gcm_type,field=field,level=level)
+    
+    field_array = interp_call[field]
+    topo = interp_call['z'].values
+    lons = interp_call['lon'].values
+    lats = interp_call['lat'].values
+
+    lats = np.tile(lats,(field_array.shape[1],1)).transpose()
+    lons = np.tile(lons,(field_array.shape[0],1))
+    
     xt,yt,zt = mapping_map_to_sphere(lons,lats)
     xt = xt*(1.025+topo*1e-5)
     yt = yt*(1.025+topo*1e-5)
     zt = zt*(1.025+topo*1e-5)
+
+    return field_array,xt,yt,zt
+
+def get_interactive_globe(land_year=0,field='RELHUM',
+                          gcm_type='cesm',level=None,
+                          save_html=False,save_fig=False,
+                          fig_name=None,
+                          vmin=None,vmax=None):
+
+    define_noaa_colormap()
+    titlecolor = 'white'
+    bgcolor = 'black'
+    
+    start_time = time.time()
+    field_array,xt,yt,zt = get_field_and_polar_coords(land_year,
+                                                      field=field,
+                                                      gcm_type=gcm_type,
+                                                      level=level)
+    logger.info(f'get_field_and_polar_coords time: {time.time()-start_time}')
+
+    start_time = time.time()
+    hires_topo,xs,ys,zs = get_hires_topo_and_polar_coords(land_year,rstride=1,cstride=2)
+    logger.info(f'get_hires_topo_and_polar_coords: {time.time()-start_time}')
 
     Ctopo = mpl_to_plotly(plt.get_cmap('custom_noaa'),255)
     if field=='RELHUM':
@@ -404,14 +438,17 @@ def get_interactive_globe(land_year=0,field='TS',gcm_type='cesm',level=None):
                       y=yt,
                       z=zt,
                       colorscale=Cfield,#Ctopo,
-                      surfacecolor=field_array,
+                      surfacecolor=field_array.values,
                       opacity=field_alpha,
                       showscale=True,
+                      cmin=vmin,
+                      cmax=vmax,
                       colorbar=dict(thickness=20,
-                                    title=f'{field} ({interp_call[field].units})',
+                                    title=f'{field} ({field_array.units})',
                                     titleside='right',
                                     tickfont=dict(family='Courier New', color=titlecolor),
                                     titlefont=dict(family='Courier New', color=titlecolor)))
+    
 
     noaxis=dict(showbackground=False,
                 showgrid=False,
@@ -420,16 +457,23 @@ def get_interactive_globe(land_year=0,field='TS',gcm_type='cesm',level=None):
                 ticks='',
                 title='',
                 zeroline=False)
+    
+    title = f'Time: {str(round(land_year,2))}Ma BP <br>'
+    title += f'Average {field_array.long_name}: {str(round(field_array.values.mean(),2))} ({field_array.units})'
     layout = go.Layout(
-                       autosize=False, width=650, height=600,
-                       title = f'Time: {land_year}Ma BP, {interp_call[field].long_name}',
+                       autosize=False, width=450, height=400,
+                       title = title,
+                       title_x = 0.5,
+                       title_y = 0.9,
                        titlefont = dict(family='Courier New', color=titlecolor),
                        showlegend = True,
+                       margin=dict(l=20, r=50, t=80, b=20),
                        scene = dict(xaxis = noaxis,
                                     yaxis = noaxis,
                                     zaxis = noaxis,
                                     aspectmode='manual',
                                     aspectratio=go.layout.scene.Aspectratio(x=1, y=1, z=1)),
+                       scene_camera=dict(eye=polar_to_cartesian(radius=1.25,lat=20,lon=320)),
                        paper_bgcolor = bgcolor,
                        plot_bgcolor = bgcolor)
 
@@ -438,8 +482,20 @@ def get_interactive_globe(land_year=0,field='TS',gcm_type='cesm',level=None):
         outfile = f'{os.environ["USER_FIGS_DIR"]}/{gcm_type}_{field}_lev{level}_{land_year}Ma_interactive_globe.html'
     else:
         outfile = f'{os.environ["USER_FIGS_DIR"]}/{gcm_type}_{field}_{land_year}Ma_interactive_globe.html'
-    logger.info(f'Saving webpage: {outfile}')
-    po.plot(fig,validate=False,filename=outfile,auto_open=False)
+    if save_html:
+        start_time = time.time()
+        logger.info(f'Saving webpage: {outfile}')
+        po.plot(fig,validate=False,filename=outfile,auto_open=False) 
+        logger.info(f'po.plot time: {time.time()-start_time}')
+    if fig_name is None:
+        fig_name = outfile.rstrip('.html')+'.png'
+    else:
+        fig_name = f'{os.environ["USER_ANIMS_DIR"]}/{fig_name.split("/")[-1]}'
+    if save_fig:
+        start_time = time.time()
+        logger.info(f'Saving figure: {fig_name}')
+        pio.write_image(fig,fig_name,format='png')
+        logger.info(f'pio.write_image time: {time.time()-start_time}')
     return fig
 
 def get_field_animation(times,stored_years=stored_years,

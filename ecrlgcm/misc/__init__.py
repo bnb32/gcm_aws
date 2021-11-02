@@ -15,6 +15,12 @@ formatter = logging.Formatter('[%(levelname)s] %(asctime)s %(message)s')
 sh.setFormatter(formatter)
 logger.addHandler(sh)
 
+def polar_to_cartesian(radius=1,lat=0,lon=0):
+     x = radius * np.cos(np.pi/180*lat) * np.cos(np.pi/180*lon)
+     y = radius * np.cos(np.pi/180*lat) * np.sin(np.pi/180*lon)
+     z = radius * np.sin(np.pi/180*lat)
+     return {'x':x,'y':y,'z':z}
+
 def mapping_map_to_sphere(lon, lat, radius=1):
     lon=np.array(lon, dtype=np.float64)
     lat=np.array(lat, dtype=np.float64)
