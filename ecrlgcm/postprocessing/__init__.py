@@ -1,5 +1,6 @@
 import ecrlgcm.environment
-from ecrlgcm.misc import polar_to_cartesian, mapping_map_to_sphere, sig_round, interp, land_years, get_logger, stored_years
+from ecrlgcm.misc import polar_to_cartesian, mapping_map_to_sphere, sig_round, interp
+from ecrlgcm.misc import land_years, get_logger, stored_years, cesm_plevels, isca_plevels
 from ecrlgcm.preprocessing import solar_constant
 from ecrlgcm.experiment import Experiment
 
@@ -111,15 +112,18 @@ def close_lon_gap(data,field):
     tmp[:,-1] = tmp[:,0]
     return tmp
 
-def field_interp(land_year,stored_years=stored_years,field=None,level=None,gcm_type='cesm'):
+def field_interp(land_year,stored_years=stored_years,field=None,level=None,gcm_type='cesm',plevel=None):
     year = float(land_year)
     keys = sorted(stored_years)
     if gcm_type=='cesm':
         height_key = 'z'
+        basefile = xr.open_mfdataset(os.environ['ORIG_CESM_TOPO_FILE'])
+        level = np.argmin(np.abs(plevel-np.array(cesm_plevels))) 
     else:
         height_key = 'zsurf'
+        basefile = xr.open_mfdataset(os.environ['ORIG_ISCA_TOPO_FILE'])
+        level = np.argmin(np.abs(plevel-np.array(isca_plevels))) 
 
-    basefile = xr.open_mfdataset(os.environ['ORIG_CESM_TOPO_FILE'])
     ds_out = xr.Dataset({'lat': (['lat'], basefile['lat'].values),
                          'lon': (['lon'], basefile['lon'].values)})
     
@@ -369,9 +373,9 @@ def get_hires_topo_and_polar_coords(land_year=0,rstride=1,cstride=1):
 
     return hires_topo,xs,ys,zs
 
-def get_field_and_polar_coords(land_year=0,field='TS',gcm_type='cesm',level=None):
+def get_field_and_polar_coords(land_year=0,field='TS',gcm_type='cesm',level=None,plevel=None):
 
-    interp_call = field_interp(land_year,gcm_type=gcm_type,field=field,level=level)
+    interp_call = field_interp(land_year,gcm_type=gcm_type,field=field,level=level,plevel=plevel)
     
     field_array = interp_call[field]
     topo = interp_call['z'].values
@@ -389,8 +393,11 @@ def get_field_and_polar_coords(land_year=0,field='TS',gcm_type='cesm',level=None
     return field_array,xt,yt,zt
 
 def get_interactive_globe(land_year=0,field='RELHUM',
-                          gcm_type='cesm',level=None,
-                          save_html=False,save_fig=False,
+                          gcm_type='cesm',
+                          level=None,
+                          plevel=None,
+                          save_html=False,
+                          save_fig=False,
                           fig_name=None,
                           vmin=None,vmax=None):
 
@@ -402,15 +409,16 @@ def get_interactive_globe(land_year=0,field='RELHUM',
     field_array,xt,yt,zt = get_field_and_polar_coords(land_year,
                                                       field=field,
                                                       gcm_type=gcm_type,
-                                                      level=level)
-    logger.info(f'get_field_and_polar_coords time: {time.time()-start_time}')
+                                                      level=level,
+                                                      plevel=plevel)
+    #logger.info(f'get_field_and_polar_coords time: {time.time()-start_time}')
 
     start_time = time.time()
     hires_topo,xs,ys,zs = get_hires_topo_and_polar_coords(land_year,rstride=1,cstride=2)
-    logger.info(f'get_hires_topo_and_polar_coords: {time.time()-start_time}')
+    #logger.info(f'get_hires_topo_and_polar_coords: {time.time()-start_time}')
 
     Ctopo = mpl_to_plotly(plt.get_cmap('custom_noaa'),255)
-    if field=='RELHUM':
+    if field=='RELHUM' or field=='rh':
         Cfield = [[0.0, 'rgba(255,255,255,0.0)'], [0.1, 'rgba(255,255,255,0.0)'],
                   [0.2, 'rgba(255,255,255,0.0)'], [0.3, 'rgba(255,255,255,0.0)'],
                   [0.4, 'rgba(255,255,255,0.0)'], [0.5, 'rgba(255,255,255,0.5)'],
@@ -486,7 +494,7 @@ def get_interactive_globe(land_year=0,field='RELHUM',
         start_time = time.time()
         logger.info(f'Saving webpage: {outfile}')
         po.plot(fig,validate=False,filename=outfile,auto_open=False) 
-        logger.info(f'po.plot time: {time.time()-start_time}')
+        #logger.info(f'po.plot time: {time.time()-start_time}')
     if fig_name is None:
         fig_name = outfile.rstrip('.html')+'.png'
     else:
@@ -495,7 +503,7 @@ def get_interactive_globe(land_year=0,field='RELHUM',
         start_time = time.time()
         logger.info(f'Saving figure: {fig_name}')
         pio.write_image(fig,fig_name,format='png')
-        logger.info(f'pio.write_image time: {time.time()-start_time}')
+        #logger.info(f'pio.write_image time: {time.time()-start_time}')
     return fig
 
 def get_field_animation(times,stored_years=stored_years,
