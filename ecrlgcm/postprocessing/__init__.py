@@ -118,11 +118,13 @@ def field_interp(land_year,stored_years=stored_years,field=None,level=None,gcm_t
     if gcm_type=='cesm':
         height_key = 'z'
         basefile = xr.open_mfdataset(os.environ['ORIG_CESM_TOPO_FILE'])
-        level = np.argmin(np.abs(plevel-np.array(cesm_plevels))) 
+        if plevel is not None:
+            level = np.argmin(np.abs(plevel-np.array(cesm_plevels))) 
     else:
         height_key = 'zsurf'
         basefile = xr.open_mfdataset(os.environ['ORIG_ISCA_TOPO_FILE'])
-        level = np.argmin(np.abs(plevel-np.array(isca_plevels))) 
+        if plevel is not None:
+            level = np.argmin(np.abs(plevel-np.array(isca_plevels))) 
 
     ds_out = xr.Dataset({'lat': (['lat'], basefile['lat'].values),
                          'lon': (['lon'], basefile['lon'].values)})
@@ -373,6 +375,26 @@ def get_hires_topo_and_polar_coords(land_year=0,rstride=1,cstride=1):
 
     return hires_topo,xs,ys,zs
 
+def get_lowres_topo_and_polar_coords(land_year=0):
+
+    lowres_topo = field_interp(land_year)['z'].values
+    lowres_lons = field_interp(land_year)['lon'].values
+    lowres_lats = field_interp(land_year)['lat'].values
+
+    lowres_lats = np.tile(lowres_lats,(lowres_topo.shape[1],1)).transpose()
+    lowres_lons = np.tile(lowres_lons,(lowres_topo.shape[0],1))
+    
+    xs,ys,zs = mapping_map_to_sphere(lowres_lons,lowres_lats)
+    #hires_topo = smooth_n_point(hires_topo,9)
+    #xs,ys,zs = mapping_map_to_sphere(hires_lons,hires_lats)
+    ratio_topo = 1.0 + lowres_topo*1e-5
+    xs = xs*ratio_topo
+    ys = ys*ratio_topo
+    zs = zs*ratio_topo
+
+    return lowres_topo,xs,ys,zs
+
+
 def get_field_and_polar_coords(land_year=0,field='TS',gcm_type='cesm',level=None,plevel=None):
 
     interp_call = field_interp(land_year,gcm_type=gcm_type,field=field,level=level,plevel=plevel)
@@ -399,7 +421,8 @@ def get_interactive_globe(land_year=0,field='RELHUM',
                           save_html=False,
                           save_fig=False,
                           fig_name=None,
-                          vmin=None,vmax=None):
+                          vmin=None,vmax=None,
+                          fast=False):
 
     define_noaa_colormap()
     titlecolor = 'white'
@@ -414,7 +437,15 @@ def get_interactive_globe(land_year=0,field='RELHUM',
     #logger.info(f'get_field_and_polar_coords time: {time.time()-start_time}')
 
     start_time = time.time()
-    hires_topo,xs,ys,zs = get_hires_topo_and_polar_coords(land_year,rstride=1,cstride=2)
+    if fast:
+        rstride=10
+        cstride=20
+        #topo,xs,ys,zs = get_lowres_topo_and_polar_coords(land_year)
+        topo,xs,ys,zs = get_hires_topo_and_polar_coords(land_year,rstride=rstride,cstride=cstride)
+    else:
+        rstride=1
+        cstride=2
+        topo,xs,ys,zs = get_hires_topo_and_polar_coords(land_year,rstride=rstride,cstride=cstride)
     #logger.info(f'get_hires_topo_and_polar_coords: {time.time()-start_time}')
 
     Ctopo = mpl_to_plotly(plt.get_cmap('custom_noaa'),255)
@@ -435,7 +466,7 @@ def get_interactive_globe(land_year=0,field='RELHUM',
                      y=ys,
                      z=zs,
                      colorscale=Ctopo,
-                     surfacecolor=hires_topo,
+                     surfacecolor=topo,
                      opacity=1.0,
                      cmin=-10000,
                      cmax=10000,
