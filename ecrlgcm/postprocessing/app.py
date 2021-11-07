@@ -3,62 +3,72 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
-from ecrlgcm.postprocessing import get_interactive_globe
+from ecrlgcm.postprocessing import get_interactive_globe, variable_dictionary
+from ecrlgcm.misc import get_logger
 
-dropdown_options = ['RELHUM','TS']
+logger = get_logger()
+
+dropdown_options = []
+for k,v in variable_dictionary.items():
+    dropdown_options.append({'label':v,'value':k})
 
 app = dash.Dash(__name__)
 server = app.server
 
-app.layout = html.Div([html.H6('Paleoclimate Modeling',style={'width':'100%', 'textAlign': 'center','font-size': '25px',"padding-top": "1px"}), 
-    html.Div([
-        "Year (in Ma BP): ",
-        dcc.Input(id='land_year', value=0, type='text')
-    ],style={'width': '33%', 'display': 'inline-block','textAlign':'center','height':'10px'}),
-    html.Div([
-        "Field: ",
-        dcc.Input(id='field', value='RELHUM', type='text')
-    ],style={'width': '33%', 'display': 'inline-block','textAlign':'center'}),
-    html.Div([
-        "Pressure Level: ",
-        dcc.Input(id='plevel', value=None, type='text')
-    ],style={'width': '33%', 'display': 'inline-block','textAlign':'center'}),
-    #html.H6('Feature Selection:',style={'width':'100%', 'textAlign': 'center','font-size': '26px'}),
-    #dcc.Dropdown(id='fields',
-    #options=dropdown_options,
-    #value=['RELHUM'],
-    #multi=False,
-    #style={'width':'1800px', 'textAlign': 'center'}),
-    html.Div([dcc.Graph(id='my-output')],style={'width':'90%','textAlign': 'center'}),
+app.layout = html.Div([html.H6('Paleoclimate Modeling',style={'width':'100%', 'textAlign': 'center','font-size': '25px'}),
+    html.Div(["Year (Ma BP): ",
+        dcc.Slider(
+        id='land_year',
+        min=0,
+        max=500,
+        step=10,
+        value=0,
+        tooltip={"placement": "bottom", "always_visible": True})],style={'width':'30%','display': 'inline-block', 'textAlign':'center'}),
+    html.Div(["Pressure Level (hPa): ",
+        dcc.Slider(
+        id='plevel',
+        min=0,
+        max=1000,
+        step=10,
+        value=850,
+        tooltip={"placement": "bottom", "always_visible": True})],style={'width':'30%','display': 'inline-block', 'textAlign':'center'}),
+    html.Div(["Fields: ",
+        dcc.Dropdown(id='field',
+            options=dropdown_options,
+            value='CLOUDCOVER_CLUBB',#'RELHUM',
+            multi=False)],
+        style={'width': '30%', 'display': 'inline-block','textAlign':'center','height':'21px','font-size':'18px','padding-left':'10px'}),
+    html.Br(),
+    html.Div([dcc.Graph(id='my-output')],style={'width':'90%','textAlign': 'center','padding-top':'-50px'}),
 
-],style={"width": "1000px",
-         "height": "900px",
+],style={"width": "1800px",
+         "height": "940px",
          "display": "inline-block",
          "border": "3px #5c5c5c solid",
          "padding-top": "1px",
+         "padding-right": "1px",
+         "padding-bottom": "1px",
          "padding-left": "1px",
-         "overflow": "hidden"})
+         "overflow": "hidden",
+         'textAlign':'center'})
 
 
 @app.callback(
     Output(component_id='my-output', component_property='figure'),
     [Input(component_id='land_year', component_property='value'),
-     Input(component_id='field', component_property='value'),
      Input(component_id='plevel', component_property='value'),
-     ]
+     Input(component_id='field', component_property='value')]
 )
-def update_output_div(land_year,field,plevel):
-    try:
-        land_year = float(land_year)
-        plevel = float(plevel)
-        fig = get_interactive_globe(land_year=land_year,field=field,plevel=plevel,fast=True)
-        fig.update_layout(width=1000,height=710)
-    except:
-        fig = get_interactive_globe(fast=True)
-        fig.update_layout(width=1000,height=710)
-        
-    return fig
+def update_output_div(land_year,plevel,field):
+    land_year = float(land_year)
+    plevel = float(plevel)
+    fig = get_interactive_globe(land_year=land_year,
+                                field=field,
+                                plevel=plevel,
+                                fast=True)
+    logger.info(f'year,plevel,field: {land_year},{plevel},{field}')
 
+    return fig
 
 #if __name__ == '__main__':
 #    app.run_server(debug=True)

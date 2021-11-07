@@ -10,6 +10,7 @@ PROJECT_CODE="UCOR0044"
 ROOT_DIR="/data"
 os.environ['USER_DIR'] = USER_DIR = f"{ROOT_DIR}/{NETID}"
 os.environ['USER_INPUT_DIR'] = USER_INPUT_DIR = f"{ROOT_DIR}/{NETID}/inputdata"
+os.environ['USER_OUTPUT_DIR'] = USER_OUTPUT_DIR = f"{ROOT_DIR}/{NETID}/outputdata"
 os.environ['USER_FIGS_DIR'] = USER_FIGS_DIR = f"{ROOT_DIR}/{NETID}/figs"
 os.environ['USER_ANIMS_DIR'] = USER_ANIMS_DIR = f"{ROOT_DIR}/{NETID}/figs/anims"
 os.environ['BASE_DIR'] = BASE_DIR = f"/home/{USERNAME}/environment"
@@ -92,3 +93,5 @@ os.system(f'mkdir -p {os.environ["INIT_CONDITIONS_DIR"]}')
 os.system(f'mkdir -p {os.environ["USER_FIGS_DIR"]}')
 os.system(f'mkdir -p {os.environ["USER_ANIMS_DIR"]}')
 os.system(f'mkdir -p {os.environ["USER_INPUT_DIR"]}')
+os.system(f'mkdir -p {os.environ["USER_OUTPUT_DIR"]}')
+
