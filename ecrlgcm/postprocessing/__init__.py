@@ -467,8 +467,8 @@ def get_interactive_globe(land_year=0,field='RELHUM',
 
     #start_time = time.time()
     if fast:
-        rstride=2
-        cstride=4
+        rstride=10
+        cstride=20
         #topo,xs,ys,zs = get_lowres_topo_and_polar_coords(land_year)
         topo,xs,ys,zs = get_hires_topo_and_polar_coords(land_year,rstride=rstride,cstride=cstride)
     else:
