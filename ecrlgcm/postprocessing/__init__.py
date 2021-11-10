@@ -5,6 +5,7 @@ from ecrlgcm.preprocessing import solar_constant
 from ecrlgcm.experiment import Experiment
 
 import xarray as xr
+import xesmf as xe
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
@@ -69,9 +70,6 @@ def define_noaa_colormap():
     color_array = list(plt.get_cmap('GnBu_r')(range(64)))[::64//(len(tmp)//4)+1]+tmp[len(tmp)//4:]    
     map_object = LinearSegmentedColormap.from_list(name='custom_noaa',colors=color_array)
     
-    color_array = list(map_object(range(256)))
-    color_array[126:128] = [(0,0,0,1)]*2
-    map_object = LinearSegmentedColormap.from_list(name='custom_noaa',colors=color_array)
     # register this new colormap with matplotlib
     unregister_cmap('custom_noaa')
     plt.register_cmap(cmap=map_object)
@@ -110,21 +108,25 @@ def hires_interp(land_year,stored_years=stored_years):
                              (year-keys[i])/(keys[i+1]-keys[i]))
                 ds_out['z'] = (('lat','lon'),tmp)
     
-    ds_new = xr.Dataset({'lat': (['lat'], basefile['lat'].values),
-                         'lon': (['lon'], list(basefile['lon'].values)+[360.0])}) 
-    #ds_new = xr.Dataset({'lat': (['lat'], basefile['lat'].values),
-    #                     'lon': (['lon'], list(basefile['lon'].values))}) 
-    ds_new['z'] = (ds_out['z'].dims,smooth_n_point(close_lon_gap(ds_out,'z'),9))
-    #ds_new['z'] = (ds_out['z'].dims,smooth_n_point(ds_out['z'].values,9))
-    ds_new['PHIS'] = (ds_out['z'].dims,9.8*ds_new['z'].values)
-    ds_new['mask'] = (ds_out['z'].dims,np.where(ds_new['z'].values>0,1,0))
-    ds_new.to_netcdf(interp_file)
-    return ds_new
+    logger.info(f'Regridding hires_interp, year: {land_year}')
+    ds_new = xr.Dataset({'lat': (['lat'], basefile['lat'].values[:-1:3]),
+                         'lon': (['lon'], basefile['lon'].values[::3])})
+    regridder = xe.Regridder(ds_out, ds_new, 'bilinear', ignore_degenerate=True)
+    ds_new = regridder(ds_out)
+    ds_tmp = xr.Dataset({'lat': (['lat'], basefile['lat'].values[:-1:3]),
+                         'lon': (['lon'], [0.0]+list(basefile['lon'].values[::3])+[360.0])})
+
+    ds_tmp['z'] = (ds_new['z'].dims,smooth_n_point(close_lon_gap(ds_new,'z'),9))
+    ds_tmp['PHIS'] = (ds_new['z'].dims,9.8*ds_tmp['z'].values)
+    ds_tmp['mask'] = (ds_new['z'].dims,np.where(ds_tmp['z'].values>0,1,0))
+    ds_tmp.to_netcdf(interp_file)
+    return ds_tmp
 
 def close_lon_gap(data,field):
-    tmp = np.zeros((len(data['lat'].values),len(data['lon'].values)+1))
-    tmp[:,:-1] = data[field].values
-    tmp[:,-1] = tmp[:,0]
+    tmp = np.zeros((len(data['lat'].values),len(data['lon'].values)+2))
+    tmp[:,1:-1] = data[field].values
+    tmp[:,-1] = 0.5*(data[field].values[:,0]+data[field].values[:,-1])
+    tmp[:,0] = 0.5*(data[field].values[:,0]+data[field].values[:,-1])
     return tmp
 
 def field_interp(land_year,stored_years=stored_years,field=None,level=None,gcm_type='cesm',plevel=None):
@@ -235,16 +237,12 @@ def field_interp(land_year,stored_years=stored_years,field=None,level=None,gcm_t
                     ds_out[field].attrs['units'] = exp0.sim_data()[field].units
 
     ds_new = xr.Dataset({'lat': (['lat'], basefile['lat'].values),
-                         'lon': (['lon'], list(basefile['lon'].values)+[360.0])})
-    #ds_new = xr.Dataset({'lat': (['lat'], basefile['lat'].values),
-    #                     'lon': (['lon'], list(basefile['lon'].values))}) 
+                         'lon': (['lon'], [0.0]+list(basefile['lon'].values)+[360.0])})
     ds_new['z'] = (ds_out['z'].dims,close_lon_gap(ds_out,'z'))
-    #ds_new['z'] = (ds_out['z'].dims,ds_out['z'].values)
     ds_new['PHIS'] = (ds_out['z'].dims,9.8*ds_new['z'].values)
     ds_new['mask'] = (ds_out['z'].dims,np.where(ds_new['z'].values>0,1,0))
     if field is not None:
-        ds_new[field] = (ds_out[field].dims,close_lon_gap(ds_out,field))
-        #ds_new[field] = (ds_out[field].dims,ds_out[field].values)
+        ds_new[field] = (ds_out[field].dims,smooth_n_point(close_lon_gap(ds_out,field),5))
         ds_new[field].attrs['long_name'] = ds_out[field].long_name
         ds_new[field].attrs['units'] = ds_out[field].units
     ds_new.to_netcdf(interp_file)
@@ -385,24 +383,25 @@ def get_avg_field(exp,field='t_surf',level=None,vmin=None,vmax=None,anomaly=Fals
     else:
         ax.set_title(f'Time Average',fontsize=20)
 
-def get_hires_topo_and_polar_coords(land_year=0,rstride=1,cstride=1):
+def get_hires_topo_and_polar_coords(land_year=0):#,rstride=1,cstride=1):
 
     hires_topo = hires_interp(land_year)['z'].values
     hires_lons = hires_interp(land_year)['lon'].values
     hires_lats = hires_interp(land_year)['lat'].values
-
-    hires_lats = np.tile(hires_lats,(hires_topo.shape[1],1)).transpose()
-    hires_lons = np.tile(hires_lons,(hires_topo.shape[0],1))
     
-    hires_topo = smooth_n_point(hires_topo[::rstride,::cstride],9)
-    xs,ys,zs = mapping_map_to_sphere(hires_lons[::rstride,::cstride],hires_lats[::rstride,::cstride])
+    if len(hires_lats.shape)==1:
+        hires_lats = np.tile(hires_lats,(hires_topo.shape[1],1)).transpose()
+    if len(hires_lons.shape)==1:
+        hires_lons = np.tile(hires_lons,(hires_topo.shape[0],1))
+    
+    xs,ys,zs = mapping_map_to_sphere(hires_lons,hires_lats)#[::rstride,::cstride],hires_lats[::rstride,::cstride])
     #hires_topo = smooth_n_point(hires_topo,9)
     #xs,ys,zs = mapping_map_to_sphere(hires_lons,hires_lats)
     ratio_topo = 1.0 + hires_topo*1e-5
     xs = xs*ratio_topo
     ys = ys*ratio_topo
     zs = zs*ratio_topo
-    return hires_topo,xs,ys,zs
+    return smooth_n_point(hires_topo,5),xs,ys,zs
 
 def get_lowres_topo_and_polar_coords(land_year=0):
 
@@ -421,7 +420,7 @@ def get_lowres_topo_and_polar_coords(land_year=0):
     ys = ys*ratio_topo
     zs = zs*ratio_topo
 
-    return lowres_topo,xs,ys,zs
+    return smooth_n_point(lowres_topo,5),xs,ys,zs
 
 
 def get_field_and_polar_coords(land_year=0,field='TS',gcm_type='cesm',level=None,plevel=None):
@@ -469,12 +468,12 @@ def get_interactive_globe(land_year=0,field='RELHUM',
     if fast:
         rstride=10
         cstride=20
-        #topo,xs,ys,zs = get_lowres_topo_and_polar_coords(land_year)
-        topo,xs,ys,zs = get_hires_topo_and_polar_coords(land_year,rstride=rstride,cstride=cstride)
+        topo,xs,ys,zs = get_lowres_topo_and_polar_coords(land_year)
+        #topo,xs,ys,zs = get_hires_topo_and_polar_coords(land_year,rstride=rstride,cstride=cstride)
     else:
         rstride=1
         cstride=2
-        topo,xs,ys,zs = get_hires_topo_and_polar_coords(land_year,rstride=rstride,cstride=cstride)
+        topo,xs,ys,zs = get_hires_topo_and_polar_coords(land_year)#,rstride=rstride,cstride=cstride)
     #logger.info(f'get_hires_topo_and_polar_coords: {time.time()-start_time}')
     #logger.info(f'Prep time: {time.time()-start_time}')
     
@@ -544,7 +543,7 @@ def get_interactive_globe(land_year=0,field='RELHUM',
                                     zaxis = noaxis,
                                     aspectmode='manual',
                                     aspectratio=go.layout.scene.Aspectratio(x=1, y=1, z=1)),
-                       scene_camera=dict(eye=polar_to_cartesian(radius=1.25,lat=20,lon=320)),
+                       scene_camera=dict(eye=polar_to_cartesian(radius=1.4,lat=20,lon=320)),
                        paper_bgcolor = bgcolor,
                        plot_bgcolor = bgcolor)
 
