@@ -146,12 +146,13 @@ def field_interp(land_year,stored_years=stored_years,field=None,level=None,gcm_t
             if 'pfull' not in reference_data[field].dims:
                 plevel = None
 
-    interp_file = f'{os.environ["USER_OUTPUT_DIR"]}/{gcm_type}_{field}_{land_year}_{plevel}.nc'
+    interp_file = f'{os.environ["USER_OUTPUT_DIR"]}/{gcm_type}_{field}_{land_year}_{plevel}_{time_avg}.nc'
     if os.path.exists(interp_file):
         return xr.open_mfdataset(interp_file)
 
     year = float(land_year)
     keys = sorted(stored_years)
+
     if gcm_type=='cesm':
         height_key = 'z'
         basefile = xr.open_mfdataset(os.environ['ORIG_CESM_TOPO_FILE'])
@@ -185,7 +186,7 @@ def field_interp(land_year,stored_years=stored_years,field=None,level=None,gcm_t
                         ds_out[field] = (('lat','lon'),exp.sim_data()[field].mean(axis=(0,1)).values)
                 else:
                     if not time_avg:
-                        ds_out[field] = (('time','lat','lon'),exp.sim_data()[field].values[level])
+                        ds_out[field] = (('time','lat','lon'),exp.sim_data()[field].values[:,level,:,:])
                     else:
                         ds_out[field] = (('lat','lon'),exp.sim_data()[field].mean(axis=(0))[level].values)
             ds_out[field].attrs['long_name']= exp.sim_data()[field].long_name    
@@ -210,7 +211,7 @@ def field_interp(land_year,stored_years=stored_years,field=None,level=None,gcm_t
                         ds_out[field] = (('lat','lon'),exp.sim_data()[field].mean(axis=(0,1)).values)
                 else:
                     if not time_avg:
-                        ds_out[field] = (('time','lat','lon'),exp.sim_data()[field].values[level])
+                        ds_out[field] = (('time','lat','lon'),exp.sim_data()[field].values[:,level,:,:])
                     else:
                         ds_out[field] = (('lat','lon'),exp.sim_data()[field].mean(axis=(0))[level].values)
             ds_out[field].attrs['long_name']= exp.sim_data()[field].long_name    
@@ -235,7 +236,7 @@ def field_interp(land_year,stored_years=stored_years,field=None,level=None,gcm_t
                         ds_out[field] = (('lat','lon'),exp.sim_data()[field].mean(axis=(0,1)).values)
                 else:
                     if not time_avg:
-                        ds_out[field] = (('time','lat','lon'),exp.sim_data()[field].values[level])
+                        ds_out[field] = (('time','lat','lon'),exp.sim_data()[field].values[:,level,:,:])
                     else:
                         ds_out[field] = (('lat','lon'),exp.sim_data()[field].mean(axis=(0))[level].values)
             ds_out[field].attrs['long_name']= exp.sim_data()[field].long_name    
@@ -271,8 +272,8 @@ def field_interp(land_year,stored_years=stored_years,field=None,level=None,gcm_t
                                 b = exp1.sim_data()[field].mean(axis=(0,1)).values
                         else:
                             if not time_avg:
-                                a = exp0.sim_data()[field].values[level]
-                                b = exp1.sim_data()[field].values[level]
+                                a = exp0.sim_data()[field].values[:,level,:,:]
+                                b = exp1.sim_data()[field].values[:,level,:,:]
                             else:
                                 a = exp0.sim_data()[field].mean(axis=(0)).values[level]
                                 b = exp1.sim_data()[field].mean(axis=(0)).values[level]
@@ -293,8 +294,8 @@ def field_interp(land_year,stored_years=stored_years,field=None,level=None,gcm_t
         ds_new[field] = (ds_out[field].dims,smooth_n_point(close_lon_gap(ds_out,field),5))
         ds_new[field].attrs['long_name'] = ds_out[field].long_name
         ds_new[field].attrs['units'] = ds_out[field].units
-    if 'time' not in ds_new:
-        ds_new.to_netcdf(interp_file)
+    #if 'time' not in ds_new:
+    ds_new.to_netcdf(interp_file)
     return ds_new
 
 def potential_intensity(t_surf):
@@ -472,24 +473,160 @@ def get_lowres_topo_and_polar_coords(land_year=0):
     return smooth_n_point(lowres_topo,5),xs,ys,zs
 
 
-def get_field_and_polar_coords(land_year=0,field='TS',gcm_type='cesm',level=None,plevel=None):
+def get_field_and_polar_coords(land_year=0,field='TS',gcm_type='cesm',level=None,plevel=None,time_avg=False):
 
-    interp_call = field_interp(land_year,gcm_type=gcm_type,field=field,level=level,plevel=plevel)
+    interp_call = field_interp(land_year,gcm_type=gcm_type,field=field,level=level,plevel=plevel,time_avg=time_avg)
     
     field_array = interp_call[field]
     topo = interp_call['z'].values
     lons = interp_call['lon'].values
     lats = interp_call['lat'].values
 
-    lats = np.tile(lats,(field_array.shape[1],1)).transpose()
-    lons = np.tile(lons,(field_array.shape[0],1))
-    
+    if field_array.ndim==3:
+        lats = np.tile(lats,(field_array.shape[2],1)).transpose()
+        lons = np.tile(lons,(field_array.shape[1],1))
+    else:
+        lats = np.tile(lats,(field_array.shape[1],1)).transpose()
+        lons = np.tile(lons,(field_array.shape[0],1))
+
     xt,yt,zt = mapping_map_to_sphere(lons,lats)
     xt = xt*(1.025+topo*1e-5)
     yt = yt*(1.025+topo*1e-5)
     zt = zt*(1.025+topo*1e-5)
 
     return field_array,xt,yt,zt
+
+def get_interactive_globe_time(land_year=0,time_step=0,
+                          field='RELHUM',
+                          gcm_type='cesm',
+                          level=None,
+                          plevel=None,
+                          save_html=False,
+                          save_fig=False,
+                          fig_name=None,
+                          vmin=None,vmax=None,
+                          fast=False):
+
+    define_noaa_colormap()
+    titlecolor = 'white'
+    bgcolor = 'black'
+    
+    start_time = time.time()
+    field_array,xt,yt,zt = get_field_and_polar_coords(land_year,
+                                                      field=field,
+                                                      gcm_type=gcm_type,
+                                                      level=level,
+                                                      plevel=plevel,
+                                                      time_avg=False)
+    #logger.info(f'get_field_and_polar_coords time: {time.time()-start_time}')
+
+    #start_time = time.time()
+    if fast:
+        rstride=10
+        cstride=20
+        topo,xs,ys,zs = get_lowres_topo_and_polar_coords(land_year)
+        #topo,xs,ys,zs = get_hires_topo_and_polar_coords(land_year,rstride=rstride,cstride=cstride)
+    else:
+        rstride=1
+        cstride=2
+        topo,xs,ys,zs = get_hires_topo_and_polar_coords(land_year)#,rstride=rstride,cstride=cstride)
+    #logger.info(f'get_hires_topo_and_polar_coords: {time.time()-start_time}')
+    #logger.info(f'Prep time: {time.time()-start_time}')
+    
+
+    start_time = time.time()
+    Ctopo = mpl_to_plotly(plt.get_cmap('custom_noaa'),255)
+    if field=='RELHUM' or field=='rh' or 'CLOUD' in field:
+        Cfield = [[0.0, 'rgba(255,255,255,0.0)'], [0.1, 'rgba(255,255,255,0.1)'],
+                  [0.2, 'rgba(255,255,255,0.2)'], [0.3, 'rgba(255,255,255,0.3)'],
+                  [0.4, 'rgba(255,255,255,0.4)'], [0.5, 'rgba(255,255,255,0.5)'],
+                  [0.6, 'rgba(255,255,255,0.6)'], [0.7, 'rgba(255,255,255,0.7)'],
+                  [0.8, 'rgba(255,255,255,0.8)'], [0.9, 'rgba(255,255,255,0.9)'],
+                  [1.0, 'rgba(255,255,255,1.0)']]
+        field_alpha = 1.0
+    else:
+        Cfield = mpl_to_plotly(plt.get_cmap('coolwarm'),255)
+        field_alpha = 0.6
+
+    topo_sphere=dict(type='surface',
+                     x=xs,
+                     y=ys,
+                     z=zs,
+                     colorscale=Ctopo,
+                     surfacecolor=topo,
+                     opacity=1.0,
+                     cmin=-10000,
+                     cmax=10000,
+                     showscale=False)
+    if vmin is None and vmax is None:
+        vmin = np.min(field_array.mean(axis=0).values)
+        vmax = np.max(field_array.mean(axis=0).values)
+    field_sphere=dict(type='surface',
+                      x=xt,
+                      y=yt,
+                      z=zt,
+                      colorscale=Cfield,#Ctopo,
+                      surfacecolor=field_array.values[time_step],
+                      opacity=field_alpha,
+                      showscale=True,
+                      cmin=vmin,
+                      cmax=vmax,
+                      colorbar=dict(thickness=20,
+                                    title=f'{field} ({field_array.units})',
+                                    titleside='right',
+                                    tickfont=dict(family='Courier New', color=titlecolor),
+                                    titlefont=dict(family='Courier New', color=titlecolor)))
+    
+
+    noaxis=dict(showbackground=False,
+                showgrid=False,
+                showline=False,
+                showticklabels=False,
+                ticks='',
+                title='',
+                zeroline=False)
+    
+    title = f'Time: {str(round(land_year,2))}Ma BP, '
+    title += f'Step: {time_step}'
+    layout = go.Layout(
+                       autosize=False, width=1800, height=750,
+                       title = title,
+                       title_x = 0.5,
+                       title_y = 0.95,
+                       titlefont = dict(family='Courier New', color=titlecolor),
+                       showlegend = True,
+                       margin=dict(l=20, r=50, t=80, b=20),
+                       scene = dict(xaxis = noaxis,
+                                    yaxis = noaxis,
+                                    zaxis = noaxis,
+                                    aspectmode='manual',
+                                    aspectratio=go.layout.scene.Aspectratio(x=1, y=1, z=1)),
+                       scene_camera=dict(eye=polar_to_cartesian(radius=1.4,lat=10,lon=180)),
+                       paper_bgcolor = bgcolor,
+                       plot_bgcolor = bgcolor)
+
+    fig = go.Figure([topo_sphere,field_sphere], layout=layout)
+    if level is not None:
+        outfile = f'{os.environ["USER_FIGS_DIR"]}/{gcm_type}_{field}_lev{level}_{land_year}Ma_{time_step}_interactive_globe.html'
+    else:
+        outfile = f'{os.environ["USER_FIGS_DIR"]}/{gcm_type}_{field}_{land_year}Ma_{time_step}_interactive_globe.html'
+    if save_html:
+        start_time = time.time()
+        logger.info(f'Saving webpage: {outfile}')
+        po.plot(fig,validate=False,filename=outfile,auto_open=False) 
+        #logger.info(f'po.plot time: {time.time()-start_time}')
+    if fig_name is None:
+        fig_name = outfile.rstrip('.html')+'.png'
+    else:
+        fig_name = f'{os.environ["USER_ANIMS_DIR"]}/{fig_name.split("/")[-1]}'
+    if save_fig:
+        start_time = time.time()
+        logger.info(f'Saving figure: {fig_name}')
+        pio.write_image(fig,fig_name,format='png')
+        #logger.info(f'pio.write_image time: {time.time()-start_time}')
+    #logger.info(f'Plotting time: {time.time()-start_time}')
+    return fig
+
 
 def get_interactive_globe(land_year=0,field='RELHUM',
                           gcm_type='cesm',
@@ -619,7 +756,7 @@ def get_interactive_globe(land_year=0,field='RELHUM',
     return fig
 
 def get_field_time_animation(year,stored_years=stored_years,
-                             field='TS',level=None,
+                             field='TS',level=None,plevel=None,
                              level_num=10,vmin=None,
                              vmax=None,color_map='coolwarm',
                              globe=False,
@@ -631,16 +768,14 @@ def get_field_time_animation(year,stored_years=stored_years,
 
     fig = plt.figure(figsize=(12,7))
     if globe:
-        proj = ccrs.Orthographic(330, 20)
+        proj = ccrs.Orthographic(200, 20)
     else:
         proj = ccrs.PlateCarree(central_longitude=180.0)
     ax = plt.axes(projection=proj)
     ax.gridlines(color='black', linestyle='dotted')
     field_alpha=0.6
-    if field=='RELHUM':
-        level_num=5
     
-    init_field = field_interp(year,stored_years,field=field,level=level,gcm_type=gcm_type,time_avg=False)[field]
+    init_field = field_interp(year,stored_years,field=field,plevel=plevel,level=level,gcm_type=gcm_type,time_avg=False)[field]
     
     land_img = hires_interp(year,stored_years)['z'].plot.imshow(ax=ax, 
                                                                 transform=ccrs.PlateCarree(), 
@@ -708,7 +843,12 @@ def get_field_time_animation(year,stored_years=stored_years,
     plt.close()
     animation = anim.FuncAnimation(fig, update, frames=range(init_field.shape[0]), blit=False)
     writervideo = anim.FFMpegWriter(fps=5) 
-    if level is not None:
+    if plevel is not None:
+        if globe:
+            anim_file = f'{os.environ["USER_FIGS_DIR"]}/{gcm_type}_{field}_{plevel}hPa_{year}Ma_globe_animation.mp4'
+        else:    
+            anim_file = f'{os.environ["USER_FIGS_DIR"]}/{gcm_type}_{field}_{plevel}hPa_{year}Ma_animation.mp4'
+    elif level is not None:
         if globe:
             anim_file = f'{os.environ["USER_FIGS_DIR"]}/{gcm_type}_{field}_lev{level}_{year}Ma_globe_animation.mp4'
         else:    
@@ -726,7 +866,7 @@ def get_field_animation(times,stored_years=stored_years,
                         field='TS',level=None,
                         level_num=10,vmin=None,
                         vmax=None,color_map='coolwarm',
-                        globe=False,
+                        globe=False,plevel=None,
                         gcm_type='cesm'):
 
     define_land_colormap()
@@ -742,7 +882,7 @@ def get_field_animation(times,stored_years=stored_years,
     ax.gridlines(color='black', linestyle='dotted')
     field_alpha=0.6
     
-    init_field = field_interp(0,stored_years,field=field,level=level,gcm_type=gcm_type)[field]
+    init_field = field_interp(0,stored_years,field=field,level=level,plevel=plevel,gcm_type=gcm_type)[field]
     
     land_img = hires_interp(0,stored_years)['z'].plot.imshow(ax=ax, 
                                                              transform=ccrs.PlateCarree(), 
@@ -780,7 +920,7 @@ def get_field_animation(times,stored_years=stored_years,
         logger.info(f'Animation step: {i}')
 
         t = times[i]
-        current_field = field_interp(t,stored_years,field=field,level=level,gcm_type=gcm_type)
+        current_field = field_interp(t,stored_years,field=field,level=level,plevel=plevel,gcm_type=gcm_type)
         fig.suptitle(f'Time: {str(round(t,2))} Ma BP, Average {field}: {str(round(current_field[field].values.mean(),2))} {init_field.units}', fontsize=20)       
         ax.clear()
         
@@ -812,7 +952,12 @@ def get_field_animation(times,stored_years=stored_years,
     plt.close()
     animation = anim.FuncAnimation(fig, update, frames=range(len(times)), blit=False)
     writervideo = anim.FFMpegWriter(fps=5) 
-    if level is not None:
+    if plevel is not None:
+        if globe:
+            anim_file = f'{os.environ["USER_FIGS_DIR"]}/{gcm_type}_{field}_{plevel}hPa_globe_animation.mp4'
+        else:    
+            anim_file = f'{os.environ["USER_FIGS_DIR"]}/{gcm_type}_{field}_{plevel}hPa_animation.mp4'
+    elif level is not None:
         if globe:
             anim_file = f'{os.environ["USER_FIGS_DIR"]}/{gcm_type}_{field}_lev{level}_globe_animation.mp4'
         else:    
