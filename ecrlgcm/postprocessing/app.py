@@ -1,11 +1,12 @@
+from ecrlgcm.postprocessing import get_interactive_globe, variable_dictionary
+from ecrlgcm.misc import get_logger, max_land_year
+
 import plotly.graph_objects as go # or plotly.express as px
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
 import dash_daq as daq
 from dash.dependencies import Input, Output
-from ecrlgcm.postprocessing import get_interactive_globe, variable_dictionary
-from ecrlgcm.misc import get_logger
 
 logger = get_logger()
 
@@ -21,7 +22,7 @@ app.layout = html.Div([html.H6('Paleoclimate Modeling',style={'width':'100%', 't
         dcc.Slider(
         id='land_year',
         min=0,
-        max=500,
+        max=max_land_year,
         step=10,
         value=0,
         tooltip={"placement": "bottom", "always_visible": True})],style={'width':'20%','display': 'inline-block', 'textAlign':'center'}),

@@ -32,6 +32,9 @@ def mapping_map_to_sphere(lon, lat, radius=1):
     return xs, ys, zs
 
 def interp(a,b,dt):
+    #a_tmp = a[:min((a.shape[0],b.shape[0]))]
+    #b_tmp = b[:a_tmp.shape[0]]
+    #return a_tmp*(1-dt)+dt*b_tmp
     return a*(1-dt)+dt*b
 
 def edit_namelists(experiment,configuration):

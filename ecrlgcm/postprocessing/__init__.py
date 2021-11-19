@@ -123,13 +123,19 @@ def hires_interp(land_year,stored_years=stored_years):
     return ds_tmp
 
 def close_lon_gap(data,field):
-    tmp = np.zeros((len(data['lat'].values),len(data['lon'].values)+2))
-    tmp[:,1:-1] = data[field].values
-    tmp[:,-1] = 0.5*(data[field].values[:,0]+data[field].values[:,-1])
-    tmp[:,0] = 0.5*(data[field].values[:,0]+data[field].values[:,-1])
+    if data[field].ndim==3:
+        tmp = np.zeros((len(data['time'].values),len(data['lat'].values),len(data['lon'].values)+2))
+        tmp[:,:,1:-1] = data[field].values
+        tmp[:,:,-1] = 0.5*(data[field].values[:,:,0]+data[field].values[:,:,-1])
+        tmp[:,:,0] = 0.5*(data[field].values[:,:,0]+data[field].values[:,:,-1])
+    else:    
+        tmp = np.zeros((len(data['lat'].values),len(data['lon'].values)+2))
+        tmp[:,1:-1] = data[field].values
+        tmp[:,-1] = 0.5*(data[field].values[:,0]+data[field].values[:,-1])
+        tmp[:,0] = 0.5*(data[field].values[:,0]+data[field].values[:,-1])
     return tmp
 
-def field_interp(land_year,stored_years=stored_years,field=None,level=None,gcm_type='cesm',plevel=None):
+def field_interp(land_year,stored_years=stored_years,field=None,level=None,gcm_type='cesm',plevel=None,time_avg=True):
     
     if gcm_type=='cesm':
         if field is not None:
@@ -167,12 +173,21 @@ def field_interp(land_year,stored_years=stored_years,field=None,level=None,gcm_t
             if exp.sim_data()[field].ndim==2:
                 ds_out[field] = (('lat','lon'),exp.sim_data()[field].values)
             if exp.sim_data()[field].ndim==3:
-                ds_out[field] = (('lat','lon'),exp.sim_data()[field].mean(axis=0).values)
+                if not time_avg:
+                    ds_out[field] = (('time','lat','lon'),exp.sim_data()[field].values)
+                else:
+                    ds_out[field] = (('lat','lon'),exp.sim_data()[field].mean(axis=0).values)
             if exp.sim_data()[field].ndim==4:
                 if level is None:
-                    ds_out[field] = (('lat','lon'),exp.sim_data()[field].mean(axis=(0,1)).values)
+                    if not time_avg:
+                        ds_out[field] = (('time','lat','lon'),exp.sim_data()[field].mean(axis=(1)).values) 
+                    else:
+                        ds_out[field] = (('lat','lon'),exp.sim_data()[field].mean(axis=(0,1)).values)
                 else:
-                    ds_out[field] = (('lat','lon'),exp.sim_data()[field].mean(axis=(0))[level].values)
+                    if not time_avg:
+                        ds_out[field] = (('time','lat','lon'),exp.sim_data()[field].values[level])
+                    else:
+                        ds_out[field] = (('lat','lon'),exp.sim_data()[field].mean(axis=(0))[level].values)
             ds_out[field].attrs['long_name']= exp.sim_data()[field].long_name    
             ds_out[field].attrs['units'] = exp.sim_data()[field].units
 
@@ -183,12 +198,21 @@ def field_interp(land_year,stored_years=stored_years,field=None,level=None,gcm_t
             if exp.sim_data()[field].ndim==2:
                 ds_out[field] = (('lat','lon'),exp.sim_data()[field].values)
             if exp.sim_data()[field].ndim==3:
-                ds_out[field] = (('lat','lon'),exp.sim_data()[field].mean(axis=0).values)
+                if not time_avg:
+                    ds_out[field] = (('time','lat','lon'),exp.sim_data()[field].values)
+                else:
+                    ds_out[field] = (('lat','lon'),exp.sim_data()[field].mean(axis=0).values)
             if exp.sim_data()[field].ndim==4:
                 if level is None:
-                    ds_out[field] = (('lat','lon'),exp.sim_data()[field].mean(axis=(0,1)).values)
+                    if not time_avg:
+                        ds_out[field] = (('time','lat','lon'),exp.sim_data()[field].mean(axis=(1)).values) 
+                    else:
+                        ds_out[field] = (('lat','lon'),exp.sim_data()[field].mean(axis=(0,1)).values)
                 else:
-                    ds_out[field] = (('lat','lon'),exp.sim_data()[field].mean(axis=(0)).values[level])
+                    if not time_avg:
+                        ds_out[field] = (('time','lat','lon'),exp.sim_data()[field].values[level])
+                    else:
+                        ds_out[field] = (('lat','lon'),exp.sim_data()[field].mean(axis=(0))[level].values)
             ds_out[field].attrs['long_name']= exp.sim_data()[field].long_name    
             ds_out[field].attrs['units'] = exp.sim_data()[field].units
 
@@ -199,12 +223,21 @@ def field_interp(land_year,stored_years=stored_years,field=None,level=None,gcm_t
             if exp.sim_data()[field].ndim==2:
                 ds_out[field] = (('lat','lon'),exp.sim_data()[field].values)
             if exp.sim_data()[field].ndim==3:
-                ds_out[field] = (('lat','lon'),exp.sim_data()[field].mean(axis=0).values)
+                if not time_avg:
+                    ds_out[field] = (('time','lat','lon'),exp.sim_data()[field].values)
+                else:
+                    ds_out[field] = (('lat','lon'),exp.sim_data()[field].mean(axis=0).values)
             if exp.sim_data()[field].ndim==4:
                 if level is None:
-                    ds_out[field] = (('lat','lon'),exp.sim_data()[field].mean(axis=(0,1)).values)
+                    if not time_avg:
+                        ds_out[field] = (('time','lat','lon'),exp.sim_data()[field].mean(axis=(1)).values) 
+                    else:
+                        ds_out[field] = (('lat','lon'),exp.sim_data()[field].mean(axis=(0,1)).values)
                 else:
-                    ds_out[field] = (('lat','lon'),exp.sim_data()[field].mean(axis=(0)).values[level])
+                    if not time_avg:
+                        ds_out[field] = (('time','lat','lon'),exp.sim_data()[field].values[level])
+                    else:
+                        ds_out[field] = (('lat','lon'),exp.sim_data()[field].mean(axis=(0))[level].values)
             ds_out[field].attrs['long_name']= exp.sim_data()[field].long_name    
             ds_out[field].attrs['units'] = exp.sim_data()[field].units
 
@@ -222,17 +255,32 @@ def field_interp(land_year,stored_years=stored_years,field=None,level=None,gcm_t
                         a = exp0.sim_data()[field].values
                         b = exp1.sim_data()[field].values
                     if exp0.sim_data()[field].ndim==3:
-                        a = exp0.sim_data()[field].mean(axis=0).values
-                        b = exp1.sim_data()[field].mean(axis=0).values
+                        if not time_avg:
+                            a = exp0.sim_data()[field].values
+                            b = exp1.sim_data()[field].values
+                        else:
+                            a = exp0.sim_data()[field].mean(axis=0).values
+                            b = exp1.sim_data()[field].mean(axis=0).values
                     if exp0.sim_data()[field].ndim==4:
                         if level is None:
-                            a = exp0.sim_data()[field].mean(axis=(0,1)).values
-                            b = exp1.sim_data()[field].mean(axis=(0,1)).values
+                            if not time_avg:
+                                a = exp0.sim_data()[field].mean(axis=(1)).values
+                                b = exp1.sim_data()[field].mean(axis=(1)).values
+                            else:
+                                a = exp0.sim_data()[field].mean(axis=(0,1)).values
+                                b = exp1.sim_data()[field].mean(axis=(0,1)).values
                         else:
-                            a = exp0.sim_data()[field].mean(axis=(0)).values[level]
-                            b = exp1.sim_data()[field].mean(axis=(0)).values[level]
+                            if not time_avg:
+                                a = exp0.sim_data()[field].values[level]
+                                b = exp1.sim_data()[field].values[level]
+                            else:
+                                a = exp0.sim_data()[field].mean(axis=(0)).values[level]
+                                b = exp1.sim_data()[field].mean(axis=(0)).values[level]
                     tmp = interp(a,b,(year-keys[i])/(keys[i+1]-keys[i]))
-                    ds_out[field] = (('lat','lon'),tmp)
+                    if len(tmp.shape)==3:
+                        ds_out[field] = (('time','lat','lon'),tmp)
+                    else:
+                        ds_out[field] = (('lat','lon'),tmp)
                     ds_out[field].attrs['long_name'] = exp0.sim_data()[field].long_name    
                     ds_out[field].attrs['units'] = exp0.sim_data()[field].units
 
@@ -245,7 +293,8 @@ def field_interp(land_year,stored_years=stored_years,field=None,level=None,gcm_t
         ds_new[field] = (ds_out[field].dims,smooth_n_point(close_lon_gap(ds_out,field),5))
         ds_new[field].attrs['long_name'] = ds_out[field].long_name
         ds_new[field].attrs['units'] = ds_out[field].units
-    ds_new.to_netcdf(interp_file)
+    if 'time' not in ds_new:
+        ds_new.to_netcdf(interp_file)
     return ds_new
 
 def potential_intensity(t_surf):
@@ -568,6 +617,110 @@ def get_interactive_globe(land_year=0,field='RELHUM',
         #logger.info(f'pio.write_image time: {time.time()-start_time}')
     #logger.info(f'Plotting time: {time.time()-start_time}')
     return fig
+
+def get_field_time_animation(year,stored_years=stored_years,
+                             field='TS',level=None,
+                             level_num=10,vmin=None,
+                             vmax=None,color_map='coolwarm',
+                             globe=False,
+                             gcm_type='cesm'):
+
+    define_land_colormap()
+    define_cloud_colormap()
+    define_noaa_colormap()
+
+    fig = plt.figure(figsize=(12,7))
+    if globe:
+        proj = ccrs.Orthographic(330, 20)
+    else:
+        proj = ccrs.PlateCarree(central_longitude=180.0)
+    ax = plt.axes(projection=proj)
+    ax.gridlines(color='black', linestyle='dotted')
+    field_alpha=0.6
+    if field=='RELHUM':
+        level_num=5
+    
+    init_field = field_interp(year,stored_years,field=field,level=level,gcm_type=gcm_type,time_avg=False)[field]
+    
+    land_img = hires_interp(year,stored_years)['z'].plot.imshow(ax=ax, 
+                                                                transform=ccrs.PlateCarree(), 
+                                                                cmap='custom_noaa',
+                                                                add_colorbar=False, 
+                                                                alpha=1.0)
+    border_img = hires_interp(year,stored_years)['mask'].plot.contour(ax=ax, levels=2, 
+                                                                      transform=ccrs.PlateCarree(), 
+                                                                      colors="black", 
+                                                                      add_colorbar=False, 
+                                                                      alpha=1.0)
+    image = init_field[0].plot.imshow(ax=ax, levels=level_num,
+                                      transform=ccrs.PlateCarree(), 
+                                      interpolation='bilinear',
+                                      cmap=color_map, 
+                                      add_colorbar=False,
+                                      alpha=0.6)
+    
+    field_border = init_field[0].plot.contour(ax=ax, levels=level_num,
+                                           transform=ccrs.PlateCarree(), 
+                                           interpolation='bilinear',
+                                           cmap=color_map, 
+                                           add_colorbar=False,
+                                           alpha=0.8)
+     
+    cb = plt.colorbar(image, ax=ax, orientation='horizontal', pad=0.05, label=f'{init_field.long_name} ({init_field.units})')
+    if vmin is not None and vmax is not None:
+        image.set_clim(vmin,vmax)
+    
+    text = cb.ax.xaxis.label
+    font = matplotlib.font_manager.FontProperties(size=16)
+    text.set_font_properties(font)
+    
+    def update(i):
+        logger.info(f'Animation step: {i}')
+
+        fig.suptitle(f'Time: {year} Ma BP, Step: {i}', fontsize=20)       
+        ax.clear()
+        
+        land_img = hires_interp(year,stored_years)['z'].plot.imshow(ax=ax, 
+                                                                 transform=ccrs.PlateCarree(), 
+                                                                 cmap='custom_noaa',
+                                                                 add_colorbar=False, 
+                                                                 alpha=1.0)
+        border_img = hires_interp(year,stored_years)['mask'].plot.contour(ax=ax,levels=2, 
+                                                                       transform=ccrs.PlateCarree(), 
+                                                                       colors="black", 
+                                                                       add_colorbar=False, 
+                                                                       alpha=1.0)
+        image = init_field[i].plot.imshow(ax=ax,levels=level_num,
+                                                 transform=ccrs.PlateCarree(), 
+                                                 interpolation='bilinear',
+                                                 cmap=color_map,
+                                                 add_colorbar=False,
+                                                 alpha=field_alpha)
+        
+        field_border = init_field[i].plot.contour(ax=ax,levels=level_num,
+                                                         transform=ccrs.PlateCarree(), 
+                                                         interpolation='bilinear',
+                                                         cmap=color_map, 
+                                                         add_colorbar=False,
+                                                         alpha=0.8)
+        return image
+    
+    plt.close()
+    animation = anim.FuncAnimation(fig, update, frames=range(init_field.shape[0]), blit=False)
+    writervideo = anim.FFMpegWriter(fps=5) 
+    if level is not None:
+        if globe:
+            anim_file = f'{os.environ["USER_FIGS_DIR"]}/{gcm_type}_{field}_lev{level}_{year}Ma_globe_animation.mp4'
+        else:    
+            anim_file = f'{os.environ["USER_FIGS_DIR"]}/{gcm_type}_{field}_lev{level}_{year}Ma_animation.mp4'
+    else:    
+        if globe:
+            anim_file = f'{os.environ["USER_FIGS_DIR"]}/{gcm_type}_{field}_{year}Ma_globe_animation.mp4'
+        else:    
+            anim_file = f'{os.environ["USER_FIGS_DIR"]}/{gcm_type}_{field}_{year}Ma_animation.mp4'
+    animation.save(anim_file, writer=writervideo)
+    print(anim_file)
+    #return HTML(animation.to_jshtml())        
 
 def get_field_animation(times,stored_years=stored_years,
                         field='TS',level=None,
