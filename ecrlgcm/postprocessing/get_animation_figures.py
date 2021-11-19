@@ -62,5 +62,5 @@ else:
     animation_name=f'{args.model}_{args.field}_{args.year}.mp4'
 
 
-cmd = f'ffmpeg -r 20 -f image2 -s 1920x1080 -i {os.environ["USER_ANIMS_DIR"]}/{args.field}_%04d.png -vcodec libx264 -crf 25  -pix_fmt yuv420p {os.environ["USER_FIGS_DIR"]}/{animation_name}'   
+cmd = f'ffmpeg -r 5 -f image2 -s 1920x1080 -i {os.environ["USER_ANIMS_DIR"]}/{args.field}_%04d.png -vcodec libx264 -crf 25  -pix_fmt yuv420p {os.environ["USER_FIGS_DIR"]}/{animation_name}'   
 os.system(cmd)

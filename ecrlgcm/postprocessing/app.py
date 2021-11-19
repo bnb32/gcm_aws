@@ -75,7 +75,8 @@ def update_output_div(land_year,plevel,field,hires):
     fig = get_interactive_globe(land_year=land_year,
                                 field=field,
                                 plevel=plevel,
-                                fast=(not hires))
+                                fast=(not hires),
+                                time_avg=True)
     logger.info(f'year,plevel,field,fast: {land_year},{plevel},{field},{not hires}')
 
     return fig

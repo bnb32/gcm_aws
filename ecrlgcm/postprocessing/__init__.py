@@ -537,8 +537,8 @@ def get_interactive_globe_time(land_year=0,time_step=0,
     start_time = time.time()
     Ctopo = mpl_to_plotly(plt.get_cmap('custom_noaa'),255)
     if field=='RELHUM' or field=='rh' or 'CLOUD' in field:
-        Cfield = [[0.0, 'rgba(255,255,255,0.0)'], [0.1, 'rgba(255,255,255,0.1)'],
-                  [0.2, 'rgba(255,255,255,0.2)'], [0.3, 'rgba(255,255,255,0.3)'],
+        Cfield = [[0.0, 'rgba(255,255,255,0.0)'], [0.1, 'rgba(255,255,255,0.0)'],
+                  [0.2, 'rgba(255,255,255,0.0)'], [0.3, 'rgba(255,255,255,0.0)'],
                   [0.4, 'rgba(255,255,255,0.4)'], [0.5, 'rgba(255,255,255,0.5)'],
                   [0.6, 'rgba(255,255,255,0.6)'], [0.7, 'rgba(255,255,255,0.7)'],
                   [0.8, 'rgba(255,255,255,0.8)'], [0.9, 'rgba(255,255,255,0.9)'],
@@ -565,7 +565,7 @@ def get_interactive_globe_time(land_year=0,time_step=0,
                       x=xt,
                       y=yt,
                       z=zt,
-                      colorscale=Cfield,#Ctopo,
+                      colorscale=Cfield,
                       surfacecolor=field_array.values[time_step],
                       opacity=field_alpha,
                       showscale=True,
@@ -636,7 +636,8 @@ def get_interactive_globe(land_year=0,field='RELHUM',
                           save_fig=False,
                           fig_name=None,
                           vmin=None,vmax=None,
-                          fast=False):
+                          fast=False,
+                          time_avg=True):
 
     define_noaa_colormap()
     titlecolor = 'white'
@@ -647,7 +648,8 @@ def get_interactive_globe(land_year=0,field='RELHUM',
                                                       field=field,
                                                       gcm_type=gcm_type,
                                                       level=level,
-                                                      plevel=plevel)
+                                                      plevel=plevel,
+                                                      time_avg=time_avg)
     #logger.info(f'get_field_and_polar_coords time: {time.time()-start_time}')
 
     #start_time = time.time()
