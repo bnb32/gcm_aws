@@ -1,5 +1,5 @@
 import os,sys
-import ecrlisca.environment
+import ecrlgcm.environment
 import argparse
 
 parser=argparse.ArgumentParser(description="Initialize ISCA")

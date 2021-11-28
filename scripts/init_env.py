@@ -8,7 +8,7 @@ cmd+='netcdf \
 
 os.system(cmd)
 
-cmd='conda install -n isca_env -c conda-forge '
+cmd='conda install -n gcm_env -c conda-forge '
 cmd+='xarray \
       xesmf \ 
       netCDF4 \
