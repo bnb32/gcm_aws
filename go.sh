@@ -14,7 +14,7 @@ python ./scripts/init_isca.py
 
 echo "Downloading paleo-continent maps"
 
-python ./scripts/get_maps.py -download
+python ./scripts/get_maps.py
 
 echo "Installing packages"
 
