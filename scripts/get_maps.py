@@ -10,7 +10,7 @@ import warnings
 import argparse
 warnings.filterwarnings("ignore")
 
-parser=argparse.ArgumentParser(description="Download and regrid paleo-continent maps")
+parser=argparse.ArgumentParser(description="Download paleo-continent maps")
 args=parser.parse_args()
 
 zip_file = 'Scotese_Wright_2018_Maps_1-88_6minX6min_PaleoDEMS_nc.zip'
