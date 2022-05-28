@@ -1,0 +1,3 @@
+WholesomeBot
+************
+.. include:: ../../README.rst
