@@ -7,16 +7,15 @@ setup(
     author='Brandon N. Benton',
     description='for setting up and running gcms on aws',
     packages=['ecrlgcm'],
-    package_dir={'ecrlgcm':'./ecrlgcm'},
+    package_dir={'ecrlgcm': './ecrlgcm'},
     install_requires=[
         'matplotlib',
+        'numpy',
         'xarray',
         'proj',
         'geos',
         'pop-tools',
-        'cartopy',
         'netCDF4',
-        'xesmf',
         'metpy',
         ]
 )
