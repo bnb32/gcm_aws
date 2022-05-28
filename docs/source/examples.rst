@@ -1,8 +1,9 @@
+********
 Examples
 ********
 
 Run Simulations
-***************
+===============
 
 Running a CESM simulation for 300Ma BP
 **************************************
@@ -14,8 +15,10 @@ Running an Isca simulation for 300Ma BP
 .. code-block:: bash
     python scripts/run_isca.py -year 300.0
 
+
 Visualization
-*************
+=============
+
 Run interactive dashboard
 *************************
 .. code-block:: bash
