@@ -17,5 +17,6 @@ setup(
         'pop-tools',
         'netCDF4',
         'metpy',
+        'tqdm'
         ]
 )

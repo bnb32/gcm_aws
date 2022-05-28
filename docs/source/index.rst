@@ -10,7 +10,8 @@ Welcome to ecrlgcm's documentation!
    :hidden:
 
    Home page <includeme>
-   API reference <_autosummary/wholesomebot>
+   API reference <_autosummary/ecrlgcm>
+   Examples <examples>
 
 .. include:: ../../README.rst
    :start-after: inclusion-intro

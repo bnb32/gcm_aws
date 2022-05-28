@@ -6,6 +6,7 @@ import os
 from sys import stdout
 import numpy as np
 from tqdm import tqdm
+import argparse
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -38,7 +39,7 @@ def interp(a,b,dt):
     #return a*(1-dt)+dt*b
 
 def edit_namelists(experiment,configuration):
-        
+
     case = f'{os.environ["CESM_REPO_DIR"]}/cases/{experiment.name}'
     nl_cam_file=f"{case}/user_nl_cam"
     nl_cpl_file=f"{case}/user_nl_cpl"
@@ -46,25 +47,25 @@ def edit_namelists(experiment,configuration):
     nl_pop_file=f"{case}/user_nl_pop"
     nl_docn_file=f"{case}/user_nl_docn"
     nl_ice_file=f"{case}/user_nl_ice"
-                    
+
     logger.info(f"**Changing namelist file: {nl_cam_file}**")
     with open(nl_cam_file,'w') as f:
         for l in configuration['atm']:
             f.write(f'{l}\n')
     f.close()
-    
+
     logger.info(f"**Changing namelist file: {nl_cpl_file}**")
     with open(nl_cpl_file,'w') as f:
         for l in configuration['cpl']:
             f.write(f'{l}\n')
-    f.close()    
+    f.close()
 
     logger.info(f"**Changing namelist file: {nl_clm_file}**")
     with open(nl_clm_file,'w') as f:
         for l in configuration['lnd']:
             f.write(f'{l}\n')
-    f.close()    
-    
+    f.close()
+
     logger.info(f"**Changing namelist file: {nl_docn_file}**")
     with open(nl_docn_file,'w') as f:
         for l in configuration['docn']:
@@ -75,31 +76,31 @@ def edit_namelists(experiment,configuration):
     with open(nl_pop_file,'w') as f:
         for l in configuration['ocn']:
             f.write(f'{l}\n')
-    f.close()    
+    f.close()
 
     logger.info(f"**Changing namelist file: {nl_ice_file}**")
     with open(nl_ice_file,'w') as f:
         for l in configuration['ocn']:
             f.write(f'{l}\n')
-    f.close()    
-    
+    f.close()
+
     if configuration['change_som_stream']:
         logger.info(f"**Changing docn dom stream file**")
         with open(f'{os.environ["GCM_REPO_DIR"]}/templates/user_docn.streams.txt.som') as f:
             docn_file=f.read()
-        
+
         os.system(f'cp {os.environ["GCM_REPO_DIR"]}/templates/user_docn.streams.txt.som {case}')
         with open(f'{case}/user_docn.streams.txt.som','w') as f:
             tmp_file = experiment.docn_som_file.split('/')[-1]
             tmp_path = experiment.docn_som_file.split('/')[:-1]
             tmp_path = '/'.join(tmp_path)
             f.write(docn_file.replace('%DOCN_SOM_FILE%',tmp_file).replace('%DOCN_SOM_DIR%',tmp_path))
-    
+
     if configuration['change_dom_stream']:
         logger.info(f"**Changing docn dom stream file**")
         with open(f'{os.environ["GCM_REPO_DIR"]}/templates/user_docn.streams.txt.prescribed') as f:
             docn_file=f.read()
-        
+
         os.system(f'cp {os.environ["GCM_REPO_DIR"]}/templates/user_docn.streams.txt.prescribed {case}')
         with open(f'{case}/user_docn.streams.txt.prescribed','w') as f:
             sst_file = experiment.docn_sst_file.split('/')[-1]
@@ -154,12 +155,12 @@ def land_year_range(arg):
     try:
         if int(arg)==float(arg):
             f = int(arg)
-    except:    
+    except:
         try:
             f = float(arg)
         except:
             raise argparse.ArgumentTypeError('land_year must be float or integer')
-    
+
     if f < min_land_year or f > max_land_year:
         raise argparse.ArgumentTypeError(f'land_year must be < {max_land_year} and > {min_land_year}')
     return f
@@ -200,12 +201,12 @@ def cell_overlap(inlat,inlon,lat,lon,lat_dx,lon_dx,landmask):
 
     total_count=0
     mask_count=0
-    
+
     if lon >= 180.0: lon-=360.0
 
     max_i = np.argmin(np.abs(inlat-(lat-lat_dx/2)))
     min_i = np.argmin(np.abs(inlat-(lat+lat_dx/2)))
-    
+
     min_j = np.argmin(np.abs(inlon-(lon-lon_dx/2)))
     max_j = np.argmin(np.abs(inlon-(lon+lon_dx/2)))
 
@@ -231,4 +232,4 @@ def overlap_fraction(inlat,inlon,outlat,outlon,landmask):
                                     outlat[i],outlon[j],
                                     lat_dx,lon_dx,
                                     landmask)
-    return tmp        
+    return tmp

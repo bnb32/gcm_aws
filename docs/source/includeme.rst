@@ -1,3 +1,3 @@
-WholesomeBot
-************
+ECRLGCM
+*******
 .. include:: ../../README.rst
