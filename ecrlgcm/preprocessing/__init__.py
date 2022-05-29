@@ -4,7 +4,6 @@ import netCDF4 as nc
 import numpy as np
 import glob
 import xarray as xr
-import xesmf as xe
 import warnings
 from tqdm import tqdm
 from scipy.ndimage import gaussian_filter

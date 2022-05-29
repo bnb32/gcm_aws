@@ -2,16 +2,14 @@ import os
 
 cmd='sudo yum-config-manager --enable epel; '
 cmd+='sudo yum install '
-cmd+='netcdf \ 
-      netcdf-fortran \
-      ;'
+cmd+='netcdf '
+cmd+='netcdf-fortran '
 
 os.system(cmd)
 
 cmd='conda install -n gcm_env -c conda-forge '
-cmd+='xarray \
-      xesmf \ 
-      netCDF4 \
-      ;'
+cmd+='xarray '
+cmd+='xesmf '
+cmd+='netCDF4 '
 
 os.system(cmd)

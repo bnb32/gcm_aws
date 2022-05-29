@@ -1,10 +1,5 @@
 """Get maps for simluations"""
-import xarray as xr
-import numpy as np
-import xesmf as xe
-import sys
 import os
-import glob
 import warnings
 import argparse
 warnings.filterwarnings("ignore")
