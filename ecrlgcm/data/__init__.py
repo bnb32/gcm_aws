@@ -24,6 +24,9 @@ def get_ecc_series():
     lines = {-float(l[0])/1000: float(l[1]) for l in lines}
     return lines
 
-co2_series = get_co2_series()
-ecc_series = get_ecc_series()
-obl_series = get_obl_series()
+try:
+    co2_series = get_co2_series()
+    ecc_series = get_ecc_series()
+    obl_series = get_obl_series()
+except Exception:
+    co2_series = ecc_series = obl_series = []
