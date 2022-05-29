@@ -17,26 +17,6 @@ def figures_argparse():
     parser.add_argument('-time_avg',default=False,action='store_true')
     return parser
 
-parser = figures_argparse()
-args = parser.parse_args()
-
-if args.overwrite:
-    cmd = f'rm -f {os.environ["USER_ANIMS_DIR"]}/{args.field}_*.png;'
-    os.system(cmd)
-
-if args.field == 'RELHUM' or 'CLOUD' in args.field:
-    vmin = 0
-    vmax = 100
-elif args.field == 'TS':
-    vmin = 240
-    vmax = 300
-else:
-    vmin=vmax=None
-
-if args.time_avg:
-    times = np.linspace(500,0,501)
-else:
-    times = [i for i in range(100)]
 
 def tmp(i):
     fig_name = f'{args.field}_{i:04}.png'
@@ -57,13 +37,35 @@ def tmp(i):
                               vmin=vmin,
                               vmax=vmax)
 
-Parallel(n_jobs=24)(delayed(tmp)(i) for i in range(len(times)))
+if __name__ == '__main__':
+    parser = figures_argparse()
+    args = parser.parse_args()
 
-if args.time_avg:
-    animation_name=f'{args.model}_{args.field}.mp4'
-else:
-    animation_name=f'{args.model}_{args.field}_{args.year}.mp4'
+    if args.overwrite:
+        cmd = f'rm -f {os.environ["USER_ANIMS_DIR"]}/{args.field}_*.png;'
+        os.system(cmd)
+
+    if args.field == 'RELHUM' or 'CLOUD' in args.field:
+        vmin = 0
+        vmax = 100
+    elif args.field == 'TS':
+        vmin = 240
+        vmax = 300
+    else:
+        vmin=vmax=None
+
+    if args.time_avg:
+        times = np.linspace(500,0,501)
+    else:
+        times = [i for i in range(100)]
+
+    Parallel(n_jobs=24)(delayed(tmp)(i) for i in range(len(times)))
+
+    if args.time_avg:
+        animation_name=f'{args.model}_{args.field}.mp4'
+    else:
+        animation_name=f'{args.model}_{args.field}_{args.year}.mp4'
 
 
-cmd = f'ffmpeg -r 5 -f image2 -s 1920x1080 -i {os.environ["USER_ANIMS_DIR"]}/{args.field}_%04d.png -vcodec libx264 -crf 25  -pix_fmt yuv420p {os.environ["USER_FIGS_DIR"]}/{animation_name}'
-os.system(cmd)
+    cmd = f'ffmpeg -r 5 -f image2 -s 1920x1080 -i {os.environ["USER_ANIMS_DIR"]}/{args.field}_%04d.png -vcodec libx264 -crf 25  -pix_fmt yuv420p {os.environ["USER_FIGS_DIR"]}/{animation_name}'
+    os.system(cmd)

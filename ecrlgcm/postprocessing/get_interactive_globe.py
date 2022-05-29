@@ -14,12 +14,13 @@ def globe_argparse():
                         help="Years prior to current era in units of Ma")
     return parser
 
-parser = globe_argparse()
-args=parser.parse_args()
+if __name__ == '__main__':
+    parser = globe_argparse()
+    args=parser.parse_args()
 
-get_interactive_globe(land_year=args.year,
-                      field=args.field,
-                      level=args.level,
-                      save_html=args.save_html,
-                      gcm_type=args.model,
-                      vmin=0,vmax=100)
+    get_interactive_globe(land_year=args.year,
+                          field=args.field,
+                          level=args.level,
+                          save_html=args.save_html,
+                          gcm_type=args.model,
+                          vmin=0,vmax=100)
