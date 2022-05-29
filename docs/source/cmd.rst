@@ -7,3 +7,5 @@ Command Line utilities
     cmd_isca
     cmd_cesm
     cmd_globe
+    cmd_figures
+    cmd_animation
