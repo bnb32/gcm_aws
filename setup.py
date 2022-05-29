@@ -20,5 +20,6 @@ setup(
         'metpy',
         'tqdm',
         'sphinx-argparse',
+        'git+https://github.com/pangeo-data/xesmf.git'
         ]
 )

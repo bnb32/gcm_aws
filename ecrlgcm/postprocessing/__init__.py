@@ -6,7 +6,6 @@ import matplotlib
 import matplotlib.pyplot as plt
 import cartopy.crs as ccrs
 import matplotlib.animation as anim
-from IPython.display import HTML
 from matplotlib.colors import LinearSegmentedColormap
 from matplotlib.cm import unregister_cmap
 from metpy.calc import smooth_n_point
@@ -16,8 +15,10 @@ import plotly.io as pio
 import os
 import time
 
-from ecrlgcm.utilities import polar_to_cartesian, mapping_map_to_sphere, sig_round, interp
-from ecrlgcm.utilities import land_years, get_logger, stored_years, cesm_plevels, isca_plevels
+from ecrlgcm.utilities import (polar_to_cartesian, mapping_map_to_sphere,
+                               sig_round, interp)
+from ecrlgcm.utilities import (get_logger, stored_years,
+                               cesm_plevels, isca_plevels)
 from ecrlgcm.preprocessing import solar_constant
 from ecrlgcm.experiment import Experiment
 
