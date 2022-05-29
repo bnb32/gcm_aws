@@ -20,6 +20,7 @@ setup(
         'metpy',
         'tqdm',
         'sphinx-argparse',
-        'xesmf'
+        'xesmf',
+        'esmpy'
         ]
 )
