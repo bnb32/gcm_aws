@@ -2,6 +2,6 @@ Get Animation
 =============
 
 .. argparse::
-    :module: ecrlgcm.postprocessing.get_animation
+    :filename: ../../ecrlgcm/postprocessing/get_animation.py
     :func: animation_argparse
     :prog: python ecrlgcm/postprocessing/get_animation.py
