@@ -1,3 +1,4 @@
+"""Ecrlgcm utilities"""
 import ecrlgcm.environment
 
 import logging

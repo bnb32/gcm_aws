@@ -1,11 +1,14 @@
-import ecrlgcm.environment
-from ecrlgcm.preprocessing import eccentricity,obliquity
-
+"""Setup GCM experiments"""
 import xarray as xr
 import os
 import glob
 
+import ecrlgcm.environment
+from ecrlgcm.preprocessing import eccentricity, obliquity
+
+
 class Experiment:
+    """GCM experiment class"""
     def __init__(self,gcm_type='cesm',multiplier=1.0,
                  land_year=0,co2_value=None,
                  res='f19_f19_mg17',
@@ -16,7 +19,7 @@ class Experiment:
         self.co2_value = co2_value
         if land_year=='0.02':
             self.sea_level = -100
-        else: 
+        else:
             self.sea_level=sea_level
         self.max_depth = max_depth
         self.res = res
@@ -51,7 +54,7 @@ class Experiment:
                 self.co2_file = f'co2_{self.multiplier}x_continents_{land_year}Ma.nc'
                 self.name = self.path_format = f'variable_co2_{self.multiplier}x_continents_{land_year}Ma_experiment'
             self.file_path = os.path.join(os.environ['GFDL_DATA'],self.path_format)
-            self.files = sorted(glob.glob(os.path.join(self.file_path,'run*/atmos_monthly.nc'))) 
+            self.files = sorted(glob.glob(os.path.join(self.file_path,'run*/atmos_monthly.nc')))
             self.co2_file = f'{os.environ["ISCA_CO2_DIR"]}/{self.co2_file}'
 
         elif gcm_type=='cesm':
@@ -61,11 +64,11 @@ class Experiment:
             else:
                 self.co2_file = f'co2_{self.multiplier}x_continents_{land_year}Ma_{res}.nc'
                 self.name = self.path_format = f'{self.exp_type}_co2_{self.multiplier}x_continents_{land_year}Ma_experiment'
-            
+
             self.file_path = os.path.join(os.environ['CIME_OUT_DIR'],self.path_format)
             self.files = sorted(glob.glob(os.path.join(self.file_path,f'atm/hist/{self.name}.cam.h0.*.nc')))
             self.run_files = sorted(glob.glob(os.path.join(self.file_path,f'run/{self.name}.cam.h0.*.nc')))
-            
+
             self.solar_file = f'{os.environ["CESM_SOLAR_DIR"]}/{self.solar_file}'
             self.topo_file = f'{os.environ["CESM_TOPO_DIR"]}/{self.topo_file}'
             self.co2_file = f'{os.environ["CESM_CO2_DIR"]}/{self.co2_file}'
@@ -87,31 +90,31 @@ class Experiment:
 
     def base(self):
         return xr.open_mfdataset(self.base_file)
-    
+
     def hires(self):
         return xr.open_mfdataset(self.high_res_file)
 
     def sim_data(self,**kwargs):
         return xr.open_mfdataset(self.files,**kwargs)
-    
+
     def run_data(self,**kwargs):
         return xr.open_mfdataset(self.run_files,**kwargs)
 
     def topo(self):
         return xr.open_mfdataset(self.topo_file,decode_times=False)
-    
+
     def land(self):
         return xr.open_mfdataset(self.landfrac_file,decode_times=False)
-    
+
     def ocean(self):
         return xr.open_mfdataset(self.oceanfrac_file,decode_times=False)
-    
+
     def docn(self):
         return xr.open_mfdataset(self.docn_ocnfrac_file,decode_times=False)
-    
+
     def solar_data(self):
         return xr.open_mfdataset(self.solar_file,decode_times=False)
-    
+
     def co2_data(self):
         return xr.open_mfdataset(self.co2_file,decode_times=False)
 
@@ -223,4 +226,4 @@ def Configuration(cesmexp,args):
 
         sim_config['change_xml_cmd'] = ';'.join(f'./xmlchange {l}' for l in sim_config["xml_changes"])
 
-    return sim_config    
+    return sim_config

@@ -1,5 +1,5 @@
 from ecrlgcm.postprocessing import get_interactive_globe
-from ecrlgcm.misc import land_year_range, min_land_year, max_land_year, none_or_int
+from ecrlgcm.utilities import land_year_range, min_land_year, max_land_year, none_or_int
 
 import argparse
 

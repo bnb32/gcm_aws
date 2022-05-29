@@ -1,5 +1,5 @@
 from ecrlgcm.postprocessing import get_continent_animation, get_field_animation, get_field_time_animation
-from ecrlgcm.misc import land_years, stored_years, none_or_int, none_or_float
+from ecrlgcm.utilities import land_years, stored_years, none_or_int, none_or_float
 
 import numpy as np
 import argparse
@@ -31,7 +31,7 @@ if args.time_avg:
                             gcm_type=args.model,globe=args.globe)
 
 if not args.time_avg:
-    
+
     if args.field=='RELHUM' or 'CLOUD' in args.field:
         get_field_time_animation(args.year,stored_years,level=args.level,
                              field=args.field,color_map='custom_clouds',

@@ -1,6 +1,7 @@
+"""Ecrlgcm preprocessing"""
 import ecrlgcm.environment
 from ecrlgcm.data import co2_series, ecc_series, obl_series
-from ecrlgcm.misc import land_years, interp, get_logger, sliding_std, get_base_topofile
+from ecrlgcm.utilities import land_years, interp, get_logger, sliding_std, get_base_topofile
 
 import os
 import netCDF4 as nc
@@ -16,7 +17,7 @@ warnings.filterwarnings("ignore")
 
 logger = get_logger()
 
-def eccentricity(land_year): 
+def eccentricity(land_year):
 
     #return mila_cycle(Amin=0.005,Amax=0.057,Acurr=0.0167,T=0.092,land_year=-land_year)
     return interpolate_ecc(land_year)
@@ -65,7 +66,7 @@ def interpolate_obl(land_year):
     return interpolate_series(land_year,obl_series)
 
 def modify_isca_input_files(ecrlexp,remap=False):
-    
+
     multiplier = ecrlexp.multiplier
     land_year = ecrlexp.land_year
     sea_level = ecrlexp.sea_level
@@ -79,11 +80,11 @@ def modify_isca_input_files(ecrlexp,remap=False):
         #co2_data = xr.open_mfdataset(ecrlexp.co2_file)
         ncfile = nc.Dataset(ecrlexp.co2_file,'r+')
         co2 = ncfile.variables['co2']
-        
-        if co2_value is None:    
+
+        if co2_value is None:
             co2[:,:,:,:] = float(multiplier)*interpolate_co2(land_year)
             #co2_data['co2'] = (co2_data['co2'].dims,np.full(co2_data['co2'].shape,float(multiplier)*interpolate_co2(land_year)))
-        else:    
+        else:
             co2[:,:,:,:] = float(co2_value)
             #co2_data['co2'] = (co2_data['co2'].dims,np.full(co2_data['co2'].shape,float(co2_value)))
         ncfile.variables['co2'][:,:,:,:] = co2[:,:,:,:]
@@ -114,7 +115,7 @@ def modify_isca_input_files(ecrlexp,remap=False):
         ds_out = ds_out.fillna(0)
         ds_out.to_netcdf(ecrlexp.topo_file)
         logger.info(f'Saving map file: {ecrlexp.topo_file}')
-    
+
 def regrid_continent_maps(remap_file,basefile='',outfile='',sea_level=0,max_depth=1000):
     land_year = f'{remap_file.rstrip(".nc").split("_")[-1]}'
     land = xr.open_mfdataset(remap_file)
@@ -127,7 +128,7 @@ def regrid_continent_maps(remap_file,basefile='',outfile='',sea_level=0,max_dept
     print(f'{out_file}')
 
 def shift_longitude(data):
-    
+
     logger.info("Shifting longitude in high res data")
     tmp = np.zeros(data['z'].shape)
     lons = [x+360.0 if x<0 else x for x in data['lon'].values]
@@ -136,11 +137,11 @@ def shift_longitude(data):
     for i,lon in enumerate(sorted_lons):
         idx = lons.index(lon)
         tmp[:,i] = data['z'].values[::-1,idx]
-    
+
     lon_attrs = data['lon'].attrs
     lat_attrs = data['lat'].attrs
     z_attrs = data['z'].attrs
-    
+
     data['lon'] = (data['lon'].dims,sorted_lons)
     data['lon'].attrs = lon_attrs
     data['lat'] = (data['lat'].dims,lats)
@@ -153,9 +154,9 @@ def compute_land_ocean_properties(land,sea_level=0,max_depth=1000):
 
     if 'latitude' in land:
         land = land.rename({'latitude':'lat'})
-    if 'longitude' in land:    
+    if 'longitude' in land:
         land = land.rename({'longitude':'lon'})
-    
+
     land = shift_longitude(land)
     land['z_non_smooth'] = (land['z'].dims,land['z'].values)
     land['z'] = (land['z'].dims,smooth_n_point(land['z'].values,9))
@@ -168,7 +169,7 @@ def compute_land_ocean_properties(land,sea_level=0,max_depth=1000):
     height = np.where(land['z'].values>sea_level,land['z'].values,0)
     depth = np.where(land['z'].values<=sea_level,-land['z'].values,0)
     depth = np.where(depth>max_depth,max_depth,depth)
-    
+
     land['landmask'] = (land['z'].dims,landmask)
     land['landfrac'] = (land['z'].dims,landfrac)
     land['oceanmask'] = (land['z'].dims,oceanmask)
@@ -194,7 +195,7 @@ def regrid_high_res_data(cesmexp,land,remap=True):
         logger.info('Regridding high res file to fv1.9x2.5')
         regridder = xe.Regridder(land, ds_out, 'bilinear', ignore_degenerate=True)
         land = regridder(land)
-        
+
         landfrac = smooth_n_point(land['landfrac'].values,5)
         landmask = np.where(landfrac>0.0,1.0,0.0)
         oceanfrac = 1-landfrac
@@ -204,7 +205,7 @@ def regrid_high_res_data(cesmexp,land,remap=True):
         height = np.where(land['z'].values>sea_level,land['z'].values,0)
         depth = np.where(land['z'].values<=sea_level,-land['z'].values,0)
         depth = np.where(depth>max_depth,max_depth,depth)
-        
+
         land['landmask'] = (land['z'].dims,landmask)
         land['landfrac'] = (land['z'].dims,landfrac)
         land['oceanmask'] = (land['z'].dims,oceanmask)
@@ -225,13 +226,13 @@ def regrid_high_res_data_ncl(cesmexp,in_shape=(1801,3601),remap=True):
     cmd += f'rm -f "%s"; ncl infile=\'"{cesmexp.high_res_file}"\' outfile=\'"%s"\' '
     cmd += f'res=\'"%s"\' n_lat_in={in_shape[0]} n_lon_in={in_shape[1]} '
     cmd += f'{os.environ["NCL_SCRIPTS"]}/remap_high_res.ncl'
-    
+
     if not os.path.exists(cesmexp.remapped_f19) or remap:
         logger.info('Regridding high res file to fv1.9x2.5')
         logger.info(cmd%(cesmexp.remapped_f19,cesmexp.remapped_f19,"f19"))
         os.system(cmd%(cesmexp.remapped_f19,cesmexp.remapped_f19,"f19"))
         logger.info(f'Saved {cesmexp.remapped_f19}')
-    
+
     '''
     if not os.path.exists(cesmexp.remapped_g16) or remap:
         logger.info('Regridding high res file to gx1v6')
@@ -267,14 +268,14 @@ def regrid_continent_data(land,basefile='',sea_level=0,max_depth=1000):
         raw_lons = land['lon'].values
 
     raw_landmask = np.where(land['z'].values>sea_level,1.0,0.0)
-    
+
     ds_out = xr.Dataset({'lat': (['lat'], lats),
                          'lon': (['lon'], lons)})
 
     logger.info('Regridding continent data')
     regridder = xe.Regridder(land, ds_out, 'bilinear')
     ds_out = regridder(land)
-    
+
     logger.info('Calculating landfrac_dict')
     landfrac_dict = overlap_fraction(raw_lats,raw_lons,lats,lons,raw_landmask)
     landfrac = get_landfrac(shape=ds_out['z'].shape,landfrac_dict=landfrac_dict)
@@ -284,11 +285,11 @@ def regrid_continent_data(land,basefile='',sea_level=0,max_depth=1000):
     landfrac[landfrac>1]=1
     landmask[landmask<0]=0
     landfrac[landfrac<0]=0
-    
+
     ds_out['landfrac'] = (ds_out['z'].dims,landfrac)
     ds_out['landmask'] = (ds_out['z'].dims,landmask.astype(np.int32))
     ds_out['land_mask'] = (ds_out['z'].dims,landmask.astype(np.int32))
-    
+
     ds_out['oceanfrac'] = (ds_out['z'].dims,1-ds_out['landfrac'].values)
     ds_out['oceanmask'] = (ds_out['z'].dims,np.array(1-ds_out['landmask'].values,dtype=np.int32))
 
@@ -300,7 +301,7 @@ def regrid_continent_data(land,basefile='',sea_level=0,max_depth=1000):
     ds_out['depth'] = (ds_out['z'].dims,depth)
     ds_out['PHIS'] = (ds_out['z'].dims,9.8*ds_out['z'].values)
     return ds_out
-    
+
 def interpolate_land(land_year):
     year = float(land_year)
     keys = sorted(land_years)
@@ -322,7 +323,7 @@ def interpolate_land(land_year):
                              get_original_map_data(keys[i+1])['z'].values,
                              (year-keys[i])/(keys[i+1]-keys[i]))
                 ds_out['z'] = (ds_out['z'].dims,tmp)
-    
+
     ds_out = ds_out.rename({'latitude':'lat','longitude':'lon'})
     return ds_out
 
@@ -357,14 +358,14 @@ def fill_poles(data):
         for j in range(len(data['lon'].values)):
             if np.abs(data['lat'].values[i]-90.0)<1:
                 tmp[i,j]=1.0
-    return tmp            
+    return tmp
 
 def modify_array_with_time(data,old_mask,new_mask):
 
     tmp = np.zeros(data.shape)
     for i in range(tmp.shape[0]):
         data[i,:,:] = modify_arrays_with_mask(data[i,:,:],old_mask,new_mask)
-    return data    
+    return data
 
 def modify_array_with_time_and_level(data,old_mask,new_mask):
 
@@ -372,10 +373,10 @@ def modify_array_with_time_and_level(data,old_mask,new_mask):
     for i in range(tmp.shape[0]):
         for j in range(tmp.shape[1]):
             data[i,j,:,:] = modify_arrays_with_mask(data[i,j,:,:],old_mask,new_mask)
-    return data    
+    return data
 
 def modify_arrays_with_mask(data,old_mask,new_mask):
-    
+
     tmp = np.zeros(new_mask.shape)
     mask_mean = data[old_mask>0].mean()
     nomask_mean = data[old_mask==0].mean()
@@ -396,17 +397,17 @@ def modify_all_arrays_with_mask(data,n_dims,old_mask,new_mask):
             tmp_vals = modify_array_with_time_and_level(data[e].values,old_mask,new_mask)
             data[e] = (data[e].dims,tmp_vals)
             data[e].attrs = tmp_attrs
-    return data    
+    return data
 
 def modify_cesm_input_files(cesmexp,remap=True,remap_hires=True):
-    
+
     land_year = cesmexp.land_year
     sea_level = cesmexp.sea_level
     max_depth = cesmexp.max_depth
     base_topofile = os.environ['ORIG_CESM_TOPO_FILE']#get_base_topofile(cesmexp.res)
-    
+
     if not os.path.exists(cesmexp.high_res_file) or remap_hires:
-        logger.info("Computing land and ocean masks") 
+        logger.info("Computing land and ocean masks")
         raw_topo_data = compute_land_ocean_properties(interpolate_land(land_year),
                                                       sea_level=sea_level,
                                                       max_depth=max_depth)
@@ -414,7 +415,7 @@ def modify_cesm_input_files(cesmexp,remap=True,remap_hires=True):
         logger.info(f'Saving high res map file: {cesmexp.high_res_file}')
         regrid_high_res_data(cesmexp,raw_topo_data,remap=remap)
         #regrid_high_res_data_ncl(cesmexp,in_shape=raw_topo_data['z'].shape,remap=remap)
-    
+
     #topo file
     if not os.path.exists(cesmexp.topo_file) or remap:
 
@@ -428,10 +429,10 @@ def modify_cesm_input_files(cesmexp,remap=True,remap_hires=True):
         topo_data['SGH30'] = (topo_data['SGH30'].dims,sliding_std(f19_data['height'].values))
         topo_data.to_netcdf(cesmexp.topo_file)
         logger.info(f'Saved topo_file: {cesmexp.topo_file}')
-    
+
     #landfrac file
     if not os.path.exists(cesmexp.landfrac_file) or remap:
-        
+
         logger.info('Modifying landfrac_file')
         orig_land = xr.open_mfdataset(os.environ['ORIG_CESM_LANDFRAC_FILE'])
         orig_mask = orig_land['mask'].values.copy()
@@ -442,7 +443,7 @@ def modify_cesm_input_files(cesmexp,remap=True,remap_hires=True):
         #orig_land = orig_land.fillna(0)
         orig_land.to_netcdf(cesmexp.landfrac_file)
         logger.info(f'Saving landfrac_file: {cesmexp.landfrac_file}')
-        
+
     #oceanfrac file
     if not os.path.exists(cesmexp.oceanfrac_file) or remap:
         logger.info('Modifying oceanfrac_file')
@@ -466,7 +467,7 @@ def modify_cesm_input_files(cesmexp,remap=True,remap_hires=True):
         #orig_docn = orig_docn.fillna(0)
         orig_docn.to_netcdf(cesmexp.docn_ocnfrac_file)
         logger.info(f'Saving docn_ocnfrac_file: {cesmexp.docn_ocnfrac_file}')
-    
+
     #docn sst/ice init conditions
     if not os.path.exists(cesmexp.docn_sst_file) or remap:
         logger.info('Modifying docn_sst_file')
@@ -480,7 +481,7 @@ def modify_cesm_input_files(cesmexp,remap=True,remap_hires=True):
         #orig_sst = orig_sst.fillna(0)
         orig_sst.to_netcdf(cesmexp.docn_sst_file)
         logger.info(f'Saving docn_sst_file: {cesmexp.docn_sst_file}')
-    
+
     #landplant file
     if not os.path.exists(cesmexp.landplant_file) or remap:
         logger.info('Modifying landplant_file')
@@ -507,7 +508,7 @@ def modify_cesm_input_files(cesmexp,remap=True,remap_hires=True):
     if not os.path.exists(cesmexp.docn_som_file) or remap:
         logger.info('Modifying docn_som_file')
         docn_som_data = xr.open_mfdataset(os.environ['ORIG_DOCN_SOM_FILE'])
-        
+
         docn_som_data = modify_all_arrays_with_mask(docn_som_data,3,
                                                     docn_som_data['mask'].values,
                                                     orig_ocean['mask'].values.astype(np.int32))
@@ -515,7 +516,7 @@ def modify_cesm_input_files(cesmexp,remap=True,remap_hires=True):
         docn_som_data['frac'] = (docn_som_data['mask'].dims,orig_ocean['frac'].values)#g16_data['oceanfrac'].values)
         docn_som_data['mask'] = (docn_som_data['mask'].dims,orig_ocean['mask'].values)#g16_data['oceanmask'].values.astype(np.int32))
         docn_som_data['mask'].attrs = mask_attrs
-        
+
         docn_som_data.to_netcdf(cesmexp.docn_som_file)
         logger.info(f'Saved docn_som_file: {cesmexp.docn_som_file}')
     '''
@@ -538,16 +539,16 @@ def modify_cesm_input_files(cesmexp,remap=True,remap_hires=True):
             tmp = np.zeros(g16_data['oceanmask'].shape)
             tmp[g16_data['oceanmask'].values>0] = init_ocean_data[1,i,:,:].mean()
             tmp_data[1,i,:,:] = tmp.copy()
-        
+
         tmp_arr = np.array(tmp_data.reshape(-1),dtype='>f8')
         tmp_arr.tofile(cesmexp.init_ocean_file)
-        
+
         #for e in init_ocean_data:
         #    if len(init_ocean_data[e].shape)==3:
         #        tmp = np.full(init_ocean_data[e].shape,0)
         #        tmp[tmp_mask>0] = np.mean(init_ocean_data[e].values)
         #        init_ocean_data[e] = (init_ocean_data[e].dims,tmp)
-        
+
         #init_ocean_data.to_netcdf(cesmexp.init_ocean_file)
         logger.info(f'Saved init_ocean_file: {cesmexp.init_ocean_file}')
 
@@ -558,7 +559,7 @@ def modify_cesm_input_files(cesmexp,remap=True,remap_hires=True):
         oceanmask = np.array(g16_data['oceanmask'].values.reshape(-1),dtype='>i4')
         oceanmask.tofile(cesmexp.oceanmask_file)
         logger.info(f'Saved oceanmask_file: {cesmexp.oceanmask_file}')
-    
+
     #oceantopo file
     if not os.path.exists(cesmexp.oceantopo_file) or remap:
         logger.info('Modifying oceantopo_file')
@@ -566,12 +567,12 @@ def modify_cesm_input_files(cesmexp,remap=True,remap_hires=True):
         oceantopo = np.array(g16_data['depth'].values.reshape(-1),dtype='>i4')
         oceantopo.tofile(cesmexp.oceantopo_file)
         logger.info(f'Saved oceantopo_file: {cesmexp.oceantopo_file}')
- 
+
     '''
     modify_solar_file(cesmexp,remap)
 
 def regrid_domain_files(cesmexp):
-    
+
     logger.info("Modifying landfrac_file")
     orig_land = xr.open_mfdataset(os.environ['ORIG_CESM_LANDFRAC_FILE'])
     orig_land['frac'] = (orig_land['frac'].dims,orig_land['mask'].values)
@@ -594,7 +595,7 @@ def regrid_domain_files(cesmexp):
     orig_docn = orig_docn.fillna(0)
     orig_docn.to_netcdf(cesmexp.docn_ocnfrac_file)
     logger.info(f'Saving docn_ocnfrac_file: {cesmexp.docn_ocnfrac_file}')
-    
+
     logger.info('Modifying docn_sst_file')
     orig_sst = xr.open_mfdataset(os.environ['ORIG_DOCN_SST_FILE'])
     orig_sst['SST_cpl'] = (orig_sst['SST_cpl'].dims,orig_sst['SST_cpl'].values)
@@ -604,7 +605,7 @@ def regrid_domain_files(cesmexp):
     logger.info(f'Saving docn_sst_file: {cesmexp.docn_sst_file}')
 
 def modify_co2_file(cesmexp,remap):
-    
+
     #co2 file
     if not os.path.exists(cesmexp.co2_file) or remap:
         logger.info('Modifying co2_file')
@@ -614,7 +615,7 @@ def modify_co2_file(cesmexp,remap):
         f['co2vmr'] = (f['co2vmr'].dims,tmp)
         f.to_netcdf(cesmexp.co2_file)
         logger.info(f'Saved co2_file: {cesmexp.co2_file}')
-    
+
 def modify_solar_file(cesmexp,remap):
 
     #solar file
@@ -625,9 +626,9 @@ def modify_solar_file(cesmexp,remap):
         f['ssi'] = (f['ssi'].dims,solar_frac*f['ssi'].values)
         f.to_netcdf(cesmexp.solar_file)
         logger.info(f'Saved solar_file: {cesmexp.solar_file}')
-    
+
 def cell_overlap(lats,lons,lat,lon,dx,dy,landmask):
-    
+
     lons_in = ((lon-dx/2 < lons) & (lons < lon+dx/2))
     lats_in = ((lat-dy/2 < lats) & (lats < lat+dy/2))
 
@@ -644,21 +645,21 @@ def overlap_fraction(inlat,inlon,outlat,outlon,landmask):
 
     inlon = [x+360.0 if x < 0 else x for x in inlon]
     outlon = [x+360.0 if x < 0 else x for x in outlon]
-    
+
     for i in tqdm(range(len(inlat))):
         for j in range(len(inlon)):
             lat = inlat[i]
             lon = inlon[j]
             lat_idx = np.argmin(np.abs(outlat-lat))
             lon_idx = np.argmin(np.abs(outlon-lon))
-            
+
             key = (lat_idx,lon_idx)
             if key not in tmp:
                 tmp[key] = {'mask_count':landmask[i,j],'total_count':1.0}
             else:
                 tmp[key]['mask_count']+=landmask[i,j]
                 tmp[key]['total_count']+=1.0
-    return tmp        
+    return tmp
 
 def get_landfrac_dict(orig_data=None,source_data=None,land_year=None,sea_level=0):
 
@@ -676,7 +677,7 @@ def get_landfrac_dict(orig_data=None,source_data=None,land_year=None,sea_level=0
     else:
         inlat = source_data['lat'].values
         inlon = source_data['lon'].values
-    
+
     return source_data,overlap_fraction(inlat,inlon,outlat,outlon,raw_landmask)
 
 def get_landfrac(shape=None,landfrac_dict=None):
@@ -687,7 +688,7 @@ def get_landfrac(shape=None,landfrac_dict=None):
         for j in range(landfrac.shape[1]):
             key = (i,j)
             landfrac[i,j] = landfrac_dict[key]['mask_count']/landfrac_dict[key]['total_count']
-    return landfrac        
+    return landfrac
 
 def get_oceanfrac(shape=None,landfrac_dict=None):
 
@@ -697,7 +698,7 @@ def get_oceanfrac(shape=None,landfrac_dict=None):
         for j in range(oceanfrac.shape[1]):
             key = (i,j)
             oceanfrac[i,j] = 1-landfrac_dict[key]['mask_count']/landfrac_dict[key]['total_count']
-    return oceanfrac        
+    return oceanfrac
 
 def anomaly_value(max_val,r,x,x0,y,y0,anomaly_type='disk'):
     if x>=180.0: x-=360.0
@@ -726,7 +727,7 @@ def inject_anomaly(basefile='',anomaly_type='disk',
 
     for i,lat in enumerate(lats):
         for j,lon in enumerate(lons):
-        
+
             value=anomaly_value(max_anomaly,squared_radius,
                                 lon,anomaly_lon,lat,anomaly_lat,
                                 anomaly_type=anomaly_type)
@@ -742,5 +743,5 @@ def inject_anomaly(basefile='',anomaly_type='disk',
                     data[:,-1,i,j]+=value
                 else:
                     data[:,:,i,j]+=value
-    
+
     return data

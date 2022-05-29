@@ -11,6 +11,7 @@ Welcome to ecrlgcm's documentation!
 
    Home page <includeme>
    API reference <_autosummary/ecrlgcm>
+   Command Line Use <cmd>
    Examples <examples>
 
 .. include:: ../../README.rst

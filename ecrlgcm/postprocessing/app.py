@@ -1,5 +1,5 @@
 from ecrlgcm.postprocessing import get_interactive_globe, variable_dictionary
-from ecrlgcm.misc import get_logger, max_land_year
+from ecrlgcm.utilities import get_logger, max_land_year
 
 import plotly.graph_objects as go # or plotly.express as px
 import dash

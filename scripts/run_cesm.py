@@ -1,48 +1,65 @@
-import ecrlgcm.environment
-from ecrlgcm.misc import edit_namelists,get_logger,land_year_range,min_land_year,max_land_year,get_base_topofile
-from ecrlgcm.preprocessing import eccentricity, obliquity, solar_constant, interpolate_co2
-from ecrlgcm.preprocessing import modify_cesm_input_files
-from ecrlgcm.experiment import Experiment, Configuration
-
+"""Run CESM simulations"""
 import os
 import argparse
 import numpy as np
 from datetime import date
 import time
 
+from ecrlgcm.utilities import (edit_namelists, get_logger, land_year_range,
+                          min_land_year, max_land_year)
+from ecrlgcm.preprocessing import (solar_constant, interpolate_co2)
+from ecrlgcm.preprocessing import modify_cesm_input_files
+from ecrlgcm.experiment import Experiment, Configuration
+
 logger = get_logger()
 
 experiment_dictionary = {
-        'cam_clmCN_docnSOM':{'compset':'F1850_CAM60_CLM50%CN_SICE_DOCN%SOM_SROF_SGLC_SWAV','res':'f19_f19_mg17','custom':True},
-        'cam_clmCN_docnDOM':{'compset':'F1850_CAM60_CLM50%CN_SICE_DOCN%DOM_SROF_SGLC_SWAV','res':'f19_f19_mg17','custom':True},
-        'aqua':{'compset':'QSC6','res':'f19_f19_mg17','custom':True},
-        }
+        'cam_clmCN_docnSOM':
+        {'compset': 'F1850_CAM60_CLM50%CN_SICE_DOCN%SOM_SROF_SGLC_SWAV',
+         'res': 'f19_f19_mg17',
+         'custom': True},
+        'cam_clmCN_docnDOM':
+        {'compset': 'F1850_CAM60_CLM50%CN_SICE_DOCN%DOM_SROF_SGLC_SWAV',
+         'res': 'f19_f19_mg17',
+         'custom': True},
+        'aqua':
+        {'compset': 'QSC6',
+         'res': 'f19_f19_mg17',
+         'custom': True}}
 
-parser=argparse.ArgumentParser(description="Run CESM")
-parser.add_argument('-exp',default='cam_clmCN_docnDOM',
-                    choices=[e for e in experiment_dictionary])
-parser.add_argument('-multiplier',default=1.0,type=float, help="CO2 Multiplier")
-parser.add_argument('-co2_value',default=None, help="CO2 Value")
-parser.add_argument('-sea_level',default=0, type=float, help="Sea level")
-parser.add_argument('-max_depth',default=1000, type=float, help="Max ocean depth")
-parser.add_argument('-year',default=0,type=land_year_range,
-                    metavar=f'[{min_land_year}-{max_land_year}]',
-                    help="Years prior to current era in units of Ma")
-parser.add_argument('-case',default='test',type=str)
-parser.add_argument('-ntasks',default=96,type=int)
-parser.add_argument('-nthrds',default=8,type=int)
-parser.add_argument('-start_date',default="0001-01-01")
-parser.add_argument('-step_type',default='ndays')
-parser.add_argument('-nsteps',default=300,type=int)
-parser.add_argument('-restart',default=False,action='store_true')
-parser.add_argument('-setup',default=False,action='store_true')
-parser.add_argument('-build',default=False,action='store_true')
-parser.add_argument('-run',default=False,action='store_true')
-parser.add_argument('-run_all',default=False,action='store_true')
-parser.add_argument('-remap',default=False,action='store_true')
-parser.add_argument('-remap_hires',default=False,action='store_true')
-parser.add_argument('-timing',default=False,action='store_true')
-args=parser.parse_args()
+
+def cesm_argparse():
+    """Parse args for CESM run"""
+    parser = argparse.ArgumentParser(description="Run CESM")
+    parser.add_argument('-exp', default='cam_clmCN_docnDOM',
+                        choices=[e for e in experiment_dictionary])
+    parser.add_argument('-multiplier', default=1.0,type=float,
+                        help="CO2 Multiplier")
+    parser.add_argument('-co2_value', default=None, help="CO2 Value")
+    parser.add_argument('-sea_level', default=0, type=float, help="Sea level")
+    parser.add_argument('-max_depth', default=1000, type=float,
+                        help="Max ocean depth")
+    parser.add_argument('-year', default=0, type=land_year_range,
+                        metavar=f'[{min_land_year}-{max_land_year}]',
+                        help="Years prior to current era in units of Ma")
+    parser.add_argument('-case', default='test', type=str)
+    parser.add_argument('-ntasks', default=96, type=int)
+    parser.add_argument('-nthrds', default=8, type=int)
+    parser.add_argument('-start_date', default="0001-01-01")
+    parser.add_argument('-step_type', default='ndays')
+    parser.add_argument('-nsteps', default=300, type=int)
+    parser.add_argument('-restart', default=False, action='store_true')
+    parser.add_argument('-setup', default=False, action='store_true')
+    parser.add_argument('-build', default=False, action='store_true')
+    parser.add_argument('-run', default=False, action='store_true')
+    parser.add_argument('-run_all', default=False, action='store_true')
+    parser.add_argument('-remap', default=False, action='store_true')
+    parser.add_argument('-remap_hires', default=False, action='store_true')
+    parser.add_argument('-timing', default=False, action='store_true')
+    return parser
+
+parser = cesm_argparse()
+args = parser.parse_args()
 
 cwd=os.getcwd()
 

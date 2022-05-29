@@ -1,13 +1,14 @@
+"""Environment configuration"""
 import os
 
-USERNAME="ec2-user"
-NETID="bnb32"
-PROJECT_CODE="UCOR0044"
+USERNAME = "ec2-user"
+NETID = "bnb32"
+PROJECT_CODE = "UCOR0044"
 
-#----------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # DONT NEED TO EDIT BELOW
 
-ROOT_DIR="/data"
+ROOT_DIR = "/data"
 os.environ['USER_DIR'] = USER_DIR = f"{ROOT_DIR}/{NETID}"
 os.environ['USER_INPUT_DIR'] = USER_INPUT_DIR = f"{ROOT_DIR}/{NETID}/inputdata"
 os.environ['USER_OUTPUT_DIR'] = USER_OUTPUT_DIR = f"{ROOT_DIR}/{NETID}/outputdata"
@@ -20,13 +21,13 @@ os.environ['HIGH_RES_TOPO_DIR'] = HIGH_RES_TOPO_DIR = f'{USER_INPUT_DIR}/topo_fi
 os.environ['NCL_SCRIPTS'] = f'{os.environ["GCM_REPO_DIR"]}/scripts/ncl'
 os.environ['RAW_TOPO_DIR'] = RAW_TOPO_DIR = f'{USER_INPUT_DIR}/paleodem_raw'
 
-#----------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
-#CESM params
+# CESM params
 os.environ['RUN_DIR'] = RUN_DIR = f"{ROOT_DIR}/cesm"
 os.environ['CESM_DIR'] = CESM_DIR = f"{USER_DIR}/my_cesm"
 CESM_SCRIPTS = f"{CESM_DIR}/cime/scripts"
-os.environ["PATH"]+=f":{CESM_SCRIPTS}"
+os.environ["PATH"] += f":{CESM_SCRIPTS}"
 
 os.environ['CIME_OUT_DIR'] = f"{SCRATCH_DIR}/archive"
 os.environ['CESM_INPUT_DATA_DIR'] = CESM_INPUT_DATA_DIR = f"{RUN_DIR}/inputdata"
@@ -51,12 +52,12 @@ os.environ['ORIG_DOCN_SOM_FILE'] = ORIG_DOCN_SOM_FILE = f'{CESM_INPUT_DATA_DIR}/
 os.environ['ORIG_DOCN_SST_FILE'] = ORIG_DOCN_SST_FILE = f'{CESM_INPUT_DATA_DIR}/atm/cam/sst/sst_HadOIBl_bc_1.9x2.5_clim_pi_c101028.nc'
 os.environ['ORIG_DOCN_OCNFRAC_FILE'] = ORIG_DOCN_OCNFRAC_FILE = f'{CESM_INPUT_DATA_DIR}/atm/cam/ocnfrac/domain.camocn.1.9x2.5_gx1v6_090403.nc'
 
-#---------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
 
-#ISCA params
+# ISCA params
 os.environ['ISCA_TOPO_DIR'] = ISCA_TOPO_DIR = f'{USER_INPUT_DIR}/topo_files/isca'
 os.environ['ISCA_REPO_DIR'] = ISCA_REPO_DIR = BASE_DIR+"/isca_aws"
-ISCA_DIR=f"{USER_DIR}/isca"
+ISCA_DIR = f"{USER_DIR}/isca"
 os.environ['GFDL_BASE'] = GFDL_BASE = ISCA_DIR
 os.environ['GFDL_ENV'] = GFDL_ENV = 'aws'
 os.environ['GFDL_WORK'] = GFDL_WORK = f"{USER_DIR}/gfdl_work"
@@ -66,9 +67,9 @@ os.environ['ORIG_ISCA_CO2_FILE'] = ORIG_ISCA_CO2_FILE = f'{RAW_ISCA_CO2_DIR}/co2
 os.environ['ISCA_CO2_DIR'] = ISCA_CO2_DIR = f'{USER_DIR}/inputdata/co2_files/isca'
 os.environ['ORIG_ISCA_TOPO_FILE'] = os.path.join(GFDL_BASE,'input/land_masks/era_land_t42.nc')
 
-#---------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
 
-#make sure directories exist
+# make sure directories exist
 
 os.environ['CESM_TOPO_DIR'] = CESM_TOPO_DIR = f'{USER_INPUT_DIR}/topo_files/cesm'
 os.environ['CESM_CO2_DIR'] = CESM_CO2_DIR = f'{USER_INPUT_DIR}/co2_files'
@@ -94,4 +95,3 @@ os.system(f'mkdir -p {os.environ["USER_FIGS_DIR"]}')
 os.system(f'mkdir -p {os.environ["USER_ANIMS_DIR"]}')
 os.system(f'mkdir -p {os.environ["USER_INPUT_DIR"]}')
 os.system(f'mkdir -p {os.environ["USER_OUTPUT_DIR"]}')
-
