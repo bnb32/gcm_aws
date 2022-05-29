@@ -2,6 +2,6 @@ Get Interactive Globe Animation
 ===============================
 
 .. argparse::
-    :filename: ../../ecrlgcm/postprocessing/get_interactive_globe.py
+    :module: ecrlgcm.postprocessing.get_interactive_globe
     :func: globe_argparse
     :prog: python ecrlgcm/postprocessing/get_interactive_globe.py
