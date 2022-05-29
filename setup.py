@@ -19,6 +19,7 @@ setup(
         'netCDF4',
         'metpy',
         'tqdm',
-        'sphinx-argparse'
+        'sphinx-argparse',
+        'xesmf'
         ]
 )
