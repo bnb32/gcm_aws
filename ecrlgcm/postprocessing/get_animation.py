@@ -4,15 +4,18 @@ from ecrlgcm.utilities import land_years, stored_years, none_or_int, none_or_flo
 import numpy as np
 import argparse
 
-parser=argparse.ArgumentParser(description="Make animation")
-parser.add_argument('-field')
-parser.add_argument('-level',default=None,type=none_or_int)
-parser.add_argument('-plevel',default=None,type=none_or_float)
-parser.add_argument('-model',default='cesm',choices=['cesm','isca'])
-parser.add_argument('-globe',default=False,action='store_true')
-parser.add_argument('-time_avg',default=False,action='store_true')
-parser.add_argument('-year',default=751,type=float)
+def animation_argparse():
+    parser=argparse.ArgumentParser(description="Make animation")
+    parser.add_argument('-field')
+    parser.add_argument('-level',default=None,type=none_or_int)
+    parser.add_argument('-plevel',default=None,type=none_or_float)
+    parser.add_argument('-model',default='cesm',choices=['cesm','isca'])
+    parser.add_argument('-globe',default=False,action='store_true')
+    parser.add_argument('-time_avg',default=False,action='store_true')
+    parser.add_argument('-year',default=751,type=float)
+    return parser
 
+parser = animation_argparse()
 args=parser.parse_args()
 
 times = np.linspace(500,0,2)

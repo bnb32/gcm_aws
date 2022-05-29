@@ -1,21 +1,24 @@
-from ecrlgcm.postprocessing import get_interactive_globe, get_interactive_globe_time
-from ecrlgcm.utilities import land_year_range, min_land_year, max_land_year, none_or_int
-import ecrlgcm.environment
-
+"""Get animation figures from simulation output"""
 import argparse
 import numpy as np
 import os
 from joblib import Parallel, delayed
 
+from ecrlgcm.postprocessing import get_interactive_globe, get_interactive_globe_time
+from ecrlgcm.utilities import land_year_range, min_land_year, max_land_year, none_or_int
 
-parser=argparse.ArgumentParser(description="Make interactive globe")
-parser.add_argument('-field',default='RELHUM')
-parser.add_argument('-year',default=751,type=float)
-parser.add_argument('-level',default=None,type=none_or_int)
-parser.add_argument('-model',default='cesm',choices=['cesm','isca'])
-parser.add_argument('-overwrite',default=False,action='store_true')
-parser.add_argument('-time_avg',default=False,action='store_true')
-args=parser.parse_args()
+def figures_argparse():
+    parser=argparse.ArgumentParser(description="Make interactive globe")
+    parser.add_argument('-field',default='RELHUM')
+    parser.add_argument('-year',default=751,type=float)
+    parser.add_argument('-level',default=None,type=none_or_int)
+    parser.add_argument('-model',default='cesm',choices=['cesm','isca'])
+    parser.add_argument('-overwrite',default=False,action='store_true')
+    parser.add_argument('-time_avg',default=False,action='store_true')
+    return parser
+
+parser = figures_argparse()
+args = parser.parse_args()
 
 if args.overwrite:
     cmd = f'rm -f {os.environ["USER_ANIMS_DIR"]}/{args.field}_*.png;'

@@ -1,7 +1,7 @@
-Training Command
-====================
+Run CESM simulation
+===================
 
 .. argparse::
-    :filename: scripts/run_isca.py
-    :func: isca_argparse
-    :prog: python scripts/run_isca.py
+    :filename: scripts/run_cesm.py
+    :func: cesm_argparse
+    :prog: python scripts/run_cesm.py

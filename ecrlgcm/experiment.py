@@ -3,7 +3,6 @@ import xarray as xr
 import os
 import glob
 
-import ecrlgcm.environment
 from ecrlgcm.preprocessing import eccentricity, obliquity
 
 

@@ -1,8 +1,4 @@
 """Ecrlgcm preprocessing"""
-import ecrlgcm.environment
-from ecrlgcm.data import co2_series, ecc_series, obl_series
-from ecrlgcm.utilities import land_years, interp, get_logger, sliding_std, get_base_topofile
-
 import os
 import netCDF4 as nc
 import numpy as np
@@ -13,6 +9,9 @@ import warnings
 from tqdm import tqdm
 from scipy.ndimage import gaussian_filter
 from metpy.calc import smooth_n_point
+
+from ecrlgcm.data import co2_series, ecc_series, obl_series
+from ecrlgcm.utilities import land_years, interp, get_logger, sliding_std, get_base_topofile
 warnings.filterwarnings("ignore")
 
 logger = get_logger()

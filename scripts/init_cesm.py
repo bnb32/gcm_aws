@@ -1,5 +1,4 @@
-import ecrlgcm.environment
-
+"""Initialize CESM"""
 import os
 import argparse
 

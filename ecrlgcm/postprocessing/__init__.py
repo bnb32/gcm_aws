@@ -1,10 +1,4 @@
 """Ecrlgcm postprocessing"""
-import ecrlgcm.environment
-from ecrlgcm.utilities import polar_to_cartesian, mapping_map_to_sphere, sig_round, interp
-from ecrlgcm.utilities import land_years, get_logger, stored_years, cesm_plevels, isca_plevels
-from ecrlgcm.preprocessing import solar_constant
-from ecrlgcm.experiment import Experiment
-
 import xarray as xr
 import xesmf as xe
 import numpy as np
@@ -21,6 +15,11 @@ import plotly.graph_objs as go
 import plotly.io as pio
 import os
 import time
+
+from ecrlgcm.utilities import polar_to_cartesian, mapping_map_to_sphere, sig_round, interp
+from ecrlgcm.utilities import land_years, get_logger, stored_years, cesm_plevels, isca_plevels
+from ecrlgcm.preprocessing import solar_constant
+from ecrlgcm.experiment import Experiment
 
 logger = get_logger()
 

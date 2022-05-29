@@ -1,4 +1,4 @@
-Training Command
+Run ISCA simulation
 ====================
 
 .. argparse::

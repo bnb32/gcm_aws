@@ -1,3 +1,4 @@
+"""Setup script"""
 from distutils.core import setup
 
 setup(
@@ -17,6 +18,7 @@ setup(
         'pop-tools',
         'netCDF4',
         'metpy',
-        'tqdm'
+        'tqdm',
+        'sphinx-argparse'
         ]
 )

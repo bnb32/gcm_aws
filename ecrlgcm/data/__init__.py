@@ -1,4 +1,4 @@
-import ecrlgcm.environment
+"""Ecrlgcm data module"""
 
 import json
 import os

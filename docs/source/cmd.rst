@@ -6,3 +6,4 @@ Command Line utilities
 
     cmd_isca
     cmd_cesm
+    cmd_globe
