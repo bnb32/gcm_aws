@@ -2,6 +2,6 @@ Run CESM simulation
 ===================
 
 .. argparse::
-    :filename: ../scripts/run_cesm.py
+    :module: ecrlgcm
     :func: cesm_argparse
     :prog: python scripts/run_cesm.py

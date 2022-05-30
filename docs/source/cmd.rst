@@ -9,3 +9,4 @@ Command Line utilities
     cmd_globe
     cmd_figures
     cmd_animation
+    cmd_app

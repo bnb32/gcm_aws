@@ -1,24 +1,7 @@
 """Run ISCA simulation"""
 import os
-import argparse
 
-from ecrlgcm.utilities import land_year_range, min_land_year, max_land_year
-
-
-def isca_argparse():
-    """Parse args for ISCA run"""
-    parser = argparse.ArgumentParser(description="Run ISCA")
-    parser.add_argument('-multiplier', default=1, help="CO2 Multiplier")
-    parser.add_argument('-co2', default=None, help="CO2 Value")
-    parser.add_argument('-year', default=0, type=land_year_range,
-                        metavar=f'[{min_land_year}-{max_land_year}]',
-                        help="Years prior to current era in units of Ma")
-    parser.add_argument('-sea_level', default=0, type=float)
-    parser.add_argument('-ncores', default=32, type=int)
-    parser.add_argument('-nyears', default=10, type=int)
-    parser.add_argument('-overwrite', action='store_true')
-    parser.add_argument('-remap', action='store_true')
-    return parser
+from ecrlgcm import isca_argparse
 
 
 if __name__ == '__main__':
@@ -26,12 +9,14 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     cmd = 'python experiments/variable_co2_and_continents.py'
+    cmd += f' -config {args.config}'
     cmd += f' -multiplier {args.multiplier}'
     cmd += f' -land_year {args.year}'
     cmd += f' -sea_level {args.sea_level}'
     cmd += f' -nyears {args.nyears}'
     cmd += f' -ncores {args.ncores}'
     cmd += f' -co2 {args.co2}'
+    cmd += f' -config {args.config}'
     if args.overwrite:
         cmd += ' -overwrite'
     if args.remap:
