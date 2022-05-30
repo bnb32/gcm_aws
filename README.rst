@@ -3,6 +3,10 @@ Ecrlgcm
 *************
 Tools for setting up gcms (isca and cesm) and running on aws.
 
+Documentation
+=============
+`<https://bnb32.github.io/gcm_aws/>`_
+
 Initialization
 ==============
 
