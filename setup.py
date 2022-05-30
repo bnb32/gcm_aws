@@ -23,6 +23,5 @@ setup(
         'joblib',
         'dash_daq'
         'f90nml',
-        'isca @ git+https://github.com/ExeClim/Isca.git#egg=isca',
         'xesmf @ git+https://github.com/pangeo-data/xesmf.git']
 )
