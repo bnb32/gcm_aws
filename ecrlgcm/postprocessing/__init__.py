@@ -28,53 +28,6 @@ from ecrlgcm.utilities.cartopy_utils import orthographic, plate_carree
 logger = get_logger()
 
 
-def app_argparse():
-    """Parse args for dahsboard app"""
-    parser = argparse.ArgumentParser(description="Initialize dashboard app")
-    parser.add_argument('-config', required=True)
-    return parser
-
-
-def animation_argparse():
-    """Parse args for creating animation"""
-    parser = argparse.ArgumentParser(description="Make animation")
-    parser.add_argument('-field')
-    parser.add_argument('-level', default=None, type=none_or_int)
-    parser.add_argument('-plevel', default=None, type=none_or_float)
-    parser.add_argument('-model', default='cesm', choices=['cesm', 'isca'])
-    parser.add_argument('-globe', default=False, action='store_true')
-    parser.add_argument('-time_avg', default=False, action='store_true')
-    parser.add_argument('-year', default=751, type=float)
-    parser.add_argument('-config', required=True)
-    return parser
-
-
-def figures_argparse():
-    """Parse args for creating animation figures"""
-    parser = argparse.ArgumentParser(description="Make interactive globe")
-    parser.add_argument('-field', default='RELHUM')
-    parser.add_argument('-year', default=751, type=float)
-    parser.add_argument('-level', default=None, type=none_or_int)
-    parser.add_argument('-model', default='cesm', choices=['cesm', 'isca'])
-    parser.add_argument('-overwrite', default=False, action='store_true')
-    parser.add_argument('-time_avg', default=False, action='store_true')
-    parser.add_argument('-config', required=True)
-    return parser
-
-
-def globe_argparse():
-    """Parse args for creating interactive globe"""
-    parser = argparse.ArgumentParser(description="Make interactive globe")
-    parser.add_argument('-field', default='RELHUM')
-    parser.add_argument('-level', default=None, type=none_or_int)
-    parser.add_argument('-save_html', default=False, action='store_true')
-    parser.add_argument('-model', default='cesm', choices=['cesm', 'isca'])
-    parser.add_argument('-year', default=0,
-                        help="Years prior to current era in units of Ma")
-    parser.add_argument('-config', required=True)
-    return parser
-
-
 def get_sphere_surfaces(xs, ys, zs, xt, yt, zt, Ctopo, Cfield, topo,
                         field_array, field_alpha, time_step, field,
                         titlecolor, vmin=None, vmax=None):
