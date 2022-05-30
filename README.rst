@@ -12,7 +12,7 @@ Edit environment configuration:
 .. code-block:: bash
 
     cd gcm_aws
-    cp environment/config.py my_config.py
+    cp ecrlgcm/environment/config.py my_config.py
     vim my_config.json
 
 Configuration can be in either .py or .json format. Follow the required
