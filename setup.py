@@ -64,7 +64,7 @@ setup(
         "Programming Language :: Python :: 3.9",
     ],
     test_suite="tests",
-    python_requires='3.6>=',
+    python_requires='>=3.7',
     install_requires=install_requires,
     extras_require={
         "dev": ["flake8", "pre-commit", "pylint"],
