@@ -10,7 +10,6 @@ setup(
     packages=['ecrlgcm'],
     package_dir={'ecrlgcm': './ecrlgcm'},
     install_requires=[
-        'python==3.8',
         'matplotlib',
         'numpy',
         'xarray',
