@@ -10,3 +10,4 @@ tqdm
 sphinx-argparse
 joblib
 f90nml
+plotly
