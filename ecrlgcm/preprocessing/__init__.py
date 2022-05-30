@@ -8,9 +8,9 @@ import warnings
 from tqdm import tqdm
 from metpy.calc import smooth_n_point
 
-from ecrlgcm.regridder import regridder_module
+from ecrlgcm.utilities.xesmf_utils import regridder_module
 from ecrlgcm.data import co2_series, ecc_series, obl_series
-from ecrlgcm.utilities import interp, get_logger, sliding_std
+from ecrlgcm.utilities.utilities import interp, get_logger, sliding_std
 warnings.filterwarnings("ignore")
 
 logger = get_logger()
@@ -209,6 +209,7 @@ class PreProcessing:
             logger.info(f'Saved solar_file: {cesmexp.solar_file}')
 
     def interpolate_land(self, land_year):
+        """Interpolate continents to requested year"""
         year = float(land_year)
         keys = sorted(self.land_years)
 
@@ -235,7 +236,7 @@ class PreProcessing:
         return ds_out
 
     def modify_cesm_input_files(self, cesmexp, remap=True, remap_hires=True):
-
+        """Modify cesm data input files according to requested experiment"""
         land_year = cesmexp.land_year
         sea_level = cesmexp.sea_level
         max_depth = cesmexp.max_depth
@@ -348,7 +349,7 @@ class PreProcessing:
         self.modify_solar_file(cesmexp, remap)
 
     def regrid_domain_files(self, cesmexp):
-
+        """Regrid the domain files for the specified experiment"""
         logger.info("Modifying landfrac_file")
         orig_land = xr.open_mfdataset(self.config.ORIG_CESM_LANDFRAC_FILE)
         orig_land['frac'] = (orig_land['frac'].dims, orig_land['mask'].values)
@@ -390,7 +391,7 @@ class PreProcessing:
         logger.info(f'Saving docn_sst_file: {cesmexp.docn_sst_file}')
 
     def modify_co2_file(self, cesmexp, remap):
-
+        """Modify co2 file for the requested experiment"""
         if not os.path.exists(cesmexp.co2_file) or remap:
             logger.info('Modifying co2_file')
             co2value = interpolate_co2(cesmexp.land_year)
@@ -404,7 +405,7 @@ class PreProcessing:
 
     def get_landfrac_dict(self, orig_data=None, source_data=None,
                           land_year=None, sea_level=0):
-
+        """Compute landfrac information used for regridding"""
         if land_year is not None:
             source_data = self.interpolate_land(land_year)
         raw_landmask = np.array(source_data['z'].values > sea_level,
@@ -552,6 +553,7 @@ class PreProcessing:
 
 def regrid_continent_maps(remap_file, basefile='', outfile='', sea_level=0,
                           max_depth=1000):
+    """Regrid the specified continent map"""
     land = xr.open_mfdataset(remap_file)
     ds_out = regrid_continent_data(land, basefile=basefile,
                                    sea_level=sea_level,
@@ -563,6 +565,7 @@ def regrid_continent_maps(remap_file, basefile='', outfile='', sea_level=0,
 
 
 def shift_longitude(data):
+    """Shift the longitude according to the high res format"""
     logger.info("Shifting longitude in high res data")
     tmp = np.zeros(data['z'].shape)
     lons = [x + 360.0 if x < 0 else x for x in data['lon'].values]
@@ -586,6 +589,7 @@ def shift_longitude(data):
 
 
 def compute_land_ocean_properties(land, sea_level=0, max_depth=1000):
+    """Compute the land ocean properties to use for simulation input"""
     if 'latitude' in land:
         land = land.rename({'latitude': 'lat'})
     if 'longitude' in land:
@@ -618,6 +622,7 @@ def compute_land_ocean_properties(land, sea_level=0, max_depth=1000):
 
 
 def regrid_continent_data(land, basefile='', sea_level=0, max_depth=1000):
+    """Regrid the specified land data"""
     base = xr.open_mfdataset(basefile)
 
     if all(-np.pi < lat < np.pi for lat in base['lat'].values):
@@ -702,9 +707,10 @@ def anomaly_smoothing(max_val, d, r):
 
 
 def fill_poles(data):
+    """Fill field at poles to remove rendering artifacts"""
     tmp = data['land_mask'].values
-    for i in range(len(data['lat'].values)):
-        for j in range(len(data['lon'].values)):
+    for i, _ in enumerate(data['lat'].values):
+        for j, _ in enumerate(data['lon'].values):
             if np.abs(data['lat'].values[i] - 90.0) < 1:
                 tmp[i, j] = 1.0
     return tmp

@@ -10,18 +10,20 @@ import matplotlib.animation as anim
 from matplotlib.colors import LinearSegmentedColormap
 from matplotlib.cm import unregister_cmap
 
-import cartopy.crs as ccrs
 from metpy.calc import smooth_n_point
 import plotly.offline as po
 import plotly.graph_objs as go
 import plotly.io as pio
 
-from ecrlgcm.utilities import (polar_to_cartesian, mapping_map_to_sphere,
-                               sig_round, interp, none_or_float, none_or_int,
-                               get_logger, cesm_plevels, isca_plevels)
+from ecrlgcm.utilities.utilities import (polar_to_cartesian,
+                                         mapping_map_to_sphere,
+                                         sig_round, interp, none_or_float,
+                                         none_or_int, get_logger,
+                                         cesm_plevels, isca_plevels)
 from ecrlgcm.preprocessing import PreProcessing, solar_constant
 from ecrlgcm.experiment import Experiment
-from ecrlgcm.regridder import regridder_module
+from ecrlgcm.utilities.xesmf_utils import regridder_module
+from ecrlgcm.utilities.cartopy_utils import orthographic, plate_carree
 
 logger = get_logger()
 
@@ -103,6 +105,7 @@ def get_sphere_surfaces(xs, ys, zs, xt, yt, zt, Ctopo, Cfield, topo,
 
 
 def define_noaa_colormap():
+    """Define colormap used by NOAA"""
     color_array = [
         (0.00000, 0.06275, 0.02353, 0.70588),
         (0.15380, 0.06275, 0.02353, 0.70588),
@@ -201,6 +204,7 @@ class PostProcessing:
         self.min_land_year, self.max_land_year = out[2:]
 
     def get_reference_data(self):
+        """Get reference data used to compute relative differences"""
         self.variable_dictionary = {}
         reference_data = Experiment(
             self.config, land_year=self.stored_years[0]).sim_data()
@@ -273,6 +277,7 @@ class PostProcessing:
 
     @staticmethod
     def close_lon_gap(data, field):
+        """Close gap at lon = 360 to remove rendering artifact"""
         if data[field].ndim == 3:
             tmp = np.zeros((len(data['time'].values), len(data['lat'].values),
                             len(data['lon'].values) + 2))
@@ -518,6 +523,7 @@ class PostProcessing:
 
     @staticmethod
     def potential_intensity(t_surf):
+        """Calculate potential intensity"""
         A = 28.2
         B = 55.8
         C = 0.1813
@@ -526,6 +532,7 @@ class PostProcessing:
 
     @staticmethod
     def mpl_to_plotly(cmap, pl_entries=11, rdigits=2):
+        """Map matplotlib colormap to plotly colormap"""
         scale = np.linspace(0, 1, pl_entries)
         colors = (cmap(scale)[:, :3] * 255).astype(np.uint8)
         pl_colorscale = [[round(s, rdigits), f'rgb{tuple(color)}']
@@ -534,6 +541,7 @@ class PostProcessing:
 
     def get_data(self, experiment, field='t_surf', level=None,
                  decode_times=True, anomaly=False):
+        """Get data for specified experiment"""
         data = xr.open_mfdataset(experiment.files, decode_times=decode_times)
         land = xr.open_mfdataset(os.path.join(self.config.TOPO_DIR,
                                               experiment.topo_file),
@@ -577,25 +585,19 @@ class PostProcessing:
     def get_avg_field(self, exp, field='t_surf', level=None, vmin=None,
                       vmax=None, anomaly=False):
         """Get the temporal average of the requested field"""
-
         data = self.get_data(exp, field=field, level=level, decode_times=True,
                              anomaly=anomaly)
-
         if 'co2' in data:
             co2 = data['co2']
-
         variable = data[field]
-
         lons = sorted(variable.lon.values)
-
-        proj = ccrs.PlateCarree(central_longitude=180.0)
+        proj = plate_carree(central_longitude=180.0)
         ax = plt.axes(projection=proj)
 
         if 'time' in variable.dims:
             avg = variable.mean(dim='time')
         else:
             avg = variable
-
         image = avg.plot.imshow(ax=ax, transform=proj,
                                 interpolation='bilinear', cmap="coolwarm",
                                 animated=True, add_colorbar=False)
@@ -833,7 +835,7 @@ class PostProcessing:
                                  level_num=10, vmin=None,
                                  vmax=None, color_map='coolwarm',
                                  globe=False, gcm_type='cesm'):
-
+        """Get field animation for requested year"""
         define_land_colormap()
         define_cloud_colormap()
         define_noaa_colormap()
@@ -843,9 +845,9 @@ class PostProcessing:
 
         fig = plt.figure(figsize=(12, 7))
         if globe:
-            proj = ccrs.Orthographic(200, 20)
+            proj = orthographic(central_longitude=200, central_latitude=20)
         else:
-            proj = ccrs.PlateCarree(central_longitude=180.0)
+            proj = plate_carree(central_longitude=180.0)
         ax = plt.axes(projection=proj)
         ax.gridlines(color='black', linestyle='dotted')
         field_alpha = 0.6
@@ -856,7 +858,7 @@ class PostProcessing:
                                        time_avg=False)[field]
 
         image = init_field[0].plot.imshow(ax=ax, levels=level_num,
-                                          transform=ccrs.PlateCarree(),
+                                          transform=plate_carree(),
                                           interpolation='bilinear',
                                           cmap=color_map,
                                           add_colorbar=False,
@@ -878,7 +880,7 @@ class PostProcessing:
             ax.clear()
 
             image = init_field[i].plot.imshow(
-                ax=ax, levels=level_num, transform=ccrs.PlateCarree(),
+                ax=ax, levels=level_num, transform=plate_carree(),
                 interpolation='bilinear', cmap=color_map, add_colorbar=False,
                 alpha=field_alpha)
             return image
@@ -917,7 +919,7 @@ class PostProcessing:
                             vmax=None, color_map='coolwarm',
                             globe=False, plevel=None,
                             gcm_type='cesm'):
-
+        """Get field animation for requested times"""
         define_land_colormap()
         define_cloud_colormap()
         define_noaa_colormap()
@@ -927,9 +929,9 @@ class PostProcessing:
 
         fig = plt.figure(figsize=(12, 7))
         if globe:
-            proj = ccrs.Orthographic(330, 20)
+            proj = orthographic(central_longitude=330, central_latitude=20)
         else:
-            proj = ccrs.PlateCarree(central_longitude=0.0)
+            proj = plate_carree(central_longitude=0.0)
         ax = plt.axes(projection=proj)
         ax.gridlines(color='black', linestyle='dotted')
         field_alpha = 0.6
@@ -939,7 +941,7 @@ class PostProcessing:
                                        gcm_type=gcm_type)[field]
 
         image = init_field.plot.imshow(ax=ax, levels=level_num,
-                                       transform=ccrs.PlateCarree(),
+                                       transform=plate_carree(),
                                        interpolation='bilinear',
                                        cmap=color_map,
                                        add_colorbar=False,
@@ -967,7 +969,7 @@ class PostProcessing:
             ax.clear()
 
             image = current_field[field].plot.imshow(
-                ax=ax, levels=level_num, transform=ccrs.PlateCarree(),
+                ax=ax, levels=level_num, transform=plate_carree(),
                 interpolation='bilinear', cmap=color_map, add_colorbar=False,
                 alpha=field_alpha)
             return image
@@ -1009,14 +1011,13 @@ class PostProcessing:
         fig = plt.figure(figsize=(12, 7))
 
         if globe:
-            proj = ccrs.Orthographic(320, 20)
+            proj = orthographic(central_longitude=320, central_latitude=20)
         else:
-            proj = ccrs.PlateCarree(central_longitude=0.0)
-        proj = ccrs.PlateCarree(central_longitude=0.0)
+            proj = plate_carree(central_longitude=0.0)
         ax = plt.axes(projection=proj)
 
         image = self.hires_interp(0, stored_years)['z'].plot.imshow(
-            ax=ax, transform=ccrs.PlateCarree(), interpolation='bilinear',
+            ax=ax, transform=plate_carree(), interpolation='bilinear',
             cmap='custom_noaa', animated=True, add_colorbar=False)
         cb = plt.colorbar(image, ax=ax, orientation='horizontal', pad=0.05,
                           label='altitude (m)')
@@ -1035,7 +1036,7 @@ class PostProcessing:
             fig.suptitle(f'Time: {str(round(t, 2))} Ma BP', fontsize=20)
             ax.clear()
             image = current_field['z'].plot.imshow(
-                ax=ax, transform=ccrs.PlateCarree(), interpolation='bilinear',
+                ax=ax, transform=plate_carree(), interpolation='bilinear',
                 cmap='custom_noaa', add_colorbar=False)
             return image
 

@@ -67,6 +67,8 @@ cesm_plevels = [3.64346569, 7.59481965, 14.35663225, 24.61222,
 
 def land_year_range(arg):
     """Get allowable range of years"""
+    min_land_year = 0
+    max_land_year = 800
     try:
         if int(arg) == float(arg):
             f = int(arg)
@@ -76,7 +78,6 @@ def land_year_range(arg):
         except Exception as e:
             raise argparse.ArgumentTypeError(
                 'land_year must be float or integer') from e
-
     if f < min_land_year or f > max_land_year:
         raise argparse.ArgumentTypeError(
             f'land_year must be < {max_land_year} and > {min_land_year}')

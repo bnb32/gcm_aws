@@ -1,7 +1,7 @@
 """Dashboard app module"""
 from ecrlgcm.environment import EnvironmentConfig
 from ecrlgcm.postprocessing import PostProcessing, app_argparse
-from ecrlgcm.utilities import get_logger, max_land_year
+from ecrlgcm.utilities.utilities import get_logger, max_land_year
 
 import dash
 import dash_core_components as dcc

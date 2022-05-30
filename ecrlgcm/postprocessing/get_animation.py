@@ -3,7 +3,6 @@ import numpy as np
 from ecrlgcm.environment import EnvironmentConfig
 
 from ecrlgcm.postprocessing import (PostProcessing, animation_argparse)
-from ecrlgcm.utilities import land_years, stored_years
 
 
 if __name__ == '__main__':
@@ -17,26 +16,27 @@ if __name__ == '__main__':
 
     if args.time_avg:
         if args.field == 'z':
-            post_proc.get_continent_animation(times, land_years)
+            post_proc.get_continent_animation(times, post_proc.land_years)
         else:
             if args.field == 'RELHUM' or 'CLOUD' in args.field:
                 post_proc.get_field_animation(
-                    times, stored_years, level=args.level, field='RELHUM',
-                    color_map='custom_clouds', gcm_type=args.model,
-                    globe=args.globe)
+                    times, post_proc.stored_years, level=args.level,
+                    field='RELHUM', color_map='custom_clouds',
+                    gcm_type=args.model, globe=args.globe)
             else:
                 post_proc.get_field_animation(
-                    times, stored_years, level=args.level, field=args.field,
-                    color_map='bwr', gcm_type=args.model, globe=args.globe)
+                    times, post_proc.stored_years, level=args.level,
+                    field=args.field, color_map='bwr', gcm_type=args.model,
+                    globe=args.globe)
 
     else:
         if args.field == 'RELHUM' or 'CLOUD' in args.field:
             post_proc.get_field_time_animation(
-                args.year, stored_years, level=args.level, field=args.field,
-                color_map='custom_clouds', level_num=5, plevel=args.plevel,
-                gcm_type=args.model, globe=args.globe)
+                args.year, post_proc.stored_years, level=args.level,
+                field=args.field, color_map='custom_clouds', level_num=5,
+                plevel=args.plevel, gcm_type=args.model, globe=args.globe)
         else:
             post_proc.get_field_time_animation(
-                args.year, stored_years, level=args.level, field=args.field,
-                color_map='bwr', plevel=args.plevel, gcm_type=args.model,
-                globe=args.globe)
+                args.year, post_proc.stored_years, level=args.level,
+                field=args.field, color_map='bwr', plevel=args.plevel,
+                gcm_type=args.model, globe=args.globe)

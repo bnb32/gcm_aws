@@ -2,7 +2,7 @@
 import os
 import argparse
 
-from ecrlgcm.utilities import (none_or_str)
+from ecrlgcm.utilities.utilities import (none_or_str)
 
 ECRLGCM_DIR = os.path.dirname(os.path.realpath(__file__))
 DATA_DIR = os.path.join(os.path.dirname(ECRLGCM_DIR), 'ecrlgcm', 'data')

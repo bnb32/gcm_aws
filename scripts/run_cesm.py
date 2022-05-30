@@ -6,7 +6,7 @@ import sys
 
 from ecrlgcm import cesm_argparse, EXPERIMENT_DICTIONARY
 from ecrlgcm.environment import EnvironmentConfig
-from ecrlgcm.utilities import (get_logger)
+from ecrlgcm.utilities.utilities import (get_logger)
 from ecrlgcm.preprocessing import (solar_constant, interpolate_co2)
 from ecrlgcm.preprocessing import PreProcessing
 from ecrlgcm.experiment import Experiment, Configuration

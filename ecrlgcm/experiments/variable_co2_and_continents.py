@@ -5,7 +5,7 @@ from ecrlgcm.environment import EnvironmentConfig
 from ecrlgcm.preprocessing import (PreProcessing, solar_constant,
                                    eccentricity, obliquity)
 from ecrlgcm.experiment import Experiment as ecrlExp
-from ecrlgcm.utilities import get_logger
+from ecrlgcm.utilities.utilities import get_logger
 
 import os
 import f90nml
