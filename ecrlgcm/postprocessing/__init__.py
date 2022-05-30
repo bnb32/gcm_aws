@@ -195,7 +195,7 @@ class PostProcessing:
             ds_out['z'] = (('lat', 'lon'), exp.hires()['z'].values)
 
         elif year >= keys[-1]:
-            exp = Experiment(land_year=keys[-1])
+            exp = Experiment(self.config, land_year=keys[-1])
             ds_out['z'] = (('lat', 'lon'), exp.hires()['z'].values)
 
         else:
