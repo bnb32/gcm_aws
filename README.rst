@@ -7,14 +7,6 @@ isca_aws and cesm_aws repos.
 Installation
 ============
 
-Install package:
-
-.. code-block:: bash
-
-    cd gcm_aws
-    pip install -e .
-    bash ./go.sh
-
 Edit environment configuration:
 
 .. code-block:: bash
@@ -25,3 +17,14 @@ Edit environment configuration:
 
 Configuration needs to be in json format. Follow the required variables from
 config.py
+
+Install package:
+
+.. code-block:: bash
+
+    cd gcm_aws
+    pip install -e .
+    bash ./go.sh
+
+This go script kicks off scripts from the scripts directory and requires
+the my_config.json file.
