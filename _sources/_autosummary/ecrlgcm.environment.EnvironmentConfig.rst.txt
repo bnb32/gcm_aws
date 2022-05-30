@@ -1,0 +1,88 @@
+ecrlgcm.environment.EnvironmentConfig
+=====================================
+
+.. currentmodule:: ecrlgcm.environment
+
+.. autoclass:: EnvironmentConfig
+   :members:
+   :show-inheritance:
+   :inherited-members:
+   :special-members: __call__, __add__, __mul__
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~EnvironmentConfig.get_config
+      ~EnvironmentConfig.init_dirs
+      ~EnvironmentConfig.load_config
+      ~EnvironmentConfig.update_env
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~EnvironmentConfig.BASE_DIR
+      ~EnvironmentConfig.CESM_CO2_DIR
+      ~EnvironmentConfig.CESM_DIR
+      ~EnvironmentConfig.CESM_INPUT_DATA_DIR
+      ~EnvironmentConfig.CESM_LANDFRAC_DIR
+      ~EnvironmentConfig.CESM_LANDPLANT_DIR
+      ~EnvironmentConfig.CESM_MAPPING_DIR
+      ~EnvironmentConfig.CESM_OCEANFRAC_DIR
+      ~EnvironmentConfig.CESM_REPO_DIR
+      ~EnvironmentConfig.CESM_SCRIPTS
+      ~EnvironmentConfig.CESM_SOLAR_DIR
+      ~EnvironmentConfig.CESM_TOPO_DIR
+      ~EnvironmentConfig.CIME_OUT_DIR
+      ~EnvironmentConfig.GCM_REPO_DIR
+      ~EnvironmentConfig.GFDL_BASE
+      ~EnvironmentConfig.GFDL_DATA
+      ~EnvironmentConfig.GFDL_ENV
+      ~EnvironmentConfig.GFDL_WORK
+      ~EnvironmentConfig.HIGH_RES_TOPO_DIR
+      ~EnvironmentConfig.INIT_CONDITIONS_DIR
+      ~EnvironmentConfig.ISCA_CO2_DIR
+      ~EnvironmentConfig.ISCA_DIR
+      ~EnvironmentConfig.ISCA_REPO_DIR
+      ~EnvironmentConfig.ISCA_TOPO_DIR
+      ~EnvironmentConfig.NCL_SCRIPTS
+      ~EnvironmentConfig.NETID
+      ~EnvironmentConfig.ORIG_CESM_CO2_FILE
+      ~EnvironmentConfig.ORIG_CESM_LANDFRAC_FILE
+      ~EnvironmentConfig.ORIG_CESM_LANDPLANT_FILE
+      ~EnvironmentConfig.ORIG_CESM_OCEANFRAC_FILE
+      ~EnvironmentConfig.ORIG_CESM_OCEANMASK_FILE
+      ~EnvironmentConfig.ORIG_CESM_OCEANTOPO_FILE
+      ~EnvironmentConfig.ORIG_CESM_SOLAR_FILE
+      ~EnvironmentConfig.ORIG_CESM_TOPO_FILE
+      ~EnvironmentConfig.ORIG_DOCN_DOMAIN_FILE
+      ~EnvironmentConfig.ORIG_DOCN_OCNFRAC_FILE
+      ~EnvironmentConfig.ORIG_DOCN_SOM_FILE
+      ~EnvironmentConfig.ORIG_DOCN_SST_FILE
+      ~EnvironmentConfig.ORIG_INIT_ATM_FILE
+      ~EnvironmentConfig.ORIG_INIT_LND_FILE
+      ~EnvironmentConfig.ORIG_INIT_OCEAN_FILE
+      ~EnvironmentConfig.ORIG_ISCA_CO2_FILE
+      ~EnvironmentConfig.ORIG_ISCA_TOPO_FILE
+      ~EnvironmentConfig.PROJECT_CODE
+      ~EnvironmentConfig.RAW_ISCA_CO2_DIR
+      ~EnvironmentConfig.RAW_TOPO_DIR
+      ~EnvironmentConfig.REMAPPED_LAND_DIR
+      ~EnvironmentConfig.ROOT_DIR
+      ~EnvironmentConfig.RUN_DIR
+      ~EnvironmentConfig.SCRATCH_DIR
+      ~EnvironmentConfig.USERNAME
+      ~EnvironmentConfig.USER_ANIMS_DIR
+      ~EnvironmentConfig.USER_DIR
+      ~EnvironmentConfig.USER_FIGS_DIR
+      ~EnvironmentConfig.USER_INPUT_DIR
+      ~EnvironmentConfig.USER_OUTPUT_DIR
+   
+   

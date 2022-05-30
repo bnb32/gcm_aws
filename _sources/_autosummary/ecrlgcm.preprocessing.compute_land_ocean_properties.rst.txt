@@ -1,0 +1,6 @@
+ecrlgcm.preprocessing.compute\_land\_ocean\_properties
+======================================================
+
+.. currentmodule:: ecrlgcm.preprocessing
+
+.. autofunction:: compute_land_ocean_properties

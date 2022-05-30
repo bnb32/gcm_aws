@@ -1,0 +1,6 @@
+ecrlgcm.postprocessing.define\_cloud\_colormap
+==============================================
+
+.. currentmodule:: ecrlgcm.postprocessing
+
+.. autofunction:: define_cloud_colormap

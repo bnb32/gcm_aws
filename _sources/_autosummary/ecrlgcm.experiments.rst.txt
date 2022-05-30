@@ -1,0 +1,30 @@
+ecrlgcm.experiments
+===================
+
+.. automodule:: ecrlgcm.experiments
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+
+.. autosummary::
+   :toctree:
+   :template: custom-module-template.rst
+   :recursive:
+
+   ecrlgcm.experiments.variable_co2_and_continents
+

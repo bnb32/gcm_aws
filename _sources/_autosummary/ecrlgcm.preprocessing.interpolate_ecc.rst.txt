@@ -1,0 +1,6 @@
+ecrlgcm.preprocessing.interpolate\_ecc
+======================================
+
+.. currentmodule:: ecrlgcm.preprocessing
+
+.. autofunction:: interpolate_ecc

@@ -1,0 +1,6 @@
+ecrlgcm.postprocessing.define\_noaa\_colormap
+=============================================
+
+.. currentmodule:: ecrlgcm.postprocessing
+
+.. autofunction:: define_noaa_colormap

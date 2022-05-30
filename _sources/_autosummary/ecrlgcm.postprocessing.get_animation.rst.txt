@@ -1,0 +1,23 @@
+ecrlgcm.postprocessing.get\_animation
+=====================================
+
+.. automodule:: ecrlgcm.postprocessing.get_animation
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

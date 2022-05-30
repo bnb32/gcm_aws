@@ -1,0 +1,6 @@
+ecrlgcm.figures\_argparse
+=========================
+
+.. currentmodule:: ecrlgcm
+
+.. autofunction:: figures_argparse

@@ -1,0 +1,6 @@
+ecrlgcm.preprocessing.regrid\_continent\_maps
+=============================================
+
+.. currentmodule:: ecrlgcm.preprocessing
+
+.. autofunction:: regrid_continent_maps

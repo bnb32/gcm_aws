@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ecrlgcm.experiment &mdash; ecrlgcm v1.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> ecrlgcm
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../includeme.html">Home page</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../includeme.html#documentation">Documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../includeme.html#initialization">Initialization</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../misc/install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../_autosummary/ecrlgcm.html">API reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../_autosummary/ecrlgcm.animation_argparse.html">ecrlgcm.animation_argparse</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../_autosummary/ecrlgcm.app_argparse.html">ecrlgcm.app_argparse</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../_autosummary/ecrlgcm.cesm_argparse.html">ecrlgcm.cesm_argparse</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../_autosummary/ecrlgcm.figures_argparse.html">ecrlgcm.figures_argparse</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../_autosummary/ecrlgcm.globe_argparse.html">ecrlgcm.globe_argparse</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../_autosummary/ecrlgcm.isca_argparse.html">ecrlgcm.isca_argparse</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../_autosummary/ecrlgcm.run_isca_variable_co2_continents_argparse.html">ecrlgcm.run_isca_variable_co2_continents_argparse</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../_autosummary/ecrlgcm.data.html">ecrlgcm.data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/ecrlgcm.data.get_co2_series.html">ecrlgcm.data.get_co2_series</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/ecrlgcm.data.get_ecc_series.html">ecrlgcm.data.get_ecc_series</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/ecrlgcm.data.get_obl_series.html">ecrlgcm.data.get_obl_series</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../_autosummary/ecrlgcm.environment.html">ecrlgcm.environment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/ecrlgcm.environment.EnvironmentConfig.html">ecrlgcm.environment.EnvironmentConfig</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/ecrlgcm.environment.config.html">ecrlgcm.environment.config</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../_autosummary/ecrlgcm.experiment.html">ecrlgcm.experiment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/ecrlgcm.experiment.Configuration.html">ecrlgcm.experiment.Configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/ecrlgcm.experiment.Experiment.html">ecrlgcm.experiment.Experiment</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../_autosummary/ecrlgcm.experiments.html">ecrlgcm.experiments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../_autosummary/ecrlgcm.postprocessing.html">ecrlgcm.postprocessing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/ecrlgcm.postprocessing.define_cloud_colormap.html">ecrlgcm.postprocessing.define_cloud_colormap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/ecrlgcm.postprocessing.define_land_colormap.html">ecrlgcm.postprocessing.define_land_colormap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/ecrlgcm.postprocessing.define_noaa_colormap.html">ecrlgcm.postprocessing.define_noaa_colormap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/ecrlgcm.postprocessing.get_sphere_surfaces.html">ecrlgcm.postprocessing.get_sphere_surfaces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/ecrlgcm.postprocessing.PostProcessing.html">ecrlgcm.postprocessing.PostProcessing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/ecrlgcm.postprocessing.get_animation.html">ecrlgcm.postprocessing.get_animation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/ecrlgcm.postprocessing.get_animation_figures.html">ecrlgcm.postprocessing.get_animation_figures</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../_autosummary/ecrlgcm.postprocessing.get_animation_figures.parallel_run.html">ecrlgcm.postprocessing.get_animation_figures.parallel_run</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/ecrlgcm.postprocessing.get_interactive_globe.html">ecrlgcm.postprocessing.get_interactive_globe</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../_autosummary/ecrlgcm.preprocessing.html">ecrlgcm.preprocessing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/ecrlgcm.preprocessing.anomaly_smoothing.html">ecrlgcm.preprocessing.anomaly_smoothing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/ecrlgcm.preprocessing.anomaly_value.html">ecrlgcm.preprocessing.anomaly_value</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/ecrlgcm.preprocessing.cell_overlap.html">ecrlgcm.preprocessing.cell_overlap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/ecrlgcm.preprocessing.compute_land_ocean_properties.html">ecrlgcm.preprocessing.compute_land_ocean_properties</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/ecrlgcm.preprocessing.disk_anomaly_squared_distance.html">ecrlgcm.preprocessing.disk_anomaly_squared_distance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/ecrlgcm.preprocessing.eccentricity.html">ecrlgcm.preprocessing.eccentricity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/ecrlgcm.preprocessing.fill_poles.html">ecrlgcm.preprocessing.fill_poles</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/ecrlgcm.preprocessing.get_landfrac.html">ecrlgcm.preprocessing.get_landfrac</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/ecrlgcm.preprocessing.get_oceanfrac.html">ecrlgcm.preprocessing.get_oceanfrac</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/ecrlgcm.preprocessing.inject_anomaly.html">ecrlgcm.preprocessing.inject_anomaly</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/ecrlgcm.preprocessing.interpolate_co2.html">ecrlgcm.preprocessing.interpolate_co2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/ecrlgcm.preprocessing.interpolate_ecc.html">ecrlgcm.preprocessing.interpolate_ecc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/ecrlgcm.preprocessing.interpolate_obl.html">ecrlgcm.preprocessing.interpolate_obl</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/ecrlgcm.preprocessing.interpolate_series.html">ecrlgcm.preprocessing.interpolate_series</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/ecrlgcm.preprocessing.meridional_band_anomaly_squared_distance.html">ecrlgcm.preprocessing.meridional_band_anomaly_squared_distance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/ecrlgcm.preprocessing.modify_all_arrays_with_mask.html">ecrlgcm.preprocessing.modify_all_arrays_with_mask</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/ecrlgcm.preprocessing.modify_array_with_time.html">ecrlgcm.preprocessing.modify_array_with_time</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/ecrlgcm.preprocessing.modify_array_with_time_and_level.html">ecrlgcm.preprocessing.modify_array_with_time_and_level</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/ecrlgcm.preprocessing.modify_arrays_with_mask.html">ecrlgcm.preprocessing.modify_arrays_with_mask</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/ecrlgcm.preprocessing.obliquity.html">ecrlgcm.preprocessing.obliquity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/ecrlgcm.preprocessing.overlap_fraction.html">ecrlgcm.preprocessing.overlap_fraction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/ecrlgcm.preprocessing.regrid_continent_data.html">ecrlgcm.preprocessing.regrid_continent_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/ecrlgcm.preprocessing.regrid_continent_maps.html">ecrlgcm.preprocessing.regrid_continent_maps</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/ecrlgcm.preprocessing.shift_longitude.html">ecrlgcm.preprocessing.shift_longitude</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/ecrlgcm.preprocessing.solar_constant.html">ecrlgcm.preprocessing.solar_constant</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/ecrlgcm.preprocessing.solar_fraction.html">ecrlgcm.preprocessing.solar_fraction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/ecrlgcm.preprocessing.zonal_band_anomaly_squared_distance.html">ecrlgcm.preprocessing.zonal_band_anomaly_squared_distance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/ecrlgcm.preprocessing.PreProcessing.html">ecrlgcm.preprocessing.PreProcessing</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../_autosummary/ecrlgcm.version.html">ecrlgcm.version</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../misc/cmd.html">Command Line Use</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../misc/cmd_isca.html">Run ISCA simulation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../misc/cmd_isca.html#Named Arguments">Named Arguments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../misc/cmd_cesm.html">Run CESM simulation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../misc/cmd_cesm.html#Named Arguments">Named Arguments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../misc/cmd_globe.html">Get Interactive Globe Animation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../misc/cmd_globe.html#Named Arguments">Named Arguments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../misc/cmd_figures.html">Get Animation Figures</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../misc/cmd_figures.html#Named Arguments">Named Arguments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../misc/cmd_animation.html">Get Animation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../misc/cmd_animation.html#Named Arguments">Named Arguments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../misc/cmd_app.html">Get Dashboard App</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../misc/cmd_app.html#Named Arguments">Named Arguments</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../misc/examples.html">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../misc/examples.html#run-simulations">Run Simulations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../misc/examples.html#visualization">Visualization</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">ecrlgcm</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+          <li><a href="../ecrlgcm.html">ecrlgcm</a> &raquo;</li>
+      <li>ecrlgcm.experiment</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for ecrlgcm.experiment</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Setup GCM experiments&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">glob</span>
+
+<span class="kn">from</span> <span class="nn">ecrlgcm.preprocessing</span> <span class="kn">import</span> <span class="n">eccentricity</span><span class="p">,</span> <span class="n">obliquity</span>
+
+
+<div class="viewcode-block" id="Experiment"><a class="viewcode-back" href="../../_autosummary/ecrlgcm.experiment.Experiment.html#ecrlgcm.experiment.Experiment">[docs]</a><span class="k">class</span> <span class="nc">Experiment</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;GCM experiment class&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">gcm_type</span><span class="o">=</span><span class="s1">&#39;cesm&#39;</span><span class="p">,</span> <span class="n">multiplier</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">land_year</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                 <span class="n">co2_value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">res</span><span class="o">=</span><span class="s1">&#39;f19_f19_mg17&#39;</span><span class="p">,</span>
+                 <span class="n">exp_type</span><span class="o">=</span><span class="s1">&#39;cam_clmCN_docnDOM&#39;</span><span class="p">,</span> <span class="n">sea_level</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                 <span class="n">max_depth</span><span class="o">=</span><span class="mi">1000</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">multiplier</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">multiplier</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">land_year</span> <span class="o">=</span> <span class="n">land_year</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">co2_value</span> <span class="o">=</span> <span class="n">co2_value</span>
+        <span class="k">if</span> <span class="n">land_year</span> <span class="o">==</span> <span class="s1">&#39;0.02&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sea_level</span> <span class="o">=</span> <span class="o">-</span><span class="mi">100</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sea_level</span> <span class="o">=</span> <span class="n">sea_level</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_depth</span> <span class="o">=</span> <span class="n">max_depth</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">res</span> <span class="o">=</span> <span class="n">res</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">exp_type</span> <span class="o">=</span> <span class="n">exp_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gcm_type</span> <span class="o">=</span> <span class="n">gcm_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">high_res_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">land_year</span><span class="si">}</span><span class="s1">Ma_high_res.nc&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">remapped_f19</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;remapped_</span><span class="si">{</span><span class="n">land_year</span><span class="si">}</span><span class="s1">Ma_f19.nc&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">remapped_g16</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;remapped_</span><span class="si">{</span><span class="n">land_year</span><span class="si">}</span><span class="s1">Ma_g16.nc&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">remapped_f1</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;remapped_</span><span class="si">{</span><span class="n">land_year</span><span class="si">}</span><span class="s1">Ma_f1.nc&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">topo_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;topo_</span><span class="si">{</span><span class="n">land_year</span><span class="si">}</span><span class="s1">Ma_</span><span class="si">{</span><span class="n">res</span><span class="si">}</span><span class="s1">.nc&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solar_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;solar_</span><span class="si">{</span><span class="n">land_year</span><span class="si">}</span><span class="s1">Ma.nc&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">landfrac_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;landfrac_</span><span class="si">{</span><span class="n">land_year</span><span class="si">}</span><span class="s1">Ma_</span><span class="si">{</span><span class="n">res</span><span class="si">}</span><span class="s1">.nc&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">oceanfrac_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;oceanfrac_</span><span class="si">{</span><span class="n">land_year</span><span class="si">}</span><span class="s1">Ma_</span><span class="si">{</span><span class="n">res</span><span class="si">}</span><span class="s1">.nc&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">oceanmask_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;oceanmask_</span><span class="si">{</span><span class="n">land_year</span><span class="si">}</span><span class="s1">Ma_</span><span class="si">{</span><span class="n">res</span><span class="si">}</span><span class="s1">.ieeei4&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">oceantopo_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;oceantopo_</span><span class="si">{</span><span class="n">land_year</span><span class="si">}</span><span class="s1">Ma_</span><span class="si">{</span><span class="n">res</span><span class="si">}</span><span class="s1">.ieeei4&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">landplant_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;landplant_</span><span class="si">{</span><span class="n">land_year</span><span class="si">}</span><span class="s1">Ma_</span><span class="si">{</span><span class="n">res</span><span class="si">}</span><span class="s1">.nc&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_ocean_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;init_ocean_</span><span class="si">{</span><span class="n">land_year</span><span class="si">}</span><span class="s1">Ma_</span><span class="si">{</span><span class="n">res</span><span class="si">}</span><span class="s1">.ieeer8&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">docn_som_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;docn_som_</span><span class="si">{</span><span class="n">land_year</span><span class="si">}</span><span class="s1">Ma_</span><span class="si">{</span><span class="n">res</span><span class="si">}</span><span class="s1">.nc&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">docn_ocnfrac_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;docn_ocnfrac_</span><span class="si">{</span><span class="n">land_year</span><span class="si">}</span><span class="s1">Ma_</span><span class="si">{</span><span class="n">res</span><span class="si">}</span><span class="s1">.nc&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">docn_sst_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;docn_sst_</span><span class="si">{</span><span class="n">land_year</span><span class="si">}</span><span class="s1">Ma_</span><span class="si">{</span><span class="n">res</span><span class="si">}</span><span class="s1">.nc&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_atm_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;init_atm_</span><span class="si">{</span><span class="n">land_year</span><span class="si">}</span><span class="s1">Ma_</span><span class="si">{</span><span class="n">res</span><span class="si">}</span><span class="s1">.nc&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">high_res_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">HIGH_RES_TOPO_DIR</span><span class="p">,</span>
+                                          <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">land_year</span><span class="si">}</span><span class="s1">Ma_high_res.nc&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">gcm_type</span> <span class="o">==</span> <span class="s1">&#39;isca&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">land_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;continents_</span><span class="si">{</span><span class="n">land_year</span><span class="si">}</span><span class="s1">Ma.nc&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">base_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">config</span><span class="o">.</span><span class="n">ISCA_TOPO_DIR</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">land_file</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">topo_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_file</span>
+            <span class="k">if</span> <span class="n">co2_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">co2_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;co2_</span><span class="si">{</span><span class="n">co2_value</span><span class="si">}</span><span class="s1">ppm_continents_&#39;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">co2_file</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">land_year</span><span class="si">}</span><span class="s1">Ma.nc&#39;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;variable_co2_</span><span class="si">{</span><span class="n">co2_value</span><span class="si">}</span><span class="s1">ppm_continents_&#39;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">land_year</span><span class="si">}</span><span class="s1">Ma_experiment&#39;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">path_format</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">co2_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;co2_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">multiplier</span><span class="si">}</span><span class="s1">x_continents_&#39;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">co2_file</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">land_year</span><span class="si">}</span><span class="s1">Ma.nc&#39;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;variable_co2_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">multiplier</span><span class="si">}</span><span class="s1">x_continents_&#39;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">land_year</span><span class="si">}</span><span class="s1">Ma_experiment&#39;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">path_format</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">GFDL_DATA</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">path_format</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">files</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;run*/atmos_monthly.nc&#39;</span><span class="p">)))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">co2_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">config</span><span class="o">.</span><span class="n">ISCA_CO2_DIR</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">co2_file</span><span class="si">}</span><span class="s1">&#39;</span>
+
+        <span class="k">elif</span> <span class="n">gcm_type</span> <span class="o">==</span> <span class="s1">&#39;cesm&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">co2_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">co2_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;co2_</span><span class="si">{</span><span class="n">co2_value</span><span class="si">}</span><span class="s1">ppm_continents_&#39;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">co2_file</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">land_year</span><span class="si">}</span><span class="s1">Ma_</span><span class="si">{</span><span class="n">res</span><span class="si">}</span><span class="s1">.nc&#39;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">exp_type</span><span class="si">}</span><span class="s1">_co2_</span><span class="si">{</span><span class="n">co2_value</span><span class="si">}</span><span class="s1">ppm_continents_&#39;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">land_year</span><span class="si">}</span><span class="s1">Ma_experiment&#39;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">path_format</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">co2_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;co2_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">multiplier</span><span class="si">}</span><span class="s1">x_continents_&#39;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">co2_file</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">land_year</span><span class="si">}</span><span class="s1">Ma_</span><span class="si">{</span><span class="n">res</span><span class="si">}</span><span class="s1">.nc&#39;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">exp_type</span><span class="si">}</span><span class="s1">_co2_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">multiplier</span><span class="si">}</span><span class="s1">x_&#39;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;continents_</span><span class="si">{</span><span class="n">land_year</span><span class="si">}</span><span class="s1">Ma_experiment&#39;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">path_format</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">CIME_OUT_DIR</span><span class="p">,</span>
+                                          <span class="bp">self</span><span class="o">.</span><span class="n">path_format</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">files</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
+                <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file_path</span><span class="p">,</span>
+                          <span class="sa">f</span><span class="s1">&#39;atm/hist/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">.cam.h0.*.nc&#39;</span><span class="p">)))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">run_files</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file_path</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;run/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">.cam.h0.*.nc&#39;</span><span class="p">)))</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">solar_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">config</span><span class="o">.</span><span class="n">CESM_SOLAR_DIR</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">solar_file</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">topo_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">config</span><span class="o">.</span><span class="n">CESM_TOPO_DIR</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">topo_file</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">co2_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">config</span><span class="o">.</span><span class="n">CESM_CO2_DIR</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">co2_file</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">landfrac_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">CESM_LANDFRAC_DIR</span><span class="p">,</span>
+                                              <span class="bp">self</span><span class="o">.</span><span class="n">landfrac_file</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">oceanfrac_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">CESM_OCEANFRAC_DIR</span><span class="p">,</span>
+                                               <span class="bp">self</span><span class="o">.</span><span class="n">oceanfrac_file</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">oceanmask_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">CESM_OCEANFRAC_DIR</span><span class="p">,</span>
+                                               <span class="bp">self</span><span class="o">.</span><span class="n">oceanmask_file</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">oceantopo_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">CESM_OCEANFRAC_DIR</span><span class="p">,</span>
+                                               <span class="bp">self</span><span class="o">.</span><span class="n">oceantopo_file</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">docn_som_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">CESM_OCEANFRAC_DIR</span><span class="p">,</span>
+                                              <span class="bp">self</span><span class="o">.</span><span class="n">docn_som_file</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">docn_sst_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">CESM_OCEANFRAC_DIR</span><span class="p">,</span>
+                                              <span class="bp">self</span><span class="o">.</span><span class="n">docn_sst_file</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">docn_ocnfrac_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">CESM_OCEANFRAC_DIR</span><span class="p">,</span>
+                                                  <span class="bp">self</span><span class="o">.</span><span class="n">docn_ocnfrac_file</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">docn_domain_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="n">config</span><span class="o">.</span><span class="n">CESM_INPUT_DATA_DIR</span><span class="p">,</span>
+                <span class="s1">&#39;/ocn/docn7/domain.ocn.1x1.111007.nc&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">init_ocean_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">CESM_OCEANFRAC_DIR</span><span class="p">,</span>
+                                                <span class="bp">self</span><span class="o">.</span><span class="n">init_ocean_file</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">landplant_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">CESM_LANDFRAC_DIR</span><span class="p">,</span>
+                                               <span class="bp">self</span><span class="o">.</span><span class="n">landplant_file</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">remapped_f19</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">REMAPPED_LAND_DIR</span><span class="p">,</span>
+                                             <span class="bp">self</span><span class="o">.</span><span class="n">remapped_f19</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">remapped_g16</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">REMAPPED_LAND_DIR</span><span class="p">,</span>
+                                             <span class="bp">self</span><span class="o">.</span><span class="n">remapped_g16</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">remapped_f1</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">REMAPPED_LAND_DIR</span><span class="p">,</span>
+                                            <span class="bp">self</span><span class="o">.</span><span class="n">remapped_f1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">init_atm_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">INIT_CONDITIONS_DIR</span><span class="p">,</span>
+                                              <span class="bp">self</span><span class="o">.</span><span class="n">init_atm_file</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">base_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">remapped_f19</span>
+
+<div class="viewcode-block" id="Experiment.base"><a class="viewcode-back" href="../../_autosummary/ecrlgcm.experiment.Experiment.html#ecrlgcm.experiment.Experiment.base">[docs]</a>    <span class="k">def</span> <span class="nf">base</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get base data without manually introduced forcing&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_mfdataset</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_file</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Experiment.hires"><a class="viewcode-back" href="../../_autosummary/ecrlgcm.experiment.Experiment.html#ecrlgcm.experiment.Experiment.hires">[docs]</a>    <span class="k">def</span> <span class="nf">hires</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get high resolution data&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_mfdataset</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">high_res_file</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Experiment.sim_data"><a class="viewcode-back" href="../../_autosummary/ecrlgcm.experiment.Experiment.html#ecrlgcm.experiment.Experiment.sim_data">[docs]</a>    <span class="k">def</span> <span class="nf">sim_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get simulation output&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_mfdataset</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Experiment.run_data"><a class="viewcode-back" href="../../_autosummary/ecrlgcm.experiment.Experiment.html#ecrlgcm.experiment.Experiment.run_data">[docs]</a>    <span class="k">def</span> <span class="nf">run_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get current simulation output&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_mfdataset</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">run_files</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Experiment.topo"><a class="viewcode-back" href="../../_autosummary/ecrlgcm.experiment.Experiment.html#ecrlgcm.experiment.Experiment.topo">[docs]</a>    <span class="k">def</span> <span class="nf">topo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get topography data&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_mfdataset</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">topo_file</span><span class="p">,</span> <span class="n">decode_times</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Experiment.land"><a class="viewcode-back" href="../../_autosummary/ecrlgcm.experiment.Experiment.html#ecrlgcm.experiment.Experiment.land">[docs]</a>    <span class="k">def</span> <span class="nf">land</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get land fraction data&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_mfdataset</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">landfrac_file</span><span class="p">,</span> <span class="n">decode_times</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Experiment.ocean"><a class="viewcode-back" href="../../_autosummary/ecrlgcm.experiment.Experiment.html#ecrlgcm.experiment.Experiment.ocean">[docs]</a>    <span class="k">def</span> <span class="nf">ocean</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get ocean fraction data&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_mfdataset</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">oceanfrac_file</span><span class="p">,</span> <span class="n">decode_times</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Experiment.docn"><a class="viewcode-back" href="../../_autosummary/ecrlgcm.experiment.Experiment.html#ecrlgcm.experiment.Experiment.docn">[docs]</a>    <span class="k">def</span> <span class="nf">docn</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get ocean fraction data for data ocean module&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_mfdataset</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">docn_ocnfrac_file</span><span class="p">,</span> <span class="n">decode_times</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Experiment.solar_data"><a class="viewcode-back" href="../../_autosummary/ecrlgcm.experiment.Experiment.html#ecrlgcm.experiment.Experiment.solar_data">[docs]</a>    <span class="k">def</span> <span class="nf">solar_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get solar data&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_mfdataset</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">solar_file</span><span class="p">,</span> <span class="n">decode_times</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Experiment.co2_data"><a class="viewcode-back" href="../../_autosummary/ecrlgcm.experiment.Experiment.html#ecrlgcm.experiment.Experiment.co2_data">[docs]</a>    <span class="k">def</span> <span class="nf">co2_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get co2 data&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_mfdataset</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">co2_file</span><span class="p">,</span> <span class="n">decode_times</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="Configuration"><a class="viewcode-back" href="../../_autosummary/ecrlgcm.experiment.Configuration.html#ecrlgcm.experiment.Configuration">[docs]</a><span class="k">def</span> <span class="nf">Configuration</span><span class="p">(</span><span class="n">cesmexp</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get simulation configuration&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">exp</span> <span class="o">==</span> <span class="s1">&#39;cam_clmCN_docnDOM&#39;</span><span class="p">:</span>
+        <span class="n">sim_config</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">sim_config</span><span class="p">[</span><span class="s1">&#39;atm&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s1">&#39;bnd_topo=&quot;</span><span class="si">{</span><span class="n">cesmexp</span><span class="o">.</span><span class="n">topo_file</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">,</span>
+                             <span class="sa">f</span><span class="s2">&quot;solar_irrad_data_file=&#39;</span><span class="si">{</span><span class="n">cesmexp</span><span class="o">.</span><span class="n">solar_file</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">,</span>
+                             <span class="sa">f</span><span class="s2">&quot;co2vmr=</span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">co2_value</span><span class="si">}</span><span class="s2">e-6&quot;</span><span class="p">,</span>
+                             <span class="sa">f</span><span class="s2">&quot;co2vmr_rad=</span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">co2_value</span><span class="si">}</span><span class="s2">e-6&quot;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">step_type</span> <span class="o">==</span> <span class="s1">&#39;ndays&#39;</span><span class="p">:</span>
+            <span class="n">sim_config</span><span class="p">[</span><span class="s1">&#39;atm&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;nhtfrq=-24&#39;</span><span class="p">)</span>
+            <span class="n">sim_config</span><span class="p">[</span><span class="s1">&#39;atm&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;mfilt=365&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">sim_config</span><span class="p">[</span><span class="s1">&#39;atm&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;nhtfrq=0&#39;</span><span class="p">)</span>
+            <span class="n">sim_config</span><span class="p">[</span><span class="s1">&#39;atm&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;mfilt=12&#39;</span><span class="p">)</span>
+
+        <span class="n">sim_config</span><span class="p">[</span><span class="s1">&#39;lnd&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;urban_hac=&#39;OFF&#39;&quot;</span><span class="p">,</span>
+                             <span class="sa">f</span><span class="s1">&#39;fsurdat=&quot;</span><span class="si">{</span><span class="n">cesmexp</span><span class="o">.</span><span class="n">landplant_file</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">]</span>
+
+        <span class="n">sim_config</span><span class="p">[</span><span class="s1">&#39;docn&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s1">&#39;domainfile=&quot;</span><span class="si">{</span><span class="n">cesmexp</span><span class="o">.</span><span class="n">oceanfrac_file</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">]</span>
+        <span class="n">sim_config</span><span class="p">[</span><span class="s1">&#39;change_som_stream&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">sim_config</span><span class="p">[</span><span class="s1">&#39;change_dom_stream&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="n">sim_config</span><span class="p">[</span><span class="s1">&#39;ice&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ice_ic=&#39;none&#39;&quot;</span><span class="p">,</span> <span class="s2">&quot;xndt_dyn=2&quot;</span><span class="p">]</span>
+
+        <span class="n">sim_config</span><span class="p">[</span><span class="s1">&#39;cpl&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;orb_mode=&quot;fixed_year&quot;&#39;</span><span class="p">,</span> <span class="s1">&#39;orb_iyear=1850&#39;</span><span class="p">,</span>
+                             <span class="sa">f</span><span class="s1">&#39;orb_eccen=</span><span class="si">{</span><span class="n">eccentricity</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">year</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+                             <span class="sa">f</span><span class="s1">&#39;orb_obliq=</span><span class="si">{</span><span class="n">obliquity</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">year</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span>
+
+        <span class="n">sim_config</span><span class="p">[</span><span class="s1">&#39;xml_changes&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="sa">f</span><span class="s1">&#39;NTASKS=</span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">ntasks</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s1">&#39;STOP_OPTION=</span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">step_type</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s1">&#39;STOP_N=</span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">nsteps</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s1">&#39;REST_N=</span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">nsteps</span><span class="o">//</span><span class="mi">5</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;--file env_build.xml DEBUG=TRUE&#39;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s1">&#39;CCSM_CO2_PPMV=</span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">co2_value</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;CLM_CO2_TYPE=&#39;constant&#39;&quot;</span><span class="p">,</span>
+            <span class="s1">&#39;EPS_FRAC=0.1&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;ATM_DOMAIN_PATH=&quot;&quot;&#39;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s1">&#39;ATM_DOMAIN_FILE=&quot;</span><span class="si">{</span><span class="n">cesmexp</span><span class="o">.</span><span class="n">landfrac_file</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;LND_DOMAIN_PATH=&quot;&quot;&#39;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s1">&#39;LND_DOMAIN_FILE=&quot;</span><span class="si">{</span><span class="n">cesmexp</span><span class="o">.</span><span class="n">landfrac_file</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;OCN_DOMAIN_PATH=&quot;&quot;&#39;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s1">&#39;OCN_DOMAIN_FILE=&quot;</span><span class="si">{</span><span class="n">cesmexp</span><span class="o">.</span><span class="n">oceanfrac_file</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;ICE_DOMAIN_PATH=&quot;&quot;&#39;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s1">&#39;ICE_DOMAIN_FILE=&quot;</span><span class="si">{</span><span class="n">cesmexp</span><span class="o">.</span><span class="n">oceanfrac_file</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s1">&#39;SSTICE_GRID_FILENAME=&quot;</span><span class="si">{</span><span class="n">cesmexp</span><span class="o">.</span><span class="n">docn_ocnfrac_file</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s1">&#39;SSTICE_DATA_FILENAME=&quot;</span><span class="si">{</span><span class="n">cesmexp</span><span class="o">.</span><span class="n">docn_sst_file</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">timing</span><span class="p">:</span>
+            <span class="n">sim_config</span><span class="p">[</span><span class="s1">&#39;xml_changes&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;SAVE_TIMING=&#39;TRUE&#39;&quot;</span><span class="p">)</span>
+            <span class="n">sim_config</span><span class="p">[</span><span class="s1">&#39;xml_changes&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;REST_OPTION=&#39;never&#39;&quot;</span><span class="p">)</span>
+            <span class="n">sim_config</span><span class="p">[</span><span class="s1">&#39;xml_changes&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;STOP_N=5&#39;</span><span class="p">)</span>
+            <span class="n">sim_config</span><span class="p">[</span><span class="s1">&#39;xml_changes&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;STOP_OPTION=&#39;ndays&#39;&quot;</span><span class="p">)</span>
+            <span class="n">sim_config</span><span class="p">[</span><span class="s1">&#39;atm&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;nhtfrq=0&quot;</span><span class="p">)</span>
+
+        <span class="n">sim_config</span><span class="p">[</span><span class="s1">&#39;ocn&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">sim_config</span><span class="p">[</span><span class="s1">&#39;change_xml_cmd&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;./xmlchange </span><span class="si">{</span><span class="n">line</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">sim_config</span><span class="p">[</span><span class="s2">&quot;xml_changes&quot;</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">sim_config</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Brandon Benton.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

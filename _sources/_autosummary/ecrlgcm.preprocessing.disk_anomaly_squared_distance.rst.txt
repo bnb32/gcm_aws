@@ -1,0 +1,6 @@
+ecrlgcm.preprocessing.disk\_anomaly\_squared\_distance
+======================================================
+
+.. currentmodule:: ecrlgcm.preprocessing
+
+.. autofunction:: disk_anomaly_squared_distance

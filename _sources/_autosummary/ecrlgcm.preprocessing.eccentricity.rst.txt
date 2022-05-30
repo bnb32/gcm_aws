@@ -1,0 +1,6 @@
+ecrlgcm.preprocessing.eccentricity
+==================================
+
+.. currentmodule:: ecrlgcm.preprocessing
+
+.. autofunction:: eccentricity

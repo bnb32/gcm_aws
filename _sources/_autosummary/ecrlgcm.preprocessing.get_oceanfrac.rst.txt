@@ -1,0 +1,6 @@
+ecrlgcm.preprocessing.get\_oceanfrac
+====================================
+
+.. currentmodule:: ecrlgcm.preprocessing
+
+.. autofunction:: get_oceanfrac

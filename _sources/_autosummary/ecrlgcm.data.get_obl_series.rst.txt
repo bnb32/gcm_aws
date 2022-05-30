@@ -1,0 +1,6 @@
+ecrlgcm.data.get\_obl\_series
+=============================
+
+.. currentmodule:: ecrlgcm.data
+
+.. autofunction:: get_obl_series

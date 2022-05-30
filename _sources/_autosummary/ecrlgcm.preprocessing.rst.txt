@@ -1,0 +1,64 @@
+ecrlgcm.preprocessing
+=====================
+
+.. automodule:: ecrlgcm.preprocessing
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      anomaly_smoothing
+      anomaly_value
+      cell_overlap
+      compute_land_ocean_properties
+      disk_anomaly_squared_distance
+      eccentricity
+      fill_poles
+      get_landfrac
+      get_oceanfrac
+      inject_anomaly
+      interpolate_co2
+      interpolate_ecc
+      interpolate_obl
+      interpolate_series
+      meridional_band_anomaly_squared_distance
+      modify_all_arrays_with_mask
+      modify_array_with_time
+      modify_array_with_time_and_level
+      modify_arrays_with_mask
+      obliquity
+      overlap_fraction
+      regrid_continent_data
+      regrid_continent_maps
+      shift_longitude
+      solar_constant
+      solar_fraction
+      zonal_band_anomaly_squared_distance
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:
+      :template: custom-class-template.rst
+   
+      PreProcessing
+   
+   
+
+   
+   
+   
+
+
+

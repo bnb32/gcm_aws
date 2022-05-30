@@ -1,0 +1,33 @@
+ecrlgcm.experiment.Experiment
+=============================
+
+.. currentmodule:: ecrlgcm.experiment
+
+.. autoclass:: Experiment
+   :members:
+   :show-inheritance:
+   :inherited-members:
+   :special-members: __call__, __add__, __mul__
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~Experiment.base
+      ~Experiment.co2_data
+      ~Experiment.docn
+      ~Experiment.hires
+      ~Experiment.land
+      ~Experiment.ocean
+      ~Experiment.run_data
+      ~Experiment.sim_data
+      ~Experiment.solar_data
+      ~Experiment.topo
+   
+   
+
+   
+   
+   

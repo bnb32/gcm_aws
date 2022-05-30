@@ -1,0 +1,6 @@
+ecrlgcm.data.get\_ecc\_series
+=============================
+
+.. currentmodule:: ecrlgcm.data
+
+.. autofunction:: get_ecc_series

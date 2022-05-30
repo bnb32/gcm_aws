@@ -1,0 +1,6 @@
+ecrlgcm.animation\_argparse
+===========================
+
+.. currentmodule:: ecrlgcm
+
+.. autofunction:: animation_argparse

@@ -1,0 +1,38 @@
+ecrlgcm.experiment
+==================
+
+.. automodule:: ecrlgcm.experiment
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      Configuration
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:
+      :template: custom-class-template.rst
+   
+      Experiment
+   
+   
+
+   
+   
+   
+
+
+

@@ -1,0 +1,6 @@
+ecrlgcm.preprocessing.get\_landfrac
+===================================
+
+.. currentmodule:: ecrlgcm.preprocessing
+
+.. autofunction:: get_landfrac

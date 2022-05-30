@@ -1,0 +1,6 @@
+ecrlgcm.preprocessing.inject\_anomaly
+=====================================
+
+.. currentmodule:: ecrlgcm.preprocessing
+
+.. autofunction:: inject_anomaly

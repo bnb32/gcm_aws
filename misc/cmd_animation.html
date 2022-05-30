@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Get Animation &mdash; ecrlgcm v1.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Get Dashboard App" href="cmd_app.html" />
+    <link rel="prev" title="Get Animation Figures" href="cmd_figures.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> ecrlgcm
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../includeme.html">Home page</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../includeme.html#documentation">Documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../includeme.html#initialization">Initialization</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_autosummary/ecrlgcm.html">API reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../_autosummary/ecrlgcm.animation_argparse.html">ecrlgcm.animation_argparse</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../_autosummary/ecrlgcm.app_argparse.html">ecrlgcm.app_argparse</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../_autosummary/ecrlgcm.cesm_argparse.html">ecrlgcm.cesm_argparse</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../_autosummary/ecrlgcm.figures_argparse.html">ecrlgcm.figures_argparse</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../_autosummary/ecrlgcm.globe_argparse.html">ecrlgcm.globe_argparse</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../_autosummary/ecrlgcm.isca_argparse.html">ecrlgcm.isca_argparse</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../_autosummary/ecrlgcm.run_isca_variable_co2_continents_argparse.html">ecrlgcm.run_isca_variable_co2_continents_argparse</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../_autosummary/ecrlgcm.data.html">ecrlgcm.data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/ecrlgcm.data.get_co2_series.html">ecrlgcm.data.get_co2_series</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/ecrlgcm.data.get_ecc_series.html">ecrlgcm.data.get_ecc_series</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/ecrlgcm.data.get_obl_series.html">ecrlgcm.data.get_obl_series</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../_autosummary/ecrlgcm.environment.html">ecrlgcm.environment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/ecrlgcm.environment.EnvironmentConfig.html">ecrlgcm.environment.EnvironmentConfig</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/ecrlgcm.environment.config.html">ecrlgcm.environment.config</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../_autosummary/ecrlgcm.experiment.html">ecrlgcm.experiment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/ecrlgcm.experiment.Configuration.html">ecrlgcm.experiment.Configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/ecrlgcm.experiment.Experiment.html">ecrlgcm.experiment.Experiment</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../_autosummary/ecrlgcm.experiments.html">ecrlgcm.experiments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../_autosummary/ecrlgcm.postprocessing.html">ecrlgcm.postprocessing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/ecrlgcm.postprocessing.define_cloud_colormap.html">ecrlgcm.postprocessing.define_cloud_colormap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/ecrlgcm.postprocessing.define_land_colormap.html">ecrlgcm.postprocessing.define_land_colormap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/ecrlgcm.postprocessing.define_noaa_colormap.html">ecrlgcm.postprocessing.define_noaa_colormap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/ecrlgcm.postprocessing.get_sphere_surfaces.html">ecrlgcm.postprocessing.get_sphere_surfaces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/ecrlgcm.postprocessing.PostProcessing.html">ecrlgcm.postprocessing.PostProcessing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/ecrlgcm.postprocessing.get_animation.html">ecrlgcm.postprocessing.get_animation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/ecrlgcm.postprocessing.get_animation_figures.html">ecrlgcm.postprocessing.get_animation_figures</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../_autosummary/ecrlgcm.postprocessing.get_animation_figures.parallel_run.html">ecrlgcm.postprocessing.get_animation_figures.parallel_run</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/ecrlgcm.postprocessing.get_interactive_globe.html">ecrlgcm.postprocessing.get_interactive_globe</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../_autosummary/ecrlgcm.preprocessing.html">ecrlgcm.preprocessing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/ecrlgcm.preprocessing.anomaly_smoothing.html">ecrlgcm.preprocessing.anomaly_smoothing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/ecrlgcm.preprocessing.anomaly_value.html">ecrlgcm.preprocessing.anomaly_value</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/ecrlgcm.preprocessing.cell_overlap.html">ecrlgcm.preprocessing.cell_overlap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/ecrlgcm.preprocessing.compute_land_ocean_properties.html">ecrlgcm.preprocessing.compute_land_ocean_properties</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/ecrlgcm.preprocessing.disk_anomaly_squared_distance.html">ecrlgcm.preprocessing.disk_anomaly_squared_distance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/ecrlgcm.preprocessing.eccentricity.html">ecrlgcm.preprocessing.eccentricity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/ecrlgcm.preprocessing.fill_poles.html">ecrlgcm.preprocessing.fill_poles</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/ecrlgcm.preprocessing.get_landfrac.html">ecrlgcm.preprocessing.get_landfrac</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/ecrlgcm.preprocessing.get_oceanfrac.html">ecrlgcm.preprocessing.get_oceanfrac</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/ecrlgcm.preprocessing.inject_anomaly.html">ecrlgcm.preprocessing.inject_anomaly</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/ecrlgcm.preprocessing.interpolate_co2.html">ecrlgcm.preprocessing.interpolate_co2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/ecrlgcm.preprocessing.interpolate_ecc.html">ecrlgcm.preprocessing.interpolate_ecc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/ecrlgcm.preprocessing.interpolate_obl.html">ecrlgcm.preprocessing.interpolate_obl</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/ecrlgcm.preprocessing.interpolate_series.html">ecrlgcm.preprocessing.interpolate_series</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/ecrlgcm.preprocessing.meridional_band_anomaly_squared_distance.html">ecrlgcm.preprocessing.meridional_band_anomaly_squared_distance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/ecrlgcm.preprocessing.modify_all_arrays_with_mask.html">ecrlgcm.preprocessing.modify_all_arrays_with_mask</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/ecrlgcm.preprocessing.modify_array_with_time.html">ecrlgcm.preprocessing.modify_array_with_time</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/ecrlgcm.preprocessing.modify_array_with_time_and_level.html">ecrlgcm.preprocessing.modify_array_with_time_and_level</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/ecrlgcm.preprocessing.modify_arrays_with_mask.html">ecrlgcm.preprocessing.modify_arrays_with_mask</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/ecrlgcm.preprocessing.obliquity.html">ecrlgcm.preprocessing.obliquity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/ecrlgcm.preprocessing.overlap_fraction.html">ecrlgcm.preprocessing.overlap_fraction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/ecrlgcm.preprocessing.regrid_continent_data.html">ecrlgcm.preprocessing.regrid_continent_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/ecrlgcm.preprocessing.regrid_continent_maps.html">ecrlgcm.preprocessing.regrid_continent_maps</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/ecrlgcm.preprocessing.shift_longitude.html">ecrlgcm.preprocessing.shift_longitude</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/ecrlgcm.preprocessing.solar_constant.html">ecrlgcm.preprocessing.solar_constant</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/ecrlgcm.preprocessing.solar_fraction.html">ecrlgcm.preprocessing.solar_fraction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/ecrlgcm.preprocessing.zonal_band_anomaly_squared_distance.html">ecrlgcm.preprocessing.zonal_band_anomaly_squared_distance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/ecrlgcm.preprocessing.PreProcessing.html">ecrlgcm.preprocessing.PreProcessing</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../_autosummary/ecrlgcm.version.html">ecrlgcm.version</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="cmd.html">Command Line Use</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="cmd_isca.html">Run ISCA simulation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cmd_isca.html#Named Arguments">Named Arguments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cmd_cesm.html">Run CESM simulation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cmd_cesm.html#Named Arguments">Named Arguments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cmd_globe.html">Get Interactive Globe Animation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cmd_globe.html#Named Arguments">Named Arguments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cmd_figures.html">Get Animation Figures</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cmd_figures.html#Named Arguments">Named Arguments</a></li>
+</ul>
+</li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Get Animation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Named Arguments">Named Arguments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cmd_app.html">Get Dashboard App</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cmd_app.html#Named Arguments">Named Arguments</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#run-simulations">Run Simulations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#visualization">Visualization</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ecrlgcm</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="cmd.html">Command Line utilities</a> &raquo;</li>
+      <li>Get Animation</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/bnb32/ecrlgcm/blob/main/docs/source/misc/cmd_animation.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="get-animation">
+<h1>Get Animation<a class="headerlink" href="#get-animation" title="Permalink to this heading"></a></h1>
+<p><p>Make animation</p>
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">python</span> <span class="n">ecrlgcm</span><span class="o">/</span><span class="n">postprocessing</span><span class="o">/</span><span class="n">get_animation</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">field</span> <span class="n">FIELD</span><span class="p">]</span>
+                                                      <span class="p">[</span><span class="o">-</span><span class="n">level</span> <span class="n">LEVEL</span><span class="p">]</span>
+                                                      <span class="p">[</span><span class="o">-</span><span class="n">plevel</span> <span class="n">PLEVEL</span><span class="p">]</span>
+                                                      <span class="p">[</span><span class="o">-</span><span class="n">model</span> <span class="p">{</span><span class="n">cesm</span><span class="p">,</span><span class="n">isca</span><span class="p">}]</span>
+                                                      <span class="p">[</span><span class="o">-</span><span class="n">globe</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">time_avg</span><span class="p">]</span>
+                                                      <span class="p">[</span><span class="o">-</span><span class="n">year</span> <span class="n">YEAR</span><span class="p">]</span> <span class="o">-</span><span class="n">config</span>
+                                                      <span class="n">CONFIG</span>
+</pre></div>
+</div>
+<section id="Named Arguments">
+<h2>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this heading"></a></h2>
+<dl class="option-list">
+<dt><kbd>-field</kbd></dt>
+<dd><p>Field from simulation output to plot</p>
+</dd>
+<dt><kbd>-level</kbd></dt>
+<dd></dd>
+<dt><kbd>-plevel</kbd></dt>
+<dd></dd>
+<dt><kbd>-model</kbd></dt>
+<dd><p>Possible choices: cesm, isca</p>
+<p>Default: “cesm”</p>
+</dd>
+<dt><kbd>-globe</kbd></dt>
+<dd><p>Default: False</p>
+</dd>
+<dt><kbd>-time_avg</kbd></dt>
+<dd><p>Default: False</p>
+</dd>
+<dt><kbd>-year</kbd></dt>
+<dd><p>Years prior to current era in units of Ma.</p>
+<p>Default: 751</p>
+</dd>
+<dt><kbd>-config</kbd></dt>
+<dd><p>Path to configuration file. Needs to have the parameters defined in environment/config.py. Needs to be in either json format or a .py file.</p>
+</dd>
+</dl>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="cmd_figures.html" class="btn btn-neutral float-left" title="Get Animation Figures" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="cmd_app.html" class="btn btn-neutral float-right" title="Get Dashboard App" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Brandon Benton.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,6 @@
+ecrlgcm.postprocessing.get\_animation\_figures.parallel\_run
+============================================================
+
+.. currentmodule:: ecrlgcm.postprocessing.get_animation_figures
+
+.. autofunction:: parallel_run

@@ -1,0 +1,6 @@
+ecrlgcm.experiment.Configuration
+================================
+
+.. currentmodule:: ecrlgcm.experiment
+
+.. autofunction:: Configuration

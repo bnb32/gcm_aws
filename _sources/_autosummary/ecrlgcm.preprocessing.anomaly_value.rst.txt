@@ -1,0 +1,6 @@
+ecrlgcm.preprocessing.anomaly\_value
+====================================
+
+.. currentmodule:: ecrlgcm.preprocessing
+
+.. autofunction:: anomaly_value

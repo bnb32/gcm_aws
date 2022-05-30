@@ -1,0 +1,6 @@
+ecrlgcm.app\_argparse
+=====================
+
+.. currentmodule:: ecrlgcm
+
+.. autofunction:: app_argparse

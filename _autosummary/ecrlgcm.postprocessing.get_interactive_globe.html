@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ecrlgcm.postprocessing.get_interactive_globe &mdash; ecrlgcm v1.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="ecrlgcm.preprocessing" href="ecrlgcm.preprocessing.html" />
+    <link rel="prev" title="ecrlgcm.postprocessing.get_animation_figures.parallel_run" href="ecrlgcm.postprocessing.get_animation_figures.parallel_run.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> ecrlgcm
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../includeme.html">Home page</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../includeme.html#documentation">Documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../includeme.html#initialization">Initialization</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../misc/install.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="ecrlgcm.html">API reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="ecrlgcm.animation_argparse.html">ecrlgcm.animation_argparse</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ecrlgcm.app_argparse.html">ecrlgcm.app_argparse</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ecrlgcm.cesm_argparse.html">ecrlgcm.cesm_argparse</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ecrlgcm.figures_argparse.html">ecrlgcm.figures_argparse</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ecrlgcm.globe_argparse.html">ecrlgcm.globe_argparse</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ecrlgcm.isca_argparse.html">ecrlgcm.isca_argparse</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ecrlgcm.run_isca_variable_co2_continents_argparse.html">ecrlgcm.run_isca_variable_co2_continents_argparse</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ecrlgcm.data.html">ecrlgcm.data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ecrlgcm.data.get_co2_series.html">ecrlgcm.data.get_co2_series</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ecrlgcm.data.get_ecc_series.html">ecrlgcm.data.get_ecc_series</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ecrlgcm.data.get_obl_series.html">ecrlgcm.data.get_obl_series</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ecrlgcm.environment.html">ecrlgcm.environment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ecrlgcm.environment.EnvironmentConfig.html">ecrlgcm.environment.EnvironmentConfig</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ecrlgcm.environment.config.html">ecrlgcm.environment.config</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ecrlgcm.experiment.html">ecrlgcm.experiment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ecrlgcm.experiment.Configuration.html">ecrlgcm.experiment.Configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ecrlgcm.experiment.Experiment.html">ecrlgcm.experiment.Experiment</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ecrlgcm.experiments.html">ecrlgcm.experiments</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="ecrlgcm.postprocessing.html">ecrlgcm.postprocessing</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="ecrlgcm.postprocessing.define_cloud_colormap.html">ecrlgcm.postprocessing.define_cloud_colormap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ecrlgcm.postprocessing.define_land_colormap.html">ecrlgcm.postprocessing.define_land_colormap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ecrlgcm.postprocessing.define_noaa_colormap.html">ecrlgcm.postprocessing.define_noaa_colormap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ecrlgcm.postprocessing.get_sphere_surfaces.html">ecrlgcm.postprocessing.get_sphere_surfaces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ecrlgcm.postprocessing.PostProcessing.html">ecrlgcm.postprocessing.PostProcessing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ecrlgcm.postprocessing.get_animation.html">ecrlgcm.postprocessing.get_animation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ecrlgcm.postprocessing.get_animation_figures.html">ecrlgcm.postprocessing.get_animation_figures</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="ecrlgcm.postprocessing.get_animation_figures.parallel_run.html">ecrlgcm.postprocessing.get_animation_figures.parallel_run</a></li>
+</ul>
+</li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">ecrlgcm.postprocessing.get_interactive_globe</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ecrlgcm.preprocessing.html">ecrlgcm.preprocessing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ecrlgcm.preprocessing.anomaly_smoothing.html">ecrlgcm.preprocessing.anomaly_smoothing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ecrlgcm.preprocessing.anomaly_value.html">ecrlgcm.preprocessing.anomaly_value</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ecrlgcm.preprocessing.cell_overlap.html">ecrlgcm.preprocessing.cell_overlap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ecrlgcm.preprocessing.compute_land_ocean_properties.html">ecrlgcm.preprocessing.compute_land_ocean_properties</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ecrlgcm.preprocessing.disk_anomaly_squared_distance.html">ecrlgcm.preprocessing.disk_anomaly_squared_distance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ecrlgcm.preprocessing.eccentricity.html">ecrlgcm.preprocessing.eccentricity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ecrlgcm.preprocessing.fill_poles.html">ecrlgcm.preprocessing.fill_poles</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ecrlgcm.preprocessing.get_landfrac.html">ecrlgcm.preprocessing.get_landfrac</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ecrlgcm.preprocessing.get_oceanfrac.html">ecrlgcm.preprocessing.get_oceanfrac</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ecrlgcm.preprocessing.inject_anomaly.html">ecrlgcm.preprocessing.inject_anomaly</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ecrlgcm.preprocessing.interpolate_co2.html">ecrlgcm.preprocessing.interpolate_co2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ecrlgcm.preprocessing.interpolate_ecc.html">ecrlgcm.preprocessing.interpolate_ecc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ecrlgcm.preprocessing.interpolate_obl.html">ecrlgcm.preprocessing.interpolate_obl</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ecrlgcm.preprocessing.interpolate_series.html">ecrlgcm.preprocessing.interpolate_series</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ecrlgcm.preprocessing.meridional_band_anomaly_squared_distance.html">ecrlgcm.preprocessing.meridional_band_anomaly_squared_distance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ecrlgcm.preprocessing.modify_all_arrays_with_mask.html">ecrlgcm.preprocessing.modify_all_arrays_with_mask</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ecrlgcm.preprocessing.modify_array_with_time.html">ecrlgcm.preprocessing.modify_array_with_time</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ecrlgcm.preprocessing.modify_array_with_time_and_level.html">ecrlgcm.preprocessing.modify_array_with_time_and_level</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ecrlgcm.preprocessing.modify_arrays_with_mask.html">ecrlgcm.preprocessing.modify_arrays_with_mask</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ecrlgcm.preprocessing.obliquity.html">ecrlgcm.preprocessing.obliquity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ecrlgcm.preprocessing.overlap_fraction.html">ecrlgcm.preprocessing.overlap_fraction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ecrlgcm.preprocessing.regrid_continent_data.html">ecrlgcm.preprocessing.regrid_continent_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ecrlgcm.preprocessing.regrid_continent_maps.html">ecrlgcm.preprocessing.regrid_continent_maps</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ecrlgcm.preprocessing.shift_longitude.html">ecrlgcm.preprocessing.shift_longitude</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ecrlgcm.preprocessing.solar_constant.html">ecrlgcm.preprocessing.solar_constant</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ecrlgcm.preprocessing.solar_fraction.html">ecrlgcm.preprocessing.solar_fraction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ecrlgcm.preprocessing.zonal_band_anomaly_squared_distance.html">ecrlgcm.preprocessing.zonal_band_anomaly_squared_distance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ecrlgcm.preprocessing.PreProcessing.html">ecrlgcm.preprocessing.PreProcessing</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ecrlgcm.version.html">ecrlgcm.version</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../misc/cmd.html">Command Line Use</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../misc/cmd_isca.html">Run ISCA simulation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../misc/cmd_isca.html#Named Arguments">Named Arguments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../misc/cmd_cesm.html">Run CESM simulation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../misc/cmd_cesm.html#Named Arguments">Named Arguments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../misc/cmd_globe.html">Get Interactive Globe Animation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../misc/cmd_globe.html#Named Arguments">Named Arguments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../misc/cmd_figures.html">Get Animation Figures</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../misc/cmd_figures.html#Named Arguments">Named Arguments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../misc/cmd_animation.html">Get Animation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../misc/cmd_animation.html#Named Arguments">Named Arguments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../misc/cmd_app.html">Get Dashboard App</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../misc/cmd_app.html#Named Arguments">Named Arguments</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../misc/examples.html">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../misc/examples.html#run-simulations">Run Simulations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../misc/examples.html#visualization">Visualization</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ecrlgcm</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="ecrlgcm.html">ecrlgcm</a> &raquo;</li>
+          <li><a href="ecrlgcm.postprocessing.html">ecrlgcm.postprocessing</a> &raquo;</li>
+      <li>ecrlgcm.postprocessing.get_interactive_globe</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/bnb32/ecrlgcm/blob/main/docs/source/_autosummary/ecrlgcm.postprocessing.get_interactive_globe.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-ecrlgcm.postprocessing.get_interactive_globe">
+<span id="ecrlgcm-postprocessing-get-interactive-globe"></span><h1>ecrlgcm.postprocessing.get_interactive_globe<a class="headerlink" href="#module-ecrlgcm.postprocessing.get_interactive_globe" title="Permalink to this heading"></a></h1>
+<p>Run interactive globe creation</p>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="ecrlgcm.postprocessing.get_animation_figures.parallel_run.html" class="btn btn-neutral float-left" title="ecrlgcm.postprocessing.get_animation_figures.parallel_run" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ecrlgcm.preprocessing.html" class="btn btn-neutral float-right" title="ecrlgcm.preprocessing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Brandon Benton.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

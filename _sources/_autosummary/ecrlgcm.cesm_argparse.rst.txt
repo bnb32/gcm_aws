@@ -1,0 +1,6 @@
+ecrlgcm.cesm\_argparse
+======================
+
+.. currentmodule:: ecrlgcm
+
+.. autofunction:: cesm_argparse

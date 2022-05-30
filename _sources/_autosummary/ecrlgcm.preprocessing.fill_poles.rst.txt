@@ -1,0 +1,6 @@
+ecrlgcm.preprocessing.fill\_poles
+=================================
+
+.. currentmodule:: ecrlgcm.preprocessing
+
+.. autofunction:: fill_poles

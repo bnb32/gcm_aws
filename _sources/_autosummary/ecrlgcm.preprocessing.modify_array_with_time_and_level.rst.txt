@@ -1,0 +1,6 @@
+ecrlgcm.preprocessing.modify\_array\_with\_time\_and\_level
+===========================================================
+
+.. currentmodule:: ecrlgcm.preprocessing
+
+.. autofunction:: modify_array_with_time_and_level

@@ -1,0 +1,6 @@
+ecrlgcm.isca\_argparse
+======================
+
+.. currentmodule:: ecrlgcm
+
+.. autofunction:: isca_argparse

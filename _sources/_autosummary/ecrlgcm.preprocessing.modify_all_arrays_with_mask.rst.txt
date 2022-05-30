@@ -1,0 +1,6 @@
+ecrlgcm.preprocessing.modify\_all\_arrays\_with\_mask
+=====================================================
+
+.. currentmodule:: ecrlgcm.preprocessing
+
+.. autofunction:: modify_all_arrays_with_mask

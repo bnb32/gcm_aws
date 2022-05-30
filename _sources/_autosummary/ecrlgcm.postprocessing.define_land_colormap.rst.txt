@@ -1,0 +1,6 @@
+ecrlgcm.postprocessing.define\_land\_colormap
+=============================================
+
+.. currentmodule:: ecrlgcm.postprocessing
+
+.. autofunction:: define_land_colormap

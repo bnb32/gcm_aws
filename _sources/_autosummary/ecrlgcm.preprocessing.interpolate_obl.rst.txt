@@ -1,0 +1,6 @@
+ecrlgcm.preprocessing.interpolate\_obl
+======================================
+
+.. currentmodule:: ecrlgcm.preprocessing
+
+.. autofunction:: interpolate_obl

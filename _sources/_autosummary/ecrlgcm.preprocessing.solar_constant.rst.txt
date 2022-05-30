@@ -1,0 +1,6 @@
+ecrlgcm.preprocessing.solar\_constant
+=====================================
+
+.. currentmodule:: ecrlgcm.preprocessing
+
+.. autofunction:: solar_constant

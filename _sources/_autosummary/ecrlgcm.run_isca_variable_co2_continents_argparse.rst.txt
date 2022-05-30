@@ -1,0 +1,6 @@
+ecrlgcm.run\_isca\_variable\_co2\_continents\_argparse
+======================================================
+
+.. currentmodule:: ecrlgcm
+
+.. autofunction:: run_isca_variable_co2_continents_argparse

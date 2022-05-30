@@ -1,0 +1,49 @@
+﻿ecrlgcm
+=======
+
+.. automodule:: ecrlgcm
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      animation_argparse
+      app_argparse
+      cesm_argparse
+      figures_argparse
+      globe_argparse
+      isca_argparse
+      run_isca_variable_co2_continents_argparse
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+
+.. autosummary::
+   :toctree:
+   :template: custom-module-template.rst
+   :recursive:
+
+   ecrlgcm.data
+   ecrlgcm.environment
+   ecrlgcm.experiment
+   ecrlgcm.experiments
+   ecrlgcm.postprocessing
+   ecrlgcm.preprocessing
+   ecrlgcm.version
+

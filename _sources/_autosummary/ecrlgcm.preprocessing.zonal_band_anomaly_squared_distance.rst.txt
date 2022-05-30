@@ -1,0 +1,6 @@
+ecrlgcm.preprocessing.zonal\_band\_anomaly\_squared\_distance
+=============================================================
+
+.. currentmodule:: ecrlgcm.preprocessing
+
+.. autofunction:: zonal_band_anomaly_squared_distance

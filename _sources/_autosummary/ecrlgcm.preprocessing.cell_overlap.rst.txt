@@ -1,0 +1,6 @@
+ecrlgcm.preprocessing.cell\_overlap
+===================================
+
+.. currentmodule:: ecrlgcm.preprocessing
+
+.. autofunction:: cell_overlap

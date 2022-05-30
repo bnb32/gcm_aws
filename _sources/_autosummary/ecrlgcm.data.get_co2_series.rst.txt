@@ -1,0 +1,6 @@
+ecrlgcm.data.get\_co2\_series
+=============================
+
+.. currentmodule:: ecrlgcm.data
+
+.. autofunction:: get_co2_series

@@ -1,0 +1,51 @@
+ecrlgcm.postprocessing
+======================
+
+.. automodule:: ecrlgcm.postprocessing
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      define_cloud_colormap
+      define_land_colormap
+      define_noaa_colormap
+      get_sphere_surfaces
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:
+      :template: custom-class-template.rst
+   
+      PostProcessing
+   
+   
+
+   
+   
+   
+
+
+
+.. autosummary::
+   :toctree:
+   :template: custom-module-template.rst
+   :recursive:
+
+   ecrlgcm.postprocessing.app
+   ecrlgcm.postprocessing.get_animation
+   ecrlgcm.postprocessing.get_animation_figures
+   ecrlgcm.postprocessing.get_interactive_globe
+

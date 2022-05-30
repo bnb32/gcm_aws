@@ -1,0 +1,6 @@
+ecrlgcm.globe\_argparse
+=======================
+
+.. currentmodule:: ecrlgcm
+
+.. autofunction:: globe_argparse

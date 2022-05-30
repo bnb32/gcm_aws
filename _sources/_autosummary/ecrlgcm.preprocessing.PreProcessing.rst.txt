@@ -1,0 +1,36 @@
+ecrlgcm.preprocessing.PreProcessing
+===================================
+
+.. currentmodule:: ecrlgcm.preprocessing
+
+.. autoclass:: PreProcessing
+   :members:
+   :show-inheritance:
+   :inherited-members:
+   :special-members: __call__, __add__, __mul__
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~PreProcessing.edit_namelists
+      ~PreProcessing.get_base_topofile
+      ~PreProcessing.get_global_vars
+      ~PreProcessing.get_landfrac_dict
+      ~PreProcessing.get_original_map_data
+      ~PreProcessing.interpolate_land
+      ~PreProcessing.modify_cesm_input_files
+      ~PreProcessing.modify_co2_file
+      ~PreProcessing.modify_isca_input_files
+      ~PreProcessing.modify_solar_file
+      ~PreProcessing.regrid_domain_files
+      ~PreProcessing.regrid_high_res_data
+      ~PreProcessing.regrid_high_res_data_ncl
+   
+   
+
+   
+   
+   

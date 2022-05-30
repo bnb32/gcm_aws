@@ -1,0 +1,23 @@
+ecrlgcm.postprocessing.get\_interactive\_globe
+==============================================
+
+.. automodule:: ecrlgcm.postprocessing.get_interactive_globe
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

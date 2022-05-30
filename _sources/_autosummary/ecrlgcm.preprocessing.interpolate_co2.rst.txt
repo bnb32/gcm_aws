@@ -1,0 +1,6 @@
+ecrlgcm.preprocessing.interpolate\_co2
+======================================
+
+.. currentmodule:: ecrlgcm.preprocessing
+
+.. autofunction:: interpolate_co2

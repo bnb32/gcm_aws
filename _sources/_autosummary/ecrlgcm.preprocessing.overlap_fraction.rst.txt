@@ -1,0 +1,6 @@
+ecrlgcm.preprocessing.overlap\_fraction
+=======================================
+
+.. currentmodule:: ecrlgcm.preprocessing
+
+.. autofunction:: overlap_fraction

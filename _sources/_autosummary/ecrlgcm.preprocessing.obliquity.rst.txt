@@ -1,0 +1,6 @@
+ecrlgcm.preprocessing.obliquity
+===============================
+
+.. currentmodule:: ecrlgcm.preprocessing
+
+.. autofunction:: obliquity

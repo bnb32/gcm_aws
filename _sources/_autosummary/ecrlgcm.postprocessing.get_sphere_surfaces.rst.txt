@@ -1,0 +1,6 @@
+ecrlgcm.postprocessing.get\_sphere\_surfaces
+============================================
+
+.. currentmodule:: ecrlgcm.postprocessing
+
+.. autofunction:: get_sphere_surfaces

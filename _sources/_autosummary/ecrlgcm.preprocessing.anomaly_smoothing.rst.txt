@@ -1,0 +1,6 @@
+ecrlgcm.preprocessing.anomaly\_smoothing
+========================================
+
+.. currentmodule:: ecrlgcm.preprocessing
+
+.. autofunction:: anomaly_smoothing

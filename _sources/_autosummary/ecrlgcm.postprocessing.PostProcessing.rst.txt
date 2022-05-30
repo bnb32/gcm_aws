@@ -1,0 +1,42 @@
+ecrlgcm.postprocessing.PostProcessing
+=====================================
+
+.. currentmodule:: ecrlgcm.postprocessing
+
+.. autoclass:: PostProcessing
+   :members:
+   :show-inheritance:
+   :inherited-members:
+   :special-members: __call__, __add__, __mul__
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~PostProcessing.close_lon_gap
+      ~PostProcessing.field_interp
+      ~PostProcessing.get_avg_field
+      ~PostProcessing.get_continent_animation
+      ~PostProcessing.get_data
+      ~PostProcessing.get_field_and_polar_coords
+      ~PostProcessing.get_field_animation
+      ~PostProcessing.get_field_colormap
+      ~PostProcessing.get_field_time_animation
+      ~PostProcessing.get_hires_topo_and_polar_coords
+      ~PostProcessing.get_interactive_globe
+      ~PostProcessing.get_interactive_globe_time
+      ~PostProcessing.get_lowres_topo_and_polar_coords
+      ~PostProcessing.get_reference_data
+      ~PostProcessing.get_sphere_layout
+      ~PostProcessing.hires_interp
+      ~PostProcessing.mpl_to_plotly
+      ~PostProcessing.potential_intensity
+      ~PostProcessing.save_globe_figure
+   
+   
+
+   
+   
+   

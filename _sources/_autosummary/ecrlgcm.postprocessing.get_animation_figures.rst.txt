@@ -1,0 +1,30 @@
+ecrlgcm.postprocessing.get\_animation\_figures
+==============================================
+
+.. automodule:: ecrlgcm.postprocessing.get_animation_figures
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      parallel_run
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

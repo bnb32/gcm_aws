@@ -1,0 +1,6 @@
+ecrlgcm.preprocessing.shift\_longitude
+======================================
+
+.. currentmodule:: ecrlgcm.preprocessing
+
+.. autofunction:: shift_longitude

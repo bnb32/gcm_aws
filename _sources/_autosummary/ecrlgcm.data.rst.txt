@@ -1,0 +1,32 @@
+ecrlgcm.data
+============
+
+.. automodule:: ecrlgcm.data
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      get_co2_series
+      get_ecc_series
+      get_obl_series
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

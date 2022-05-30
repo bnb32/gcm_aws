@@ -1,0 +1,6 @@
+ecrlgcm.preprocessing.interpolate\_series
+=========================================
+
+.. currentmodule:: ecrlgcm.preprocessing
+
+.. autofunction:: interpolate_series
