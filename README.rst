@@ -1,11 +1,10 @@
 *************
 Ecrlgcm
 *************
-Tools for setting up gcms (isca and cesm) and running on aws. For use with
-isca_aws and cesm_aws repos.
+Tools for setting up gcms (isca and cesm) and running on aws.
 
-Installation
-============
+Initialization
+==============
 
 Edit environment configuration:
 
@@ -19,12 +18,11 @@ Configuration can be in either .py or .json format. Follow the required
 variables from config.py. Easiest is just to edit the my_config.py file and
 not convert to json.
 
-Install package:
+After following the installation instructions `here <https://bnb32.github.io/gcm_aws/install.html>`_:
 
 .. code-block:: bash
 
     cd gcm_aws
-    pip install -e .
     bash ./go.sh
 
 This go script kicks off scripts from the scripts directory and requires

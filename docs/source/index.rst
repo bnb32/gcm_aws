@@ -10,9 +10,10 @@ Welcome to ecrlgcm's documentation!
    :hidden:
 
    Home page <includeme>
+   Installation <misc/install>
    API reference <_autosummary/ecrlgcm>
-   Command Line Use <cmd>
-   Examples <examples>
+   Command Line Use <misc/cmd>
+   Examples <misc/examples>
 
 .. include:: ../../README.rst
    :start-after: inclusion-intro
