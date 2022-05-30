@@ -14,3 +14,14 @@ Install package:
     cd gcm_aws
     pip install -e .
     bash ./go.sh
+
+Edit environment configuration:
+
+.. code-block:: bash
+
+    cd gcm_aws
+    cp environment/config.py my_config.json
+    vim my_config.json
+
+Configuration needs to be in json format. Follow the required variables from
+config.py
