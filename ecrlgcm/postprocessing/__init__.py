@@ -21,6 +21,7 @@ from ecrlgcm.utilities import (polar_to_cartesian, mapping_map_to_sphere,
                                get_logger, cesm_plevels, isca_plevels)
 from ecrlgcm.preprocessing import PreProcessing, solar_constant
 from ecrlgcm.experiment import Experiment
+from ecrlgcm.regridder import regridder_module
 
 logger = get_logger()
 
@@ -213,7 +214,6 @@ class PostProcessing:
         self.reference_data = reference_data
 
     def hires_interp(self, land_year, stored_years=None):
-        import xesmf as xe
         """Interpolate to high resolution"""
         if stored_years is None:
             stored_years = self.stored_years
@@ -244,7 +244,7 @@ class PostProcessing:
             ds_out['z'] = (('lat', 'lon'), exp.hires()['z'].values)
 
         else:
-            for i in range(len(keys)):
+            for i, _ in enumerate(keys):
                 if keys[i] <= year <= keys[i + 1]:
                     exp0 = Experiment(self.config, land_year=keys[i])
                     exp1 = Experiment(self.config, land_year=keys[i + 1])
@@ -256,8 +256,7 @@ class PostProcessing:
         logger.info(f'Regridding hires_interp, year: {land_year}')
         ds_new = xr.Dataset({'lat': (['lat'], basefile['lat'].values[:-1: 3]),
                              'lon': (['lon'], basefile['lon'].values[::3])})
-        regridder = xe.Regridder(ds_out, ds_new, 'bilinear',
-                                 ignore_degenerate=True)
+        regridder = regridder_module(ds_out, ds_new)
         ds_new = regridder(ds_out)
         ds_tmp = xr.Dataset(
             {'lat': (['lat'], basefile['lat'].values[:-1: 3]),

@@ -8,6 +8,7 @@ import warnings
 from tqdm import tqdm
 from metpy.calc import smooth_n_point
 
+from ecrlgcm.regridder import regridder_module
 from ecrlgcm.data import co2_series, ecc_series, obl_series
 from ecrlgcm.utilities import interp, get_logger, sliding_std
 warnings.filterwarnings("ignore")
@@ -50,7 +51,7 @@ def interpolate_series(land_year, series):
         return series[keys[-1]]
 
     else:
-        for i in range(len(keys)):
+        for i, _ in enumerate(keys):
             if keys[i] <= year <= keys[i + 1]:
                 return interp(series[keys[i]],
                               series[keys[i + 1]],
@@ -81,7 +82,6 @@ class PreProcessing:
         self.min_land_year, self.max_land_year = out[2:]
 
     def modify_isca_input_files(self, ecrlexp, remap=False):
-        import xesmf as xe
         """Modify input data file for requested experiment"""
         multiplier = ecrlexp.multiplier
         land_year = ecrlexp.land_year
@@ -117,7 +117,7 @@ class PreProcessing:
                 logger.info(
                     f'Saving high res map file: {ecrlexp.high_res_file}')
 
-            regridder = xe.Regridder(land, ds_out, 'bilinear')
+            regridder = regridder_module(land, ds_out)
             land['z'] = (land['z'].dims,
                          np.where(land['z'].values > sea_level,
                          land['z'].values, 0))
@@ -132,7 +132,6 @@ class PreProcessing:
             logger.info(f'Saving map file: {ecrlexp.topo_file}')
 
     def regrid_high_res_data(self, cesmexp, land, remap=True):
-        import xesmf as xe
         """Regrid high res data on grid used for simulation"""
         sea_level = cesmexp.sea_level
         max_depth = cesmexp.max_depth
@@ -143,13 +142,12 @@ class PreProcessing:
                                  'lon': (['lon'], basefile['lon'].values)})
 
             logger.info('Regridding high res file to fv1.9x2.5')
-            regridder = xe.Regridder(land, ds_out, 'bilinear',
-                                     ignore_degenerate=True)
+            regridder = regridder_module(land, ds_out)
             land = regridder(land)
 
             landfrac = smooth_n_point(land['landfrac'].values, 5)
             landmask = np.where(landfrac > 0.0, 1.0, 0.0)
-            oceanfrac = 1-landfrac
+            oceanfrac = 1 - landfrac
             oceanfrac = np.where(oceanfrac > 1.0, 1.0, oceanfrac)
             oceanfrac = np.where(oceanfrac < 0.0, 0.0, oceanfrac)
             oceanmask = np.where(oceanfrac > 0.0, 1.0, 0.0)
@@ -367,7 +365,7 @@ class PreProcessing:
             np.array(1 - orig_land['mask'].values, dtype=np.int32))
         orig_ocean['frac'] = (
             orig_ocean['mask'].dims,
-            np.array(1-orig_land['mask'].values, dtype=np.int32))
+            np.array(1 - orig_land['mask'].values, dtype=np.int32))
         orig_ocean = orig_ocean.fillna(0)
         orig_ocean.to_netcdf(cesmexp.oceanfrac_file)
         logger.info(f'Saving oceanfrac_file: {cesmexp.oceanfrac_file}')
@@ -396,19 +394,17 @@ class PreProcessing:
         if not os.path.exists(cesmexp.co2_file) or remap:
             logger.info('Modifying co2_file')
             co2value = interpolate_co2(cesmexp.land_year)
-            f=xr.open_mfdataset(self.config.ORIG_CESM_CO2_FILE,
-                                decode_times=False)
+            f = xr.open_mfdataset(self.config.ORIG_CESM_CO2_FILE,
+                                  decode_times=False)
             tmp = np.full(f['co2vmr'].shape,
                           cesmexp.multiplier * co2value * 1.0e-6)
             f['co2vmr'] = (f['co2vmr'].dims, tmp)
             f.to_netcdf(cesmexp.co2_file)
             logger.info(f'Saved co2_file: {cesmexp.co2_file}')
 
-
     def get_landfrac_dict(self, orig_data=None, source_data=None,
                           land_year=None, sea_level=0):
 
-        landfrac_dict = {}
         if land_year is not None:
             source_data = self.interpolate_land(land_year)
         raw_landmask = np.array(source_data['z'].values > sea_level,
@@ -439,38 +435,38 @@ class PreProcessing:
 
         logger.info(f"**Changing namelist file: {nl_cam_file}**")
         with open(nl_cam_file, 'w') as f:
-            for l in configuration['atm']:
-                f.write(f'{l}\n')
+            for line in configuration['atm']:
+                f.write(f'{line}\n')
         f.close()
 
         logger.info(f"**Changing namelist file: {nl_cpl_file}**")
         with open(nl_cpl_file, 'w') as f:
-            for l in configuration['cpl']:
-                f.write(f'{l}\n')
+            for line in configuration['cpl']:
+                f.write(f'{line}\n')
         f.close()
 
         logger.info(f"**Changing namelist file: {nl_clm_file}**")
         with open(nl_clm_file, 'w') as f:
-            for l in configuration['lnd']:
-                f.write(f'{l}\n')
+            for line in configuration['lnd']:
+                f.write(f'{line}\n')
         f.close()
 
         logger.info(f"**Changing namelist file: {nl_docn_file}**")
         with open(nl_docn_file, 'w') as f:
-            for l in configuration['docn']:
-                f.write(f'{l}\n')
+            for line in configuration['docn']:
+                f.write(f'{line}\n')
         f.close()
 
         logger.info(f"**Changing namelist file: {nl_pop_file}**")
         with open(nl_pop_file, 'w') as f:
-            for l in configuration['ocn']:
-                f.write(f'{l}\n')
+            for line in configuration['ocn']:
+                f.write(f'{line}\n')
         f.close()
 
         logger.info(f"**Changing namelist file: {nl_ice_file}**")
         with open(nl_ice_file, 'w') as f:
-            for l in configuration['ocn']:
-                f.write(f'{l}\n')
+            for line in configuration['ocn']:
+                f.write(f'{line}\n')
         f.close()
 
         if configuration['change_som_stream']:
@@ -512,6 +508,7 @@ class PreProcessing:
                                 '%DOCN_OCNFRAC_DIR%', ocnfrac_path))
 
     def get_base_topofile(self, res):
+        """Get unmodified topography file"""
         tmp_res = res.replace('.', '').split('_')[0]
         if '42' in tmp_res:
             self.config.ORIG_CESM_TOPO_FILE = self.config.T42_TOPO_FILE
@@ -564,8 +561,8 @@ def regrid_continent_maps(remap_file, basefile='', outfile='', sea_level=0,
     ds_out.to_netcdf(outfile)
     print(f'{outfile}')
 
-def shift_longitude(data):
 
+def shift_longitude(data):
     logger.info("Shifting longitude in high res data")
     tmp = np.zeros(data['z'].shape)
     lons = [x + 360.0 if x < 0 else x for x in data['lon'].values]
@@ -587,8 +584,8 @@ def shift_longitude(data):
     data['z'].attrs = z_attrs
     return data
 
-def compute_land_ocean_properties(land, sea_level=0, max_depth=1000):
 
+def compute_land_ocean_properties(land, sea_level=0, max_depth=1000):
     if 'latitude' in land:
         land = land.rename({'latitude': 'lat'})
     if 'longitude' in land:
@@ -605,7 +602,7 @@ def compute_land_ocean_properties(land, sea_level=0, max_depth=1000):
     oceanmask = np.where(oceanfrac > 0.0, 1.0, 0.0)
     height = np.where(land['z'].values > sea_level, land['z'].values, 0)
     depth = np.where(land['z'].values <= sea_level, -land['z'].values, 0)
-    depth = np.where(depth>max_depth, max_depth, depth)
+    depth = np.where(depth > max_depth, max_depth, depth)
 
     land['landmask'] = (land['z'].dims, landmask)
     land['landfrac'] = (land['z'].dims, landfrac)
@@ -621,14 +618,13 @@ def compute_land_ocean_properties(land, sea_level=0, max_depth=1000):
 
 
 def regrid_continent_data(land, basefile='', sea_level=0, max_depth=1000):
-    import xesmf as xe
     base = xr.open_mfdataset(basefile)
 
-    if all(-np.pi < l < np.pi for l in base['lat'].values):
+    if all(-np.pi < lat < np.pi for lat in base['lat'].values):
         lats = 180.0 / np.pi * base['lat'].values
     else:
         lats = base['lat'].values
-    if all(-2 * np.pi < l < 2 * np.pi for l in base['lon'].values):
+    if all(-2 * np.pi < lon < 2 * np.pi for lon in base['lon'].values):
         lons = 180.0 / np.pi * base['lon'].values
     else:
         lons = base['lon'].values
@@ -646,7 +642,7 @@ def regrid_continent_data(land, basefile='', sea_level=0, max_depth=1000):
                          'lon': (['lon'], lons)})
 
     logger.info('Regridding continent data')
-    regridder = xe.Regridder(land, ds_out, 'bilinear')
+    regridder = regridder_module(land, ds_out)
     ds_out = regridder(land)
 
     logger.info('Calculating landfrac_dict')
@@ -682,6 +678,7 @@ def regrid_continent_data(land, basefile='', sea_level=0, max_depth=1000):
 
 def zonal_band_anomaly_squared_distance(y, y0):
     return (y - y0)**2
+
 
 def meridional_band_anomaly_squared_distance(r, x, x0, y):
     ymin = np.sqrt(r) + 1
@@ -733,7 +730,7 @@ def modify_array_with_time_and_level(data, old_mask, new_mask):
 def modify_arrays_with_mask(data, old_mask, new_mask):
     tmp = np.zeros(new_mask.shape)
     mask_mean = data[old_mask > 0].mean()
-    nomask_mean = data[old_mask==0].mean()
+    nomask_mean = data[old_mask == 0].mean()
 
     tmp[new_mask > 0] = mask_mean
     tmp[new_mask == 0] = nomask_mean
@@ -764,7 +761,7 @@ def cell_overlap(lats, lons, lat, lon, dx, dy, landmask):
 
     lat_count = lats_in.sum()
     lon_count = lons_in.sum()
-    total_count = lat_count*lon_count
+    total_count = lat_count * lon_count
     mask_count = landmask[np.outer(lats_in, lons_in)].sum()
 
     return {'mask_count': mask_count, 'total_count': total_count}
@@ -801,8 +798,8 @@ def get_landfrac(shape=None, landfrac_dict=None):
             landfrac[i, j] /= landfrac_dict[key]['total_count']
     return landfrac
 
-def get_oceanfrac(shape=None, landfrac_dict=None):
 
+def get_oceanfrac(shape=None, landfrac_dict=None):
     oceanfrac = np.zeros(shape)
     logger.info('Calculating oceanfrac')
     for i in tqdm(range(oceanfrac.shape[0])):
@@ -811,6 +808,7 @@ def get_oceanfrac(shape=None, landfrac_dict=None):
             oceanfrac[i, j] = 1 - landfrac_dict[key]['mask_count']
             oceanfrac[i, j] /= landfrac_dict[key]['total_count']
     return oceanfrac
+
 
 def anomaly_value(max_val, r, x, x0, y, y0, anomaly_type='disk'):
     if x >= 180.0:
@@ -826,6 +824,7 @@ def anomaly_value(max_val, r, x, x0, y, y0, anomaly_type='disk'):
     if anomaly_type == 'none':
         return 0
     return anomaly_smoothing(max_val, np.sqrt(d), np.sqrt(r))
+
 
 def inject_anomaly(basefile='', anomaly_type='disk', variable='PHIS',
                    exp_type='dry_hs', max_anomaly=0, squared_radius=1,
