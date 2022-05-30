@@ -27,4 +27,5 @@ Install package:
     bash ./go.sh
 
 This go script kicks off scripts from the scripts directory and requires
-the my_config.json file.
+the my_config.json file. Pip has trouble installing xesmf and cartopy so these
+packages may need to be installed manually with conda.
