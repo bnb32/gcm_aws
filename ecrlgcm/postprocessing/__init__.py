@@ -1,6 +1,5 @@
 """Ecrlgcm postprocessing"""
 import xarray as xr
-import xesmf as xe
 import numpy as np
 import os
 import argparse
@@ -18,9 +17,8 @@ import plotly.graph_objs as go
 import plotly.io as pio
 
 from ecrlgcm.utilities import (polar_to_cartesian, mapping_map_to_sphere,
-                               sig_round, interp, none_or_float, none_or_int)
-from ecrlgcm.utilities import (get_logger, stored_years,
-                               cesm_plevels, isca_plevels)
+                               sig_round, interp, none_or_float, none_or_int,
+                               get_logger, cesm_plevels, isca_plevels)
 from ecrlgcm.preprocessing import PreProcessing, solar_constant
 from ecrlgcm.experiment import Experiment
 
@@ -215,6 +213,7 @@ class PostProcessing:
         self.reference_data = reference_data
 
     def hires_interp(self, land_year, stored_years=None):
+        import xesmf as xe
         """Interpolate to high resolution"""
         if stored_years is None:
             stored_years = self.stored_years

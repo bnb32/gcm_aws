@@ -4,7 +4,6 @@ import netCDF4 as nc
 import numpy as np
 import glob
 import xarray as xr
-import xesmf as xe
 import warnings
 from tqdm import tqdm
 from metpy.calc import smooth_n_point
@@ -82,6 +81,7 @@ class PreProcessing:
         self.min_land_year, self.max_land_year = out[2:]
 
     def modify_isca_input_files(self, ecrlexp, remap=False):
+        import xesmf as xe
         """Modify input data file for requested experiment"""
         multiplier = ecrlexp.multiplier
         land_year = ecrlexp.land_year
@@ -132,6 +132,7 @@ class PreProcessing:
             logger.info(f'Saving map file: {ecrlexp.topo_file}')
 
     def regrid_high_res_data(self, cesmexp, land, remap=True):
+        import xesmf as xe
         """Regrid high res data on grid used for simulation"""
         sea_level = cesmexp.sea_level
         max_depth = cesmexp.max_depth
@@ -620,7 +621,7 @@ def compute_land_ocean_properties(land, sea_level=0, max_depth=1000):
 
 
 def regrid_continent_data(land, basefile='', sea_level=0, max_depth=1000):
-
+    import xesmf as xe
     base = xr.open_mfdataset(basefile)
 
     if all(-np.pi < l < np.pi for l in base['lat'].values):
