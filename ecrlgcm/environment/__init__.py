@@ -156,7 +156,6 @@ class EnvironmentConfig:
                     if hasattr(self, k):
                         setattr(self, k, v)
 
-
     def update_env(self):
         """Update path after loading config"""
         os.environ["PATH"] += f":{self.CESM_SCRIPTS}"
@@ -164,9 +163,8 @@ class EnvironmentConfig:
             if d.upper() == d:
                 os.environ[d] = getattr(self, d)
 
-    @staticmethod
-    def init_dirs(config):
+    def init_dirs(self):
         """Make project directories"""
-        for d in dir(config):
+        for d in dir(self):
             if 'DIR' in d:
                 os.system(f'mkdir -p {d}')
