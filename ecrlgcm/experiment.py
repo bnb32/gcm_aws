@@ -3,6 +3,8 @@ import xarray as xr
 import os
 import glob
 
+from ecrlgcm.preprocessing import eccentricity, obliquity
+
 
 class Experiment:
     """GCM experiment class"""
@@ -183,8 +185,8 @@ def Configuration(cesmexp, args):
         sim_config['ice'] = ["ice_ic='none'", "xndt_dyn=2"]
 
         sim_config['cpl'] = ['orb_mode="fixed_year"', 'orb_iyear=1850',
-                             'orb_eccen={eccentricity(args.year)}',
-                             'orb_obliq={obliquity(args.year)}']
+                             f'orb_eccen={eccentricity(args.year)}',
+                             f'orb_obliq={obliquity(args.year)}']
 
         sim_config['xml_changes'] = [
             f'NTASKS={args.ntasks}',

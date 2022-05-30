@@ -682,10 +682,12 @@ def regrid_continent_data(land, basefile='', sea_level=0, max_depth=1000):
 
 
 def zonal_band_anomaly_squared_distance(y, y0):
+    """Anomaly value for a band at constant latitude"""
     return (y - y0)**2
 
 
 def meridional_band_anomaly_squared_distance(r, x, x0, y):
+    """Anomaly value for a band at constant longitude"""
     ymin = np.sqrt(r) + 1
     ymax = 90 - ymin - 1
     if ymin < y < ymax:
@@ -794,7 +796,7 @@ def overlap_fraction(inlat, inlon, outlat, outlon, landmask):
 
 
 def get_landfrac(shape=None, landfrac_dict=None):
-
+    """Get the land fraction data"""
     landfrac = np.zeros(shape)
     logger.info('Calculating landfrac')
     for i in tqdm(range(landfrac.shape[0])):
@@ -806,6 +808,7 @@ def get_landfrac(shape=None, landfrac_dict=None):
 
 
 def get_oceanfrac(shape=None, landfrac_dict=None):
+    """Get the ocean fraction data"""
     oceanfrac = np.zeros(shape)
     logger.info('Calculating oceanfrac')
     for i in tqdm(range(oceanfrac.shape[0])):
@@ -817,6 +820,7 @@ def get_oceanfrac(shape=None, landfrac_dict=None):
 
 
 def anomaly_value(max_val, r, x, x0, y, y0, anomaly_type='disk'):
+    """Anomaly value for the specified anomaly type"""
     if x >= 180.0:
         x -= 360.0
     if x0 >= 180.0:
@@ -836,6 +840,8 @@ def inject_anomaly(basefile='', anomaly_type='disk', variable='PHIS',
                    exp_type='dry_hs', max_anomaly=0, squared_radius=1,
                    anomaly_lon=0, anomaly_lat=0, use_lapse_rate=True,
                    just_surface=False):
+    """Inject anomaly into the data to be forced. This data could be sea
+    surface temperature, topography, etc"""
 
     base = xr.open_mfdataset(basefile)
     data = base[variable].values

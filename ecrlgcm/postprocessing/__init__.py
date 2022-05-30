@@ -2,7 +2,6 @@
 import xarray as xr
 import numpy as np
 import os
-import argparse
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -17,8 +16,7 @@ import plotly.io as pio
 
 from ecrlgcm.utilities.utilities import (polar_to_cartesian,
                                          mapping_map_to_sphere,
-                                         sig_round, interp, none_or_float,
-                                         none_or_int, get_logger,
+                                         sig_round, interp, get_logger,
                                          cesm_plevels, isca_plevels)
 from ecrlgcm.preprocessing import PreProcessing, solar_constant
 from ecrlgcm.experiment import Experiment
