@@ -10,6 +10,7 @@ setup(
     packages=['ecrlgcm'],
     package_dir={'ecrlgcm': './ecrlgcm'},
     install_requires=[
+        'python==3.8',
         'matplotlib',
         'numpy',
         'xarray',
@@ -21,6 +22,5 @@ setup(
         'tqdm',
         'sphinx-argparse',
         'joblib',
-        'f90nml',
-        'xesmf @ git+https://github.com/pangeo-data/xesmf.git']
+        'f90nml']
 )
