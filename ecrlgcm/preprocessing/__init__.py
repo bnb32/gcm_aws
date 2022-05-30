@@ -10,7 +10,7 @@ from tqdm import tqdm
 from metpy.calc import smooth_n_point
 
 from ecrlgcm.data import co2_series, ecc_series, obl_series
-from ecrlgcm.utilities import land_years, interp, get_logger, sliding_std
+from ecrlgcm.utilities import interp, get_logger, sliding_std
 warnings.filterwarnings("ignore")
 
 logger = get_logger()
@@ -82,7 +82,7 @@ class PreProcessing:
         self.min_land_year, self.max_land_year = out[2:]
 
     def modify_isca_input_files(self, ecrlexp, remap=False):
-
+        """Modify input data file for requested experiment"""
         multiplier = ecrlexp.multiplier
         land_year = ecrlexp.land_year
         sea_level = ecrlexp.sea_level
@@ -110,7 +110,7 @@ class PreProcessing:
             base = xr.open_mfdataset(self.config.ORIG_ISCA_TOPO_FILE)
 
             ds_out = xr.Dataset({'lat': (['lat'], base['lat'].values),
-                             'lon': (['lon'], base['lon'].values)})
+                                 'lon': (['lon'], base['lon'].values)})
 
             if not os.path.exists(ecrlexp.high_res_file):
                 land.to_netcdf(ecrlexp.high_res_file)
@@ -132,7 +132,7 @@ class PreProcessing:
             logger.info(f'Saving map file: {ecrlexp.topo_file}')
 
     def regrid_high_res_data(self, cesmexp, land, remap=True):
-
+        """Regrid high res data on grid used for simulation"""
         sea_level = cesmexp.sea_level
         max_depth = cesmexp.max_depth
 
@@ -174,6 +174,7 @@ class PreProcessing:
 
     def regrid_high_res_data_ncl(self, cesmexp, in_shape=(1801, 3601),
                                  remap=True):
+        """Regrid high res data on grid used for simulation. Use ncl script"""
 
         cmd = f'export NCL_POP_REMAP="{self.config.USER_DIR}'
         cmd += '/inputdata/mapping_files"; '
@@ -191,24 +192,26 @@ class PreProcessing:
             logger.info(f'Saved {cesmexp.remapped_f19}')
 
     def get_original_map_data(self, land_year):
+        """Get original map for requested year"""
         land_year = str(land_year)
         file = glob.glob(self.config.RAW_TOPO_DIR + f'/Map*_{land_year}Ma.nc')
         land = xr.open_mfdataset(file)
         return land
 
     def modify_solar_file(self, cesmexp, remap):
+        """Modify input solar file with forcing specified in cesmexp"""
         if not os.path.exists(cesmexp.solar_file) or remap:
             logger.info('Modifying solar_file')
             solar_frac = solar_fraction(cesmexp.land_year)
             f = xr.open_mfdataset(self.config.ORIG_CESM_SOLAR_FILE,
                                   decode_times=False)
-            f['ssi'] = (f['ssi'].dims, solar_frac*f['ssi'].values)
+            f['ssi'] = (f['ssi'].dims, solar_frac * f['ssi'].values)
             f.to_netcdf(cesmexp.solar_file)
             logger.info(f'Saved solar_file: {cesmexp.solar_file}')
 
     def interpolate_land(self, land_year):
         year = float(land_year)
-        keys = sorted(land_years)
+        keys = sorted(self.land_years)
 
         if land_year in keys:
             ds_out = self.get_original_map_data(keys[keys.index(land_year)])
@@ -765,16 +768,15 @@ def cell_overlap(lats, lons, lat, lon, dx, dy, landmask):
 
     return {'mask_count': mask_count, 'total_count': total_count}
 
-def overlap_fraction(inlat, inlon, outlat, outlon, landmask):
 
+def overlap_fraction(inlat, inlon, outlat, outlon, landmask):
+    """Compute overlap fraction between sets of coordinates"""
     tmp = {}
     inlon = [x + 360.0 if x < 0 else x for x in inlon]
     outlon = [x + 360.0 if x < 0 else x for x in outlon]
 
-    for i in tqdm(range(len(inlat))):
-        for j in range(len(inlon)):
-            lat = inlat[i]
-            lon = inlon[j]
+    for i, lat in tqdm(enumerate(inlat)):
+        for j, lon in enumerate(inlon):
             lat_idx = np.argmin(np.abs(outlat - lat))
             lon_idx = np.argmin(np.abs(outlon - lon))
 

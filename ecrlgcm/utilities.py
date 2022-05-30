@@ -121,9 +121,11 @@ def sliding_std(data, dx=3, dy=3):
             tmp[i, j] = np.std(tmp[i_min: i_max + 1, j_min: j_max + 1])
     return tmp
 
+
 def count_between(array, min_val, max_val):
     """Count number of values in array betwee min / max"""
     return ((min_val <= array) & (array <= max_val)).sum()
+
 
 def cell_overlap(inlat, inlon, lat, lon, lat_dx, lon_dx, landmask):
     """Compute cell overlap for given coordinates"""
@@ -141,12 +143,13 @@ def cell_overlap(inlat, inlon, lat, lon, lat_dx, lon_dx, landmask):
 
     for i in range(min_i, max_i + 1):
         for j in range(min_j, max_j + 1):
-            if ((np.abs(inlat[i] - lat) < lat_dx / 2) and
-                (np.abs(inlon[j] - lon) < lon_dx / 2)):
+            if ((np.abs(inlat[i] - lat) < lat_dx / 2)
+                    and (np.abs(inlon[j] - lon) < lon_dx / 2)):
                 total_count += 1
                 if landmask[i, j] > 0:
                     mask_count += 1
     return mask_count / total_count
+
 
 def overlap_fraction(inlat, inlon, outlat, outlon, landmask):
     """Compute overlap fractio between specified coordinate sets"""
@@ -155,8 +158,8 @@ def overlap_fraction(inlat, inlon, outlat, outlon, landmask):
     lat_dx = outlat[1] - outlat[0]
     lon_dx = outlon[1] - outlon[0]
 
-    for i in tqdm(range(len(outlat))):
-        for j in range(len(outlon)):
-            tmp[i, j] = cell_overlap(inlat, inlon, outlat[i], outlon[j],
+    for i, lat in tqdm(enumerate(outlat)):
+        for j, lon in enumerate(outlon):
+            tmp[i, j] = cell_overlap(inlat, inlon, lat, lon,
                                      lat_dx, lon_dx, landmask)
     return tmp
