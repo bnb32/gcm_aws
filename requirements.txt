@@ -1,10 +1,8 @@
-geos
-cartopy
+pygeos
 matplotlib
 numpy
 xarray
 proj
-geos
 pop-tools
 netCDF4
 metpy
@@ -12,4 +10,3 @@ tqdm
 sphinx-argparse
 joblib
 f90nml
-xesmf @ git+https://github.com/pangeo-data/xesmf.git
