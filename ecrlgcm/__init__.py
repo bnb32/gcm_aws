@@ -9,8 +9,8 @@ ECRLGCM_DIR = os.path.dirname(os.path.realpath(__file__))
 DATA_DIR = os.path.join(os.path.dirname(ECRLGCM_DIR), 'ecrlgcm', 'data')
 
 config_arg_description = ('Path to configuration file. Needs to have the '
-                          'parameters defined in environment/config.py. Needs'
-                          'to be in json format.')
+                          'parameters defined in environment/config.py. Needs '
+                          'to be in either json format or a .py file.')
 year_arg_description = ("Years prior to current era in units of Ma.")
 
 EXPERIMENT_DICTIONARY = {
@@ -102,7 +102,7 @@ def run_isca_variable_co2_continents_argparse():
 def app_argparse():
     """Parse args for dahsboard app"""
     parser = argparse.ArgumentParser(description="Initialize dashboard app")
-    parser.add_argument('-config', required=True)
+    parser.add_argument('-config', required=True, help=config_arg_description)
     return parser
 
 

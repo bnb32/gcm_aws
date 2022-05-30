@@ -1,6 +1,8 @@
 """Environment configuration"""
 import os
 import json
+import importlib.util
+import sys
 
 
 class EnvironmentConfig:
@@ -110,13 +112,22 @@ class EnvironmentConfig:
         Parameters
         ----------
         file_name : string
-            JSON configuration file
+            JSON or .py configuration file
         """
         self.file_name = file_name
         self.config_dict = {}
         self.get_config(file_name)
         self.update_env()
         self.init_dirs()
+
+    @staticmethod
+    def load_config(file_name):
+        """Load config from python file"""
+        spec = importlib.util.spec_from_file_location("config", file_name)
+        config = importlib.util.module_from_spec(spec)
+        sys.modules["config"] = config
+        spec.loader.exec_module(config)
+        return config
 
     def get_config(self, file_name=None):
         """Get configuration from file
@@ -131,12 +142,20 @@ class EnvironmentConfig:
         """
 
         if file_name is not None:
-            with open(file_name, 'r') as fh:
-                self.config_dict = json.load(fh)
+            if file_name.split('.')[-1] == 'py':
+                config = self.load_config(file_name)
+                for k in dir(config):
+                    if k.upper() == k:
+                        if hasattr(self, k):
+                            setattr(self, k, getattr(config, k))
+            elif file_name.split('.')[-1] == 'json':
+                with open(file_name, 'r') as fh:
+                    self.config_dict = json.load(fh)
 
-            for k, v in self.config_dict.items():
-                if hasattr(self, k):
-                    setattr(self, k, v)
+                for k, v in self.config_dict.items():
+                    if hasattr(self, k):
+                        setattr(self, k, v)
+
 
     def update_env(self):
         """Update path after loading config"""
