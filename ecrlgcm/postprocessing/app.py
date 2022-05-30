@@ -1,7 +1,8 @@
 """Dashboard app module"""
 from ecrlgcm.environment import EnvironmentConfig
-from ecrlgcm.postprocessing import PostProcessing, app_argparse
-from ecrlgcm.utilities.utilities import get_logger, max_land_year
+from ecrlgcm.postprocessing import PostProcessing
+from ecrlgcm import app_argparse
+from ecrlgcm.utilities.utilities import get_logger
 
 import dash
 import dash_core_components as dcc
@@ -32,7 +33,8 @@ if __name__ == '__main__':
         [html.H6('Paleoclimate Modeling',
          style={'width': '100%', 'textAlign': 'center', 'font-size': '25px'}),
          html.Div(["Year (Ma BP): ",
-                   dcc.Slider(id='land_year', min=0, max=max_land_year,
+                   dcc.Slider(id='land_year', min=post_proc.min_land_year,
+                              max=post_proc.max_land_year,
                               step=10, value=0,
                               tooltip={"placement": "bottom",
                                        "always_visible": True})],

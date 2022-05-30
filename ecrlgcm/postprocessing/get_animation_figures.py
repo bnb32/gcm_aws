@@ -4,7 +4,8 @@ import os
 from joblib import Parallel, delayed
 
 from ecrlgcm.environment import EnvironmentConfig
-from ecrlgcm.postprocessing import (PostProcessing, figures_argparse)
+from ecrlgcm.postprocessing import (PostProcessing)
+from ecrlgcm import figures_argparse
 
 
 def parallel_run(i, args, config):

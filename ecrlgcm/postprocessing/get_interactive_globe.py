@@ -1,7 +1,7 @@
 """Run interactive globe creation"""
 from ecrlgcm.environment import EnvironmentConfig
 from ecrlgcm.postprocessing import PostProcessing
-from ecrlgcm.postprocessing import globe_argparse
+from ecrlgcm import globe_argparse
 
 
 if __name__ == '__main__':

@@ -2,6 +2,6 @@ Get Dashboard App
 =================
 
 .. argparse::
-    :module: ecrlgcm.postprocessing
+    :module: ecrlgcm
     :func: app_argparse
     :prog: python ecrlgcm/postprocessing/app.py

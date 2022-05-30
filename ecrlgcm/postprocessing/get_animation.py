@@ -2,7 +2,8 @@
 import numpy as np
 from ecrlgcm.environment import EnvironmentConfig
 
-from ecrlgcm.postprocessing import (PostProcessing, animation_argparse)
+from ecrlgcm.postprocessing import (PostProcessing)
+from ecrlgcm import animation_argparse
 
 
 if __name__ == '__main__':
