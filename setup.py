@@ -21,5 +21,6 @@ setup(
         'tqdm',
         'sphinx-argparse',
         'joblib',
-        'f90nml']
+        'f90nml',
+        'xesmf @ git+https://github.com/pangeo-data/xesmf.git']
 )
